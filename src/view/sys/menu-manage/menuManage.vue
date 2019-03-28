@@ -32,18 +32,18 @@
         </Col>
         <Col span="9">
           <Form ref="menuForm" :model="menuForm" :label-width="85" :rules="menuFormValidate">
-            <FormItem label="类型" prop="type">
-              <RadioGroup v-model="menuForm.type">
-                <Radio :label="0" :disabled="isButton">
-                  <Icon type="ios-list-outline"></Icon>
-                  <span>页面菜单</span>
-                </Radio>
-                <Radio :label="1" :disabled="isMenu">
-                  <Icon type="log-in"></Icon>
-                  <span>操作按钮</span>
-                </Radio>
-              </RadioGroup>
-            </FormItem>
+            <!--<FormItem label="类型" prop="type">-->
+              <!--<RadioGroup v-model="menuForm.type">-->
+                <!--<Radio :label="0" :disabled="isButton">-->
+                  <!--<Icon type="ios-list-outline"></Icon>-->
+                  <!--<span>页面菜单</span>-->
+                <!--</Radio>-->
+                <!--<Radio :label="1" :disabled="isMenu">-->
+                  <!--<Icon type="log-in"></Icon>-->
+                  <!--<span>操作按钮</span>-->
+                <!--</Radio>-->
+              <!--</RadioGroup>-->
+            <!--</FormItem>-->
             <FormItem label="名称" prop="title" v-if="menuForm.type===0">
               <Input v-model="menuForm.title"/>
             </FormItem>

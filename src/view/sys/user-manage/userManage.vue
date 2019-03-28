@@ -372,7 +372,7 @@
     methods: {
       init () {
         this.accessToken = {
-          accessToken: this.getStore('accessToken');
+          accessToken: this.getStore('accessToken')
         }
         // this.initDepartmentData();
         this.getUserList()

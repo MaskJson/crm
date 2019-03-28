@@ -249,17 +249,6 @@ export const renderLink = (h, href, text) => {
   }, text || href)
 }
 
-export const getJsonArray = (data) => {
-  try {
-    if (!Array.isArray(data)) {
-      data = JSON.parse(data)
-    }
-  } catch (e) {
-    data = []
-  }
-  return data
-};
-
 // 获取普通列表render
 export const getRenderList = (h, data) => {
   data = getJsonArray(data)
@@ -293,4 +282,115 @@ export const getPageList = (page, data, pageSize) => {
   return data.slice((page-1)*10, page*10);
 }
 
+function getJsonArray (data) {
+  try {
+    data = JSON.parse(data)
+  } catch (e) {
+    data = []
+  }
+  return data
+}
+
+export const jsonArray = getJsonArray;
+
+// 获取职能render
+export const getAptness = (h, data) => {
+  data = getJsonArray(data) || []
+  return h('p', data.map(item => {
+    return h('span', {
+      'class': {
+        mL10: true
+      }
+    }, item)
+  }))
+}
+// 获取城市render
+export const getCity = (h, data) => {
+  data = getJsonArray(data)
+  return h('span', data.map(item => {
+    return h('span', {
+      'class': {
+        mL5: true
+      }
+    }, item)
+  }))
+}
+
+// 获取pagrender
+export const getPagRender = (h, data) => {
+  data = getJsonArray(data)
+  return h('div', data.map(item => {
+    return h('span', {
+      'class': {
+        mL5: true
+      }
+    }, item)
+  }))
+}
+// 获取状态render
+export const getStatusRender = (h, data) => {
+  let text = ''
+  switch (data) {
+    case '0': text = '项目进展中'; break
+    case '1': text = '不在职看机会'; break
+    case '2': text = '在职不看机会'; break
+    case '3': text = '在职看机会'; break
+    case '4': text = '在职急换工作'; break
+    case '5': text = '半年后看机会'; break
+    case '6': text = '1年后看机会'; break
+    case '7': text = '2年后看机会'; break
+    default: text = '项目进展中'; break
+  }
+  return h('span', text)
+}
+// 过滤人才详情
+export const getTalentInfoUtil = (data) => {
+  let {industry, aptness, city, telephone, email, intentionCity, resume, pag, experienceList} = data
+  experienceList = experienceList || [];
+  experienceList.forEach(item => {
+    item.status = item == '0'
+  })
+  Object.assign(data, {
+    industry: getJsonArray(industry),
+    aptness: getJsonArray(aptness),
+    city: getJsonArray(city),
+    // telephone: getJsonArray(telephone),
+    // email: getJsonArray(email),
+    intentionCity: getJsonArray(intentionCity),
+    // resume: getJsonArray(resume),
+    pag: getJsonArray(pag),
+    experienceList: experienceList
+  })
+  return data;
+}
+
+/**
+ * 过滤客户详情
+ */
+export const getClientInfoUtil = (data) => {
+  let {city, industry} = data;
+  Object.assign(data, {
+    city: getJsonArray(city),
+    industry: getJsonArray(industry)
+  })
+  return data;
+}
+
+/**
+ * 获取项目详情
+ */
+export const getProjectInfoUtil = (data) => {
+  let {industry, aptness, city, firstApplyTime, finishTime, adviserList} = data;
+  adviserList = adviserList || [];
+  const list = adviserList.map(item => {
+    return item.adviserId
+  })
+  Object.assign(data, {
+    industry: getJsonArray(industry),
+    aptness: getJsonArray(aptness),
+    city: getJsonArray(city),
+    adviserList: list
+  })
+  return data;
+}
 
