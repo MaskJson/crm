@@ -1,0 +1,28 @@
+.flex{
+  display: flex;
+}
+
+.flex-row{
+  .flex;
+  flex-direction: row;
+}
+
+.flex-col{
+  .flex;
+  flex-direction: column;
+}
+
+.flex-v-center{
+  align-items: center;
+}
+
+.flex-h-center{
+  justify-content: center;
+}
+
+.margin-r10{
+  &:not(:last-child){
+    margin-right: 10px;
+  }
+}
+

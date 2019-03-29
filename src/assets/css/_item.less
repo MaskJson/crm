@@ -1,0 +1,28 @@
+@import "./_props";
+
+.item(){
+  /deep/.item-title{
+    align-items: flex-start;
+  }
+  .item-contain{
+    width: @full;
+    /deep/.ivu-input-wrapper{
+      width: @full;
+    }
+    /deep/.ivu-date-picker{
+      width: @full;
+    }
+    .range{
+      display: flex;
+      align-items: center;
+      .link-text{
+        display: flex;
+        flex-direction: row;
+        padding: 0 10px;
+      }
+      .end-text{
+        padding-left: 10px;
+      }
+    }
+  }
+}
