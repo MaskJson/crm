@@ -9,10 +9,10 @@
         <shrinkable-menu :shrink="shrink" @on-change="handleSubmenuChange" :theme="menuTheme"
                          :before-push="beforePush" :open-names="openedSubmenuArr" :menu-list="menuList">
           <div slot="top" class="logo-con">
-            <div class="bgf2 pd-5 radius4" v-show="!shrink">
-              <img class="radius4" src="https://taoke-prod.oss-cn-hangzhou.aliyuncs.com/common/mgr/logo-bg.png" key="max-logo"/>
+            <div class="pd-5 radius4" v-show="!shrink">
+              <img class="radius4" :src="maxLogo" key="max-logo"/>
             </div>
-            <img v-show="shrink" src="https://taoke-prod.oss-cn-hangzhou.aliyuncs.com/common/mgr/logo-sm.png" key="min-logo"/>
+            <img v-show="shrink" :src="minLogo" key="min-logo"/>
           </div>
         </shrinkable-menu>
       </scroll-bar>
@@ -32,15 +32,15 @@
         </div>
         <div class="header-avator-con">
           <full-screen v-model="isFullScreen" @on-change="fullscreenChange"></full-screen>
-          <Dropdown @on-click="handleLanDropdown" class="options">
-            <Icon type="md-globe" :size="24" class="language"></Icon>
-            <DropdownMenu slot="list">
-              <DropdownItem name="zh-CN">中文</DropdownItem>
-              <DropdownItem name="en-US">English</DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-          <lock-screen></lock-screen>
-          <message-tip v-model="mesCount"></message-tip>
+          <!--<Dropdown @on-click="handleLanDropdown" class="options">-->
+            <!--<Icon type="md-globe" :size="24" class="language"></Icon>-->
+            <!--<DropdownMenu slot="list">-->
+              <!--<DropdownItem name="zh-CN">中文</DropdownItem>-->
+              <!--<DropdownItem name="en-US">English</DropdownItem>-->
+            <!--</DropdownMenu>-->
+          <!--</Dropdown>-->
+          <!--<lock-screen></lock-screen>-->
+          <!--<message-tip v-model="mesCount"></message-tip>-->
           <div class="user-dropdown-menu-con">
             <Row type="flex" justify="end" align="middle" class="user-dropdown-innercon">
               <Dropdown transfer trigger="hover" @on-click="handleClickUserDropdown">

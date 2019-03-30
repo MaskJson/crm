@@ -2,7 +2,7 @@
   <Card>
     <div>
       <SearchItem>
-        <InputNumber placeholder="客户id" class="w200" :min="1" :parser="value = value => value ? Math.floor(value) : value" v-model="searchData.id"/>
+        <InputNumber placeholder="客户id" class="w200" :min="1" :parser="value = value => (value ? Math.floor(value) : value).toString()" v-model="searchData.id"/>
       </SearchItem>
       <SearchItem>
         <Input placeholder="客户名称" class="w200" v-model="searchData.name"/>
@@ -19,25 +19,33 @@
         <Cascader v-model="searchData.city" :data="cityList" class="w200"></Cascader>
       </SearchItem>
       <SearchItem>
-        <Button type="primary">查询</Button>
+        <Button type="primary" @click="search">查询</Button>
       </SearchItem>
       <SearchItem>
-        <Button type="primary">重置查询条件</Button>
+        <Button type="primary" @click="resetSearch">重置查询条件</Button>
       </SearchItem>
       <SearchItem>
-        <Button type="primary">客户收藏夹管理</Button>
+        <Button type="primary" @click="showFavoriteSetting = true">客户收藏夹管理</Button>
       </SearchItem>
     </div>
-    <ManagerView :del="false" :save="null" :columns="columns"/>
+    <ManagerView ref="manager" :del="false" :save="{save: true}" route="/customer/customer-edit" :columns="columns" :searchData="searchParams"/>
+    <Drawer :width="360" title="客户收藏夹管理" :closable="false" v-model="showFavoriteSetting">
+      <favorite-setting :type="1"/>
+    </Drawer>
   </Card>
 </template>
 
 <script>
-  import { jsonArray, getCity } from "../../../libs/tools";
+  import { jsonArray, getCity, globalSearch } from "../../../libs/tools";
+  import { list, toggleFollow } from "../../../api/customer";
   import cityList from '../../../libs/cityList';
+  import FavoriteSetting from '../../components/favorite-setting';
 
   export default {
     name: "CustomerManage",
+    components: {
+      FavoriteSetting
+    },
     computed: {
       searchParams() {
         const { id, name, industry, folderId, city } = this.searchData;
@@ -52,6 +60,7 @@
     },
     data() {
       return {
+        showFavoriteSetting: false,
         folders: [], // 客户收藏夹
         cityList: cityList,
         searchData: {
@@ -90,7 +99,7 @@
             key: 'type',
             render: (h, params) => {
               const type = params.row.type;
-              return h('span', type == 0 ? '普通客户' : type == 1 ? '拓展客户' : '签约客户')
+              return h('span', type == 0 ? '普通公司' : type == 6 ? '客户' : '拓展客户')
             }
           },
           {
@@ -108,41 +117,52 @@
           {
             title: '操作',
             align: 'center',
+            width: 200,
             render: (h, params) => {
               return h('div', [
                 h('Button', {
+                  class: {
+                    'mr-5': true
+                  },
                   props: {
-                    type: 'text',
                     size: 'small'
                   },
                   on: {
                     click: () => {
-
+                      this.$router.push({ path: '/customer/customer-detail', query: {id: params.row.id}});
                     }
                   }
                 }, '查看详情'),
                 h('Button', {
+                  class: {
+                    'mr-5': true
+                  },
                   props: {
-                    type: 'text',
+                    type: 'primary',
                     size: 'small'
                   },
                   on: {
                     click: () => {
-
+                      this.$router.push({ path: '/customer/customer-edit', query: {id: params.row.id}});
                     }
                   }
                 }, '编辑'),
                 h('Button', {
                   props: {
-                    type: 'text',
+                    type: 'warning',
                     size: 'small'
                   },
                   on: {
                     click: () => {
-
+                      this.$refs['manager'].emitManagerHandler('toggle', {
+                        params: {
+                          id: params.row.id,
+                          follow: !params.row.follow
+                        }
+                      });
                     }
                   }
-                }, '取消关注')
+                }, params.row.follow ? '取消关注' : '关注')
               ])
             }
           }
@@ -150,12 +170,24 @@
       }
     },
     methods: {
-
+      resetSearch() {
+        this.searchData = {
+          id: null,
+          name: null,
+          folderId: null,
+          industry: null,
+          city: []
+        }
+      },
+      search() {
+        globalSearch(this);
+      }
     },
     provide() {
       return {
         handlers: {
-
+          search: list,
+          toggle: toggleFollow
         }
       }
     }

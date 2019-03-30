@@ -127,7 +127,8 @@ util.setCurrentPath = function (vm, name) {
         return false;
       }
     })[0];
-    if (currentPathObj.children.length < 1 && currentPathObj.name === 'home') {
+    currentPathObj.children = !!currentPathObj.children ? currentPathObj.children : [];
+    if (currentPathObj.children && currentPathObj.children.length < 1 && currentPathObj.name === 'home') {
       currentPathArr = [
         {
           title: '首页',
@@ -135,7 +136,7 @@ util.setCurrentPath = function (vm, name) {
           name: 'home'
         }
       ];
-    } else if (currentPathObj.children.length < 1 && currentPathObj.name !== 'home') {
+    } else if (currentPathObj.children && currentPathObj.children.length < 1 && currentPathObj.name !== 'home') {
       currentPathArr = [
         {
           title: '首页',
@@ -276,6 +277,9 @@ util.initRouter = function (vm) {
     // 添加全局路由
     vm.$store.commit('updateDefaultRouter', otherRoutes);
     // 刷新界面菜单
+    constRoutes.forEach(item => {
+      item.children = item.children.filter(item => !item.hideInMenu);
+    });
     vm.$store.commit('updateMenulist', constRoutes.filter(item => item.children.length > 0));
 
     let tagsList = [];
@@ -305,8 +309,9 @@ util.initRouterNode = function (routers, data) {
     let meta = {};
     // 给页面添加权限、标题、第三方网页链接
     meta.permTypes = menu.permTypes ? menu.permTypes : null;
-    meta.title = menu.title ? menu.title + "管理后台" : null;
+    meta.title = menu.title ? menu.title : null;
     meta.url = menu.url ? menu.url : null;
+    meta.hideInMenu = !!menu.hideInMenu;
     menu.meta = meta;
     routers.push(menu);
   }

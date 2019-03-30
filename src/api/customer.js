@@ -19,3 +19,13 @@ export const list = (params) => {
 export const get = (params) => {
   return getRequest('/customer/get', params);
 };
+
+// 修改关注状态
+export const toggleFollow = (params) => {
+  return postRequest('/customer/toggle-follow', params);
+};
+
+// 添加客户跟踪
+export const addRemind = (params) => {
+  return postJson('/customer/add-remind', params);
+}

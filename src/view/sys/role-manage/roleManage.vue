@@ -99,7 +99,7 @@
         columns: [
           {
             type: 'selection',
-            // width: 60,
+            width: 60,
             align: 'center'
           },
           {

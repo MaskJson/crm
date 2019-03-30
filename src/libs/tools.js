@@ -367,7 +367,7 @@ export const getTalentInfoUtil = (data) => {
 /**
  * 过滤客户详情
  */
-export const getClientInfoUtil = (data) => {
+export const getCustomerInfoUtil = (data) => {
   let {city, industry} = data;
   Object.assign(data, {
     city: getJsonArray(city),
@@ -393,4 +393,16 @@ export const getProjectInfoUtil = (data) => {
   })
   return data;
 }
+
+// manager view 查询
+export const globalSearch = (vm) => {
+  vm.$refs['manager'].emitManagerHandler(3, {
+    unFresh: true
+  });
+}
+
+// util component toggleShow
+export const toggleShow = (vm, key, flag) => {
+  vm.$refs[key].toggleShow(flag);
+};
 

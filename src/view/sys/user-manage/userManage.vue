@@ -9,18 +9,18 @@
                 <Input type="text" v-model="searchForm.username" clearable placeholder="请输入用户名" style="width: 200px"/>
               </Form-item>
 
-                <Form-item label="用户类型" prop="type">
-                  <Select v-model="searchForm.type" placeholder="请选择" clearable style="width: 200px">
-                    <Option value="0">普通用户</Option>
-                    <Option value="1">管理员</Option>
-                  </Select>
-                </Form-item>
-                <Form-item label="用户状态" prop="status">
-                  <Select v-model="searchForm.status" placeholder="请选择" clearable style="width: 200px">
-                    <Option value="0">正常</Option>
-                    <Option value="-1">禁用</Option>
-                  </Select>
-                </Form-item>
+                <!--<Form-item label="用户类型" prop="type">-->
+                  <!--<Select v-model="searchForm.type" placeholder="请选择" clearable style="width: 200px">-->
+                    <!--<Option value="0">普通用户</Option>-->
+                    <!--<Option value="1">管理员</Option>-->
+                  <!--</Select>-->
+                <!--</Form-item>-->
+                <!--<Form-item label="用户状态" prop="status">-->
+                  <!--<Select v-model="searchForm.status" placeholder="请选择" clearable style="width: 200px">-->
+                    <!--<Option value="0">正常</Option>-->
+                    <!--<Option value="-1">禁用</Option>-->
+                  <!--</Select>-->
+                <!--</Form-item>-->
                 <Form-item label="创建时间">
                   <DatePicker v-model="selectDate" type="daterange" format="yyyy-MM-dd" clearable
                     @on-change="selectDateRange" placeholder="选择起始时间"
@@ -44,7 +44,7 @@
           <Row>
             <Table :loading="loading" border :columns="columns" :data="data" sortable="custom"
                    @on-sort-change="changeSort" @on-selection-change="showSelect" ref="table"></Table>
-            <Table :columns="exportColumns" :data="exportData" ref="exportTable" style="display:none"></Table>
+            <Table :columns="columns" :data="exportData" ref="exportTable" style="display:none"></Table>
           </Row>
           <Row type="flex" justify="end" class="page">
             <Page :current="searchForm.page" :total="total" :page-size="searchForm.size"
@@ -322,23 +322,23 @@
                   },
                   '编辑'
                 ),
-                h(
-                  'Button',
-                  {
-                    props: {
-                      size: 'small'
-                    },
-                    style: {
-                      marginRight: '5px'
-                    },
-                    on: {
-                      click: () => {
-                        this.enable(params.row.id, params.row.status == 0 ? -1 : 0, params.row.nickName)
-                      }
-                    }
-                  },
-                  params.row.status == 0 ? '禁用' : '启用'
-                ),
+                // h(
+                //   'Button',
+                //   {
+                //     props: {
+                //       size: 'small'
+                //     },
+                //     style: {
+                //       marginRight: '5px'
+                //     },
+                //     on: {
+                //       click: () => {
+                //         this.enable(params.row.id, params.row.status == 0 ? -1 : 0, params.row.nickName)
+                //       }
+                //     }
+                //   },
+                //   params.row.status == 0 ? '禁用' : '启用'
+                // ),
                 h(
                   'Button',
                   {

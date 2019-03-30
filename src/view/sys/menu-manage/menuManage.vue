@@ -90,12 +90,18 @@
               <InputNumber :max="1000" :min="0" v-model="menuForm.sortOrder"></InputNumber>
               <span style="margin-left:5px">值越小越靠前，支持小数</span>
             </FormItem>
-            <FormItem label="是否启用" prop="status">
-              <i-switch size="large" v-model="editStatus" @on-change="changeEditSwitch">
-                <span slot="open">启用</span>
-                <span slot="close">禁用</span>
+            <FormItem label="是否隐藏菜单">
+              <i-switch v-model="menuForm.hideInMenu">
+                <span slot="open">隐藏</span>
+                <span slot="close">显示</span>
               </i-switch>
             </FormItem>
+            <!--<FormItem label="是否" prop="status">-->
+              <!--<i-switch size="large" v-model="editStatus" @on-change="changeEditSwitch">-->
+                <!--<span slot="open">启用</span>-->
+                <!--<span slot="close">禁用</span>-->
+              <!--</i-switch>-->
+            <!--</FormItem>-->
             <Form-item>
               <Button style="margin-right:5px" @click="submitEdit" :loading="submitLoading" type="primary"
                       icon="ios-create-outline">修改并保存
@@ -168,12 +174,18 @@
           <InputNumber :max="1000" :min="0" v-model="menuFormAdd.sortOrder"></InputNumber>
           <span style="margin-left:5px">值越小越靠前，支持小数</span>
         </FormItem>
-        <FormItem label="是否启用" prop="status">
-          <i-switch size="large" v-model="addStatus" @on-change="changeAddSwitch">
-            <span slot="open">启用</span>
-            <span slot="close">禁用</span>
+        <FormItem label="是否隐藏左侧菜单">
+          <i-switch v-model="menuFormAdd.hideInMenu">
+            <span slot="open">隐藏</span>
+            <span slot="close">显示</span>
           </i-switch>
         </FormItem>
+        <!--<FormItem label="是否启用" prop="status">-->
+          <!--<i-switch size="large" v-model="addStatus" @on-change="changeAddSwitch">-->
+            <!--<span slot="open">启用</span>-->
+            <!--<span slot="close">禁用</span>-->
+          <!--</i-switch>-->
+        <!--</FormItem>-->
       </Form>
       <div slot="footer">
         <Button type="text" @click="cancelAdd">取消</Button>
@@ -213,10 +225,19 @@
           sortOrder: null,
           level: null,
           status: 0,
-          url: ''
+          url: '',
+          hideInMenu: false
         },
         menuFormAdd: {
-          buttonType: ''
+          id: '',
+          parentId: '',
+          buttonType: '',
+          type: 0,
+          sortOrder: null,
+          level: null,
+          status: 0,
+          url: '',
+          hideInMenu: false
         },
         menuFormValidate: {
           title: [{ required: true, message: '名称不能为空', trigger: 'blur' }],

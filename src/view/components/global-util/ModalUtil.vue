@@ -57,8 +57,8 @@
           this.$emit('reset');
         }
       },
-      toggleShow() {
-        this.isShow = !this.isShow;
+      toggleShow(flag) {
+        this.isShow = flag !== null && flag !== undefined ? flag : !this.isShow;
       }
     }
   }

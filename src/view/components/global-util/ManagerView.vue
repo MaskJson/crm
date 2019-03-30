@@ -62,7 +62,7 @@
         default: 10
       },
       // 添加操作跳转页面时的路由
-      saveRoute: {
+      route: {
         type: String,
         default: ''
       },
@@ -91,7 +91,7 @@
           this.$emit('on-save');
         } else {
           // this.handlers.saveHandler();
-          this.$router.push(this.saveRoute);
+          this.$router.push(this.route);
         }
       },
       // 页码改变刷新数据
@@ -144,37 +144,21 @@
         if (handler) {
           if (!isAsync) {
             this.showSpin = true;
-            handler(handlerData).then(res => {
+            handler(handlerData).then(data => {
               this.showSpin = false;
-              if (res.code == 200 || res.success) {
-                if (type == 3) {
-                  const data = res.result;
-                  if (!this.unPage) {
-                    this.list = data.content || [];
-                    this.page.total = data.totalElements;
-                  } else {
-                    this.list = data;
-                  }
-                } else if (type == 'freshRow') { // 特殊处理
-                  this.showSpin = true;
-                  this.handlers.getDetail({id: params.id}).then(res => {
-                    this.showSpin = false;
-                    if (res.code == 200) {
-                      this.data.splice(params.index, 1, res.data);
-                    }
-                  }).catch(res => {
-                    this.showSpin = false;
-                  })
+              if (type == 3) {
+                if (!this.unPage) {
+                  this.list = data.content || [];
+                  this.page.total = data.totalElements;
+                } else {
+                  this.list = data;
                 }
-                this.$emit('on-success', type, res.result || {}); // 响应组件请求成功监听，特殊处理
-                if (!unFresh) { // 需要刷新数据
-                  this.emitManagerHandler(3, {
-                    unFresh: true
-                  });
-                }
-              } else {
-                this.$Message.error(res.message);
-                this.$emit('on-error', type);
+              }
+              this.$emit('on-success', type, data || {}); // 响应组件请求成功监听，特殊处理
+              if (!unFresh) { // 需要刷新数据
+                this.emitManagerHandler(3, {
+                  unFresh: true
+                });
               }
               this.showSpin = false;
             }).catch(res => {
