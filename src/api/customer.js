@@ -28,4 +28,19 @@ export const toggleFollow = (params) => {
 // 添加客户跟踪
 export const addRemind = (params) => {
   return postJson('/customer/add-remind', params);
-}
+};
+
+// 获取客户跟踪记录
+export const remindList = (params) => {
+  return getRequest('/customer/remind-list', params);
+};
+
+// 获取所有客户
+export const allCustomer = (params) => {
+  return getRequest('/customer/customer-all', params);
+};
+
+// 获取所有客户
+export const allDepartment = (params) => {
+  return getRequest('/customer/department-all', params);
+};

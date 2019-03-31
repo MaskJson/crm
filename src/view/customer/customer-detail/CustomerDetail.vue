@@ -32,7 +32,15 @@
           </div>
         </TabPane>
         <TabPane label="客户跟踪摘要">
-
+          <div v-if="remindList && remindList.length > 0" class="mt-10">
+            <Timeline>
+              <TimelineItem v-for="(item, index) of remindList" :key="'remind' + index">
+                <p class="fs16">{{item.type | typeFilter}}</p>
+                <p class="mt-5"><span class="mR10">创建者：{{item.createUser}}</span><span class="ml-20">创建时间：{{getDateTime(item.createTime)}}</span></p>
+                <p class="pd10 bgf5 mt-5">内容：{{item.type == 2 ? item.meetNotice : item.remark}}</p>
+              </TimelineItem>
+            </Timeline>
+          </div>
         </TabPane>
       </Tabs>
     </Row>
@@ -99,8 +107,8 @@
 </template>
 
 <script>
-  import { getDateTime, getCustomerInfoUtil, toggleShow } from "../../../libs/tools";
-  import { get, toggleFollow, addRemind } from "../../../api/customer";
+  import { getDateTime, getCustomerInfoUtil, toggleShow, getUserId } from "../../../libs/tools";
+  import { get, toggleFollow, addRemind, remindList } from "../../../api/customer";
   import { list, bindFolder } from "../../../api/folder";
 
   export default {
@@ -111,6 +119,9 @@
       },
       industryFilter(v) {
         return (v || []).join('、');
+      },
+      typeFilter(v) {
+        return v == 1 ? '电话沟通' : v == 2 ? '客户上门' : '拜访客户';
       }
     },
     computed: {
@@ -126,6 +137,7 @@
         entity: {
 
         },
+        remindList: [],
         remind: {
           type: 1,
           status: null,
@@ -172,10 +184,12 @@
               this.$Message.warning('拜访客户必须填拜访信息');
               return false;
             }
-            if ((remind.nextRemindTime || remind.nextType) && (!remind.nextRemindTime || !remind.nextType)) {
+            if ((remind.nextRemindTime && remind.nextType) || (!remind.nextRemindTime && !remind.nextType)) {
               this.$Message.warning('设置下次跟踪，类别和时间需填写完整');
               return false;
             }
+            remind.createUerId = getUserId();
+            remind.customerId = this.entity.id;
             addRemind(remind).then(data => {
               this.show = false;
             }).catch(data => {this.show = false;})
@@ -215,10 +229,13 @@
         get({id}).then(data => {
           this.show = false;
           this.entity = getCustomerInfoUtil(data);
-        }).catch(data => { this.show = false; })
+        }).catch(data => { this.show = false; });
         list({ type: 1 }).then(data => {
           this.folderList = data;
-        }).catch(data => {})
+        }).catch(data => {});
+        remindList({id}).then(data => {
+          this.remindList = data;
+        }).catch(data => {});
       }
     },
     created() {
