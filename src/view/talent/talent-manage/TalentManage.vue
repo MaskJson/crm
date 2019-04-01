@@ -56,12 +56,18 @@
           folderId,
           city: JSON.stringify(city),
         }
+      },
+      folders() {
+        const ref = this.$refs['favorite'];
+        if (ref) {
+          return ref.list;
+        }
+        return [];
       }
     },
     data() {
       return {
         showFavoriteSetting: false,
-        folders: [], // 客户收藏夹
         cityList: cityList,
         searchData: {
           aptness: null,

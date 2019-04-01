@@ -30,7 +30,7 @@
     </div>
     <ManagerView ref="manager" :del="false" :save="{save: true}" route="/customer/customer-edit" :columns="columns" :searchData="searchParams"/>
     <Drawer :width="360" title="客户收藏夹管理" :closable="false" v-model="showFavoriteSetting">
-      <favorite-setting :type="1"/>
+      <favorite-setting ref="favorite" :type="1"/>
     </Drawer>
   </Card>
 </template>
@@ -56,12 +56,18 @@
           folderId,
           city: JSON.stringify(city),
         }
+      },
+      folders() {
+        const ref = this.$refs['favorite'];
+        if (ref) {
+          return ref.list;
+        }
+        return [];
       }
     },
     data() {
       return {
         showFavoriteSetting: false,
-        folders: [], // 客户收藏夹
         cityList: cityList,
         searchData: {
           id: null,
