@@ -345,21 +345,12 @@ export const getStatusRender = (h, data) => {
 }
 // 过滤人才详情
 export const getTalentInfoUtil = (data) => {
-  let {industry, aptness, city, telephone, email, intentionCity, resume, pag, experienceList} = data
-  experienceList = experienceList || [];
-  experienceList.forEach(item => {
-    item.status = item == '0'
-  })
+  let {industry, aptness, city, intentionCity} = data
   Object.assign(data, {
     industry: getJsonArray(industry),
     aptness: getJsonArray(aptness),
     city: getJsonArray(city),
-    // telephone: getJsonArray(telephone),
-    // email: getJsonArray(email),
     intentionCity: getJsonArray(intentionCity),
-    // resume: getJsonArray(resume),
-    pag: getJsonArray(pag),
-    experienceList: experienceList
   })
   return data;
 }

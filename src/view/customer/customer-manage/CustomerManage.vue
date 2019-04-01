@@ -54,7 +54,8 @@
           name,
           industry,
           folderId,
-          city: JSON.stringify(city)
+          city: JSON.stringify(city),
+          test: encodeURI(JSON.stringify([1,2,3]))
         }
       }
     },

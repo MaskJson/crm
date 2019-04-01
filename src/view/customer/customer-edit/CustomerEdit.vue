@@ -140,7 +140,7 @@
         get(params).then(data => {
           this.show = false;
           if (flag) {
-            this.entity = getCustomerInfoUtil(data);
+            this.entity = getCustomerInfoUtil(data || {});
           } else if (data) {
             this.checkCustomerStatus = true;
           } else {

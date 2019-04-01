@@ -100,7 +100,7 @@
       <Row>
         <Col span="8">
           <FormItem label="工作意向城市：">
-            <Cascader v-model="entity.city" :data="cityList"></Cascader>
+            <Cascader v-model="entity.intentionCity" :data="cityList"></Cascader>
           </FormItem>
         </Col>
         <Col span="8">
@@ -116,7 +116,7 @@
               <Form :model="item" :rules="experienceRules" :label-width="80" :ref="'itemForm' + index">
                 <FormItem label="公司名称" class="mt-10 myItem relative left80" prop="company" style="margin-bottom: 20px;">
                   <Input v-model="entity.experienceList[index].company" placeholder="请输入公司名称" @on-focus="showList(index, 0, true)" @on-blur="actionIndex = null" @on-change="findCustomerByName(index, 0, true)" class="w500"></Input>
-                  <div class="borderB nameList" v-if="item.showList">
+                  <div class="borderB nameList" v-if="item.showList && actionIndex == index">
                     <li class="border bgfff company-item" v-if="customers && customers.length == 0">暂无数据</li>
                     <li class="border bgfff company-item cursor" v-for="(customer, index2) of customers" :key="'customer' + index2" @click="setName(customer.name, index, 0)">
                       {{customer.name}}
@@ -127,7 +127,7 @@
                   <div class="inline-block w240">
                     <FormItem label="部门" class="mt-10 myItem left80" prop="department" style="margin-bottom: 20px;">
                       <Input v-model="entity.experienceList[index].department" :disabled="!entity.experienceList[index].company" placeholder="请输入部门" @on-focus="showList(index, 0, false)" @on-blur="actionIndex = null" @on-change="findCustomerByName(index, 0, false)" class="w200" style="width: 180px;" />
-                      <div class="borderB nameList ml-10" style="width: 240px;" v-if="item.showList2">
+                      <div class="borderB nameList" style="width: 240px;" v-if="item.showList2 && actionIndex == index">
                         <li class="border bgfff company-item" v-if="departments && departments.length == 0">暂无数据</li>
                         <li class="border bgfff company-item cursor" v-for="(department, index2) of departments" :key="'department' + index2" @click="setName2(department.name, index, 0)">
                           {{ department.name }}
@@ -142,15 +142,15 @@
                   </div>
                 </div>
                 <FormItem label="任职时间">
-                  <DatePicker type="datetime" placeholder="开始时间" v-model="entity.experienceList[index].starTime" class="w200"></DatePicker>
+                  <DatePicker type="datetime" placeholder="开始时间" v-model="entity.experienceList[index].startTime" class="w200"></DatePicker>
                   <DatePicker type="datetime" placeholder="结束时间" v-model="entity.experienceList[index].endTime" class="w200 ml-10"></DatePicker>
                   <Checkbox class="ml-5" v-model="entity.experienceList[index].status" @on-change="statusChange(index)">至今</Checkbox>
                 </FormItem>
                 <FormItem label="工作职责" class="mt-10">
-                  <Input v-model="entity.experienceList[index].remark" type="textarea" :rows="4" placeholder="" class="w500"></Input>
+                  <Input v-model="entity.experienceList[index].remark" type="textarea" :rows="3" placeholder="" class="w500" />
                 </FormItem>
                 <FormItem label="工作业绩" class="mt-10">
-                  <Input v-model="entity.experienceList[index].performance" placeholder="" class="w500"></Input>
+                  <Input v-model="entity.experienceList[index].performance" placeholder="" class="w500" />
                 </FormItem>
                 <FormItem class="mt-20">
                   <Button v-if="index > 0" type="error" @click="removeExperience(index)" class="ml-20">删除</Button>
@@ -165,13 +165,13 @@
         <Input type="textarea" :rows="3" placeholder="请输入教育经历" v-model="entity.educationExperience"/>
       </FormItem>
       <FormItem label="项目经历：">
-        <Input type="textarea" :rows="3" placeholder="请输入教育经历" v-model="entity.projectExperience"/>
+        <Input type="textarea" :rows="3" placeholder="请输入项目经历" v-model="entity.projectExperience"/>
       </FormItem>
       <FormItem label="职业技能：">
-        <Input type="textarea" :rows="3" placeholder="请输入教育经历" v-model="entity.occupationSkill"/>
+        <Input type="textarea" :rows="3" placeholder="请输入职业技能" v-model="entity.occupationSkill"/>
       </FormItem>
       <FormItem label="评价：">
-        <Input type="textarea" :rows="3" placeholder="请输入教育经历" v-model="entity.remark"/>
+        <Input type="textarea" :rows="3" placeholder="请输入评价" v-model="entity.remark"/>
       </FormItem>
       <FormItem label="来源类型">
         <div>
@@ -181,10 +181,10 @@
             <Radio :label="3">转介绍</Radio>
           </RadioGroup>
         </div>
-        <Select v-model="entity.sourceFrom" class="w300" v-if="entity.sourceType == '1'">
+        <Select v-model="entity.sourceFrom" class="w300" v-if="entity.sourceType == 1">
           <Option v-for="(item, index) of talentSource" :value="item.value" :key="'source' + index">{{ item.label }}</Option>
         </Select>
-        <Select v-model="entity.sourceFrom" class="w300" v-if="entity.sourceType == '2'">
+        <Select v-model="entity.sourceFrom" class="w300" v-if="entity.sourceType == 2">
           <Option v-for="(item, index) of allCustomers" :value="item.id" :key="'customerS' + index">{{ item.name }}</Option>
         </Select>
       </FormItem>
@@ -200,7 +200,7 @@
                 </FormItem>
                 <FormItem label="公司名称" class="mT10 myItem left80" prop="company" style="margin-bottom: 20px;">
                   <Input v-model="friends[index].company" placeholder="请输入公司名称" @on-focus="showList(index, 1, true)" @on-blur="actionFriendIndex = null" @on-change="findCustomerByName(index, 1, true)" class="w300" />
-                  <div class="borderB nameList" v-if="item.showList">
+                  <div class="borderB nameList" v-if="item.showList && actionIndex == index">
                     <li class="border bgfff company-item" v-if="customers && customers.length == 0">暂无数据</li>
                     <li class="border bgfff company-item cursor" v-for="(customer, index2) of customers" :key="'customer' + index2" @click="setName(customer.name, index, 1)">
                       {{customer.name}}
@@ -209,7 +209,7 @@
                 </FormItem>
                 <FormItem label="部门" class="mt-10 myItem left80" prop="department" style="margin-bottom: 20px;">
                   <Input v-model="friends[index].department" placeholder="请输入部门" class="w300" @on-focus="showList(index, 1, false)" @on-blur="actionFriendIndex = null" @on-change="findCustomerByName(index, 1, false)" />
-                  <div class="borderB nameList" style="width: 300px;" v-if="item.showList2">
+                  <div class="borderB nameList" style="width: 300px;" v-if="item.showList2 && actionIndex == index">
                     <li class="border bgfff company-item" v-if="departments && departments.length == 0">暂无数据</li>
                     <li class="border bgfff company-item cursor" v-for="(department, index2) of departments" :key="'department' + index2" @click="setName2(department.name, index, 1)">
                       {{department.name}}
@@ -235,7 +235,7 @@
               <Form :model="item" :rules="chanceRule" :label-width="80" :ref="'chance' + index">
                 <FormItem label="公司名称" class="mt-10 myItem left80" prop="company" style="margin-bottom: 20px;">
                   <Input v-model="chances[index].company" placeholder="请输入公司名称" @on-focus="showList(index, 2, true)" @on-blur="actionChanceIndex = null" @on-change="findCustomerByName(index, 2, true)" class="w300" />
-                  <div class="borderB nameList" v-if="item.showList">
+                  <div class="borderB nameList" v-if="item.showList && actionIndex == index">
                     <li class="border bgfff company-item" v-if="customers && customers.length == 0">暂无数据</li>
                     <li class="border bgfff company-item cursor" v-for="(customer, index2) of customers" :key="'customer' + index2" @click="setName(customer.name, index, 2)">
                       {{ customer.name }}
@@ -253,68 +253,68 @@
           </div>
         </div>
       </FormItem>
-      <FormItem label="人才状态：">
+      <FormItem label="人才状态：" prop="status">
         <Select v-model="entity.status">
           <Option v-for="(item, index) of talentStatus" :key="'status' + index" :value="item.value">{{ item.label }}</Option>
         </Select>
       </FormItem>
-      <FormItem label="关联项目" v-if="remind.status == 10">
+      <FormItem label="关联项目" v-if="remind.status == 10 && !entity.id">
         <Select v-model="entity.projectId">
           <Option v-for="(item, index) of projectList" :key="'project' + index" :value="item.projectId">{{ item.name }}</Option>
         </Select>
       </FormItem>
     </Form>
 
-    <p class="pl120 cl-error">选择本次跟踪类别后开启跟踪验证</p>
+
     <!--  添加跟踪记录 -->
-    <Form ref="addRemind" :model="remind" :rules="remindRule" :label-width="120" v-if="entity.status != 10">
-    <FormItem label="本次跟踪类别" prop="remindTypeId">
-      <Select v-model="remind.type">
-        <Option :value="0">请选择</Option>
-        <Option :value="1">电话</Option>
-        <Option :value="2">顾问面试（内）</Option>
-        <Option :value="3">顾问面试（外）</Option>
-      </Select>
-    </FormItem>
-    <FormItem label="沟通记录" v-if="remind.type == '1'">
-      <Input type="textarea" :rows="3" v-model="remind.remark"/>
-    </FormItem>
-    <div v-if="remind.type == 2">
-      <FormItem label="候选人基本情况">
-        <Input type="textarea" :rows="3" v-model="remind.situation"/>
+    <Form ref="addRemind" :model="remind" :rules="remindRule" :label-width="120" v-if="entity.status != 10 && !entity.id">
+      <FormItem label="本次跟踪类别" prop="remindTypeId">
+        <Select v-model="remind.type">
+          <Option :value="0">请选择</Option>
+          <Option :value="1">电话</Option>
+          <Option :value="2">顾问面试（内）</Option>
+          <Option :value="3">顾问面试（外）</Option>
+        </Select>
       </FormItem>
-      <FormItem label="求职方向不离职原因">
-        <Input type="textarea" :rows="3" v-model="remind.cause"/>
+      <FormItem label="沟通记录" v-if="remind.type == 1">
+        <Input type="textarea" :rows="3" v-model="remind.remark"/>
       </FormItem>
-      <FormItem label="薪资架构">
-        <Input v-model="remind.salary"/>
+      <div v-if="remind.type == 2">
+        <FormItem label="候选人基本情况">
+          <Input type="textarea" :rows="3" v-model="remind.situation"/>
+        </FormItem>
+        <FormItem label="求职方向不离职原因">
+          <Input type="textarea" :rows="3" v-model="remind.cause"/>
+        </FormItem>
+        <FormItem label="薪资架构">
+          <Input v-model="remind.salary"/>
+        </FormItem>
+      </div>
+      <div v-if="remind.type == 3">
+        <FormItem label="面试时间" prop="meetTime">
+          <DatePicker type="date" placeholder="日期" v-model="remind.meetTime"></DatePicker>
+        </FormItem>
+        <FormItem label="面试地点" prop="meetAddress" v-if="[2,3].indexOf(remind.type) > -1">
+          <Input v-model="remind.meetAddress"/>
+        </FormItem>
+      </div>
+      <FormItem label="下次跟踪类别" prop="remindTypeId">
+        <Select v-model="remind.nextType">
+          <Option :value="0">请选择</Option>
+          <Option :value="1">电话</Option>
+          <Option :value="2">顾问面试（内）</Option>
+          <Option :value="3">顾问面试（外）</Option>
+        </Select>
       </FormItem>
-    </div>
-    <div v-if="remind.type == 3">
-      <FormItem label="面试时间" prop="meetTime">
-        <DatePicker type="date" placeholder="日期" v-model="remind.meetTime"></DatePicker>
+      <FormItem label="下次联系时间" prop="remindTime" >
+        <DatePicker type="date" placeholder="日期" v-model="remind.nextRemindTime"></DatePicker>
       </FormItem>
-      <FormItem label="面试地点" prop="meetAddress" v-if="[2,3].indexOf(remind.type) > -1">
-        <Input v-model="remind.meetAddress"/>
+      <FormItem label="提醒对象" prop="adviserList">
+        <Select v-model="remind.adviserId" placeholder="请选择">
+          <Option v-for="(user, index) of teamUserList" :value="user.id" :key="'user'+index">{{user.name}}</Option>
+        </Select>
       </FormItem>
-    </div>
-    <FormItem label="下次跟踪类别" prop="remindTypeId">
-      <Select v-model="remind.nextType">
-        <Option :value="0">请选择</Option>
-        <Option :value="1">电话</Option>
-        <Option :value="2">顾问面试（内）</Option>
-        <Option :value="3">顾问面试（外）</Option>
-      </Select>
-    </FormItem>
-    <FormItem label="下次联系时间" prop="remindTime" >
-      <DatePicker type="date" placeholder="日期" v-model="remind.nextRemindTime"></DatePicker>
-    </FormItem>
-    <FormItem label="提醒对象" prop="adviserList">
-      <Select v-model="remind.adviserId" placeholder="请选择">
-        <Option v-for="(user, index) of teamUserList" :value="user.id" :key="'user'+index">{{user.name}}</Option>
-      </Select>
-    </FormItem>
-  </Form>
+    </Form>
     <div class="center mt-10">
       <Button type="primary" class="w120" :disabled="checkPhoneStatus || phoneError" @click="checkSubmit">提交</Button>
     </div>
@@ -326,9 +326,10 @@
   import IndustrySelect from '@/view/components/industry-select/industry-select.vue';
   import AptnessSelect from '@/view/components/industry-select/aptness-select.vue';
   import cityList from '../../../libs/cityList';
+  import { getTalentInfoUtil, getUserId } from "../../../libs/tools";
   import { industryList, aptnessList, language, talentSource, talentStatus, educationList, countries } from "../../../libs/constant";
   import { allCustomer, allDepartment } from "../../../api/customer";
-  import { checkByPhone } from "../../../api/talent";
+  import { checkByPhone, getDetail, save } from "../../../api/talent";
 
   export default {
     name: "TalentEdit",
@@ -340,6 +341,7 @@
       return {
         phoneError: false,
         show: false,
+        status: null,
         checkPhoneStatus: false, // 手机号是否重复
         timeoutHandler: null,
         cityList: cityList,
@@ -390,7 +392,7 @@
           experienceList: [
             {
               company: '', // 公司名称
-              starTime: null, // 开始时间
+              startTime: null, // 开始时间
               endTime: null, // 结束时间
               status: false, // 至今
               position: '', // 职位
@@ -406,6 +408,9 @@
         entityRule: {
           name: [
             { required: true, type: 'string', message: '请输入姓名', trigger: 'blur' }
+          ],
+          status: [
+            { required: true, type: 'number', message: '请选择状态', trigger: 'change' }
           ],
           email: [
             { required: false, type: 'email', message: '邮箱格式有误', trigger: 'blur' }
@@ -475,7 +480,7 @@
       addExperience () {
         this.entity.experienceList.push({
           company: '',
-          starTime: null,
+          startTime: null,
           endTime: null,
           status: '',
           position: '',
@@ -640,6 +645,7 @@
       removeChance(index) {
         this.chances.splice(index, 1);
       },
+      // 提交验证
       checkSubmit() {
         if (this.remind.type && this.entity.status != 10) {
           const talentType = this.entity.type;
@@ -656,7 +662,7 @@
             this.$Message.warning('室外面试需要填写面试时间和地点');
             return false;
           }
-          if ((params.nextRemindTime && params.nextType) || (!params.nextRemindTime && !params.nextType)) {
+          if ((params.nextRemindTime || params.nextType) && (!params.nextRemindTime || !params.nextType)) {
             this.$Message.warning('设置下次跟踪，类别和时间需填写完整');
             return false;
           }
@@ -694,7 +700,43 @@
         });
         if (!flag) {
           this.$Message.error('请检查选项是否按要求填写');
+        } else {
+          this.submit();
         }
+      },
+      submit() {
+        const entity = {...this.entity};
+        if (!entity.intentionCity.length) {
+          entity.intentionCity = entity.city;
+        }
+        if (!entity.id) {
+          entity.createUserId = getUserId();
+        }
+        entity.city = JSON.stringify(entity.city);
+        entity.industry = JSON.stringify(entity.industry);
+        entity.aptness = JSON.stringify(entity.aptness);
+        entity.intentionCity = JSON.stringify(entity.intentionCity);
+        entity.friends = this.friends;
+        entity.chances = this.chances;
+        if (!entity.id && entity.status != 10) {
+          this.remind.status = entity.status;
+          this.remind.createUserId = getUserId();
+          entity.remind = this.remind;
+        }
+        this.show = true;
+        save(entity).then(data => {
+          this.show = false;
+          this.$Message.success('添加成功');
+        }).catch(data => { this.show = false; })
+      },
+      init(id) {
+        getDetail({ id }).then(data => {
+          this.show = false;
+          const entity = getTalentInfoUtil(data);
+          this.entity = entity;
+          this.friends = entity.friends || [];
+          this.chances = entity.chances;
+        }).catch(data => { this.show = false; })
       }
     },
     mounted() {
@@ -722,6 +764,10 @@
       });
     },
     created() {
+      const id = (this.$route.query || {}).id;
+      if (id) {
+        this.init(Number(id));
+      }
       allCustomer({}).then(data => {
         this.allCustomers = data;
       }).catch(data => {});
