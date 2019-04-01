@@ -5,7 +5,7 @@
         <Cascader v-model="searchData.city" :data="cityList" class="w200"></Cascader>
       </SearchItem>
       <SearchItem>
-        <InputNumber placeholder="姓名" class="w200" v-model="searchData.name"/>
+        <Input placeholder="姓名" class="w200" v-model="searchData.name"/>
       </SearchItem>
       <SearchItem>
         <Input placeholder="行业" class="w200" v-model="searchData.industry"/>
