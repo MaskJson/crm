@@ -55,7 +55,6 @@
           industry,
           folderId,
           city: JSON.stringify(city),
-          test: encodeURI(JSON.stringify([1,2,3]))
         }
       }
     },
@@ -107,13 +106,6 @@
             title: '关联项目',
             align: 'center',
             key: 'projectCount'
-          },
-          // {title: '进展中', align: 'center', key: 'projecting'},
-          // {title: '联系跟踪摘要', align: 'center', key: 'remindRecod'},
-          {
-            title: '最新跟踪时间',
-            align: 'center',
-            key: 'remindTime'
           },
           {
             title: '操作',

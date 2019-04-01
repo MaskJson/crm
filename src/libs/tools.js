@@ -331,15 +331,17 @@ export const getPagRender = (h, data) => {
 export const getStatusRender = (h, data) => {
   let text = ''
   switch (data) {
-    case '0': text = '项目进展中'; break
-    case '1': text = '不在职看机会'; break
-    case '2': text = '在职不看机会'; break
-    case '3': text = '在职看机会'; break
-    case '4': text = '在职急换工作'; break
-    case '5': text = '半年后看机会'; break
-    case '6': text = '1年后看机会'; break
-    case '7': text = '2年后看机会'; break
-    default: text = '项目进展中'; break
+    case 1: text = '不在职看机会'; break
+    case 2: text = '在职不看机会'; break
+    case 3: text = '在职看机会'; break
+    case 4: text = '在职急换工作'; break
+    case 5: text = '半年后看机会'; break
+    case 6: text = '1年后看机会'; break
+    case 7: text = '2年后看机会'; break
+    case 8: text = '新入职，暂时不看机会'; break
+    case 9: text = '推荐给客户总监'; break
+    case 10: text = '推荐给客户'; break
+
   }
   return h('span', text)
 }

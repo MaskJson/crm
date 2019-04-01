@@ -18,3 +18,13 @@ export const save = (params) => {
 export const getDetail = (params) => {
   return getRequest('/talent/get', params);
 };
+
+// 列表
+export const list = (params) => {
+  return getRequest('/talent/list', params);
+};
+
+// 修改关注状态
+export const toggleFollow = (params) => {
+  return postRequest('/talent/toggle-follow', params);
+};
