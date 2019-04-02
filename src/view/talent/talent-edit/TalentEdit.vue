@@ -115,10 +115,10 @@
             <div class="borderB pd-10" v-for="(item, index) in entity.experienceList" :key="'form' + index">
               <Form :model="item" :rules="experienceRules" :label-width="80" :ref="'itemForm' + index">
                 <FormItem label="公司名称" class="mt-10 myItem relative left80" prop="company" style="margin-bottom: 20px;">
-                  <Input v-model="entity.experienceList[index].company" placeholder="请输入公司名称" @on-focus="showList(index, 0, true)" @on-blur="actionIndex = null" @on-change="findCustomerByName(index, 0, true)" class="w500"></Input>
-                  <div class="borderB nameList" v-if="item.showList && actionIndex == index">
+                  <Input v-model="entity.experienceList[index].company" placeholder="请输入公司名称" @on-focus="showList(index, 0, true)" @on-blur="" @on-change="findCustomerByName(index, 0, true)" class="w500"></Input>
+                  <div class="borderB nameList" v-if="item.showList && actionIndex == index && actionType === true">
                     <li class="border bgfff company-item" v-if="customers && customers.length == 0">暂无数据</li>
-                    <li class="border bgfff company-item cursor" v-for="(customer, index2) of customers" :key="'customer' + index2" @click="setName(customer.name, index, 0)">
+                    <li class="border bgfff company-item cursor" v-for="(customer, index2) of customers" :key="'customer1' + index2" @click="setName(customer.name, index, 0)">
                       {{customer.name}}
                     </li>
                   </div>
@@ -127,9 +127,9 @@
                   <div class="inline-block w240">
                     <FormItem label="部门" class="mt-10 myItem left80" prop="department" style="margin-bottom: 20px;">
                       <Input v-model="entity.experienceList[index].department" :disabled="!entity.experienceList[index].company" placeholder="请输入部门" @on-focus="showList(index, 0, false)" @on-blur="actionIndex = null" @on-change="findCustomerByName(index, 0, false)" class="w200" style="width: 180px;" />
-                      <div class="borderB nameList" style="width: 240px;" v-if="item.showList2 && actionIndex == index">
+                      <div class="borderB nameList" style="width: 240px; z-index: 99999999;" v-if="item.showList2 && actionIndex == index && actionType === false">
                         <li class="border bgfff company-item" v-if="departments && departments.length == 0">暂无数据</li>
-                        <li class="border bgfff company-item cursor" v-for="(department, index2) of departments" :key="'department' + index2" @click="setName2(department.name, index, 0)">
+                        <li class="border bgfff company-item cursor" v-for="(department, index2) of departments" :key="'department1' + index2" @click="setName2(department.name, index, 0)">
                           {{ department.name }}
                         </li>
                       </div>
@@ -199,19 +199,19 @@
                   <Input v-model="friends[index].name" placeholder="请输入名字" class="w300" />
                 </FormItem>
                 <FormItem label="公司名称" class="mT10 myItem left80" prop="company" style="margin-bottom: 20px;">
-                  <Input v-model="friends[index].company" placeholder="请输入公司名称" @on-focus="showList(index, 1, true)" @on-blur="actionFriendIndex = null" @on-change="findCustomerByName(index, 1, true)" class="w300" />
-                  <div class="borderB nameList" v-if="item.showList && actionIndex == index">
+                  <Input v-model="friends[index].company" placeholder="请输入公司名称" @on-focus="showList(index, 1, true)" @on-blur="" @on-change="findCustomerByName(index, 1, true)" class="w300" />
+                  <div class="borderB nameList" v-if="item.showList && actionFriendIndex == index && actionType === true">
                     <li class="border bgfff company-item" v-if="customers && customers.length == 0">暂无数据</li>
-                    <li class="border bgfff company-item cursor" v-for="(customer, index2) of customers" :key="'customer' + index2" @click="setName(customer.name, index, 1)">
+                    <li class="border bgfff company-item cursor" v-for="(customer, index2) of customers" :key="'customer2' + index2" @click="setName(customer.name, index, 1)">
                       {{customer.name}}
                     </li>
                   </div>
                 </FormItem>
                 <FormItem label="部门" class="mt-10 myItem left80" prop="department" style="margin-bottom: 20px;">
                   <Input v-model="friends[index].department" placeholder="请输入部门" class="w300" @on-focus="showList(index, 1, false)" @on-blur="actionFriendIndex = null" @on-change="findCustomerByName(index, 1, false)" />
-                  <div class="borderB nameList" style="width: 300px;" v-if="item.showList2 && actionIndex == index">
+                  <div class="borderB nameList" style="width: 300px;" v-if="item.showList2 && actionFriendIndex == index && actionType === false">
                     <li class="border bgfff company-item" v-if="departments && departments.length == 0">暂无数据</li>
-                    <li class="border bgfff company-item cursor" v-for="(department, index2) of departments" :key="'department' + index2" @click="setName2(department.name, index, 1)">
+                    <li class="border bgfff company-item cursor" v-for="(department, index2) of departments" :key="'department2' + index2" @click="setName2(department.name, index, 1)">
                       {{department.name}}
                     </li>
                   </div>
@@ -234,8 +234,8 @@
             <div class="borderB pd-10" v-for="(item, index) in chances" :key="'chance' + index">
               <Form :model="item" :rules="chanceRule" :label-width="80" :ref="'chance' + index">
                 <FormItem label="公司名称" class="mt-10 myItem left80" prop="company" style="margin-bottom: 20px;">
-                  <Input v-model="chances[index].company" placeholder="请输入公司名称" @on-focus="showList(index, 2, true)" @on-blur="actionChanceIndex = null" @on-change="findCustomerByName(index, 2, true)" class="w300" />
-                  <div class="borderB nameList" v-if="item.showList && actionIndex == index">
+                  <Input v-model="chances[index].company" placeholder="请输入公司名称" @on-focus="showList(index, 2, true)" @on-blur="" @on-change="findCustomerByName(index, 2, true)" class="w300" />
+                  <div class="borderB nameList" v-if="item.showList && actionChanceIndex == index && actionType === true">
                     <li class="border bgfff company-item" v-if="customers && customers.length == 0">暂无数据</li>
                     <li class="border bgfff company-item cursor" v-for="(customer, index2) of customers" :key="'customer' + index2" @click="setName(customer.name, index, 2)">
                       {{ customer.name }}
@@ -292,7 +292,7 @@
       </div>
       <div v-if="remind.type == 3">
         <FormItem label="面试时间" prop="meetTime">
-          <DatePicker type="date" placeholder="日期" v-model="remind.meetTime"></DatePicker>
+          <DatePicker type="datetime" placeholder="日期" v-model="remind.meetTime"></DatePicker>
         </FormItem>
         <FormItem label="面试地点" prop="meetAddress" v-if="[2,3].indexOf(remind.type) > -1">
           <Input v-model="remind.meetAddress"/>
@@ -307,7 +307,7 @@
         </Select>
       </FormItem>
       <FormItem label="下次联系时间" prop="remindTime" >
-        <DatePicker type="date" placeholder="日期" v-model="remind.nextRemindTime"></DatePicker>
+        <DatePicker type="datetime" placeholder="日期" v-model="remind.nextRemindTime"></DatePicker>
       </FormItem>
       <FormItem label="提醒对象" prop="adviserList">
         <Select v-model="remind.adviserId" placeholder="请选择">
@@ -471,7 +471,12 @@
           followRemindId: null
         },
         remindRule: {
-
+          type: [
+            { required: true, type: 'number', message: '请选择类型', trigger: 'change' }
+          ],
+          status: [
+            { required: true, type: 'number', message: '请选择状态', trigger: 'change' }
+          ],
         }
       }
     },
@@ -590,6 +595,7 @@
         }
       },
       showList(index, flag, bool) {
+        this.actionType = bool;
         this.customers = [];
         this.departments = [];
         switch (flag) {
@@ -726,7 +732,8 @@
         this.show = true;
         save(entity).then(data => {
           this.show = false;
-          this.$Message.success('添加成功');
+          this.$Message.success('提交成功');
+          this.$router.push('/talent/talent-manage');
         }).catch(data => { this.show = false; })
       },
       init(id) {
@@ -740,27 +747,43 @@
       }
     },
     mounted() {
-      document.addEventListener('click', () => {
+      document.addEventListener('click', (event) => {
+        console.log('adfasdfasdfasdf')
         // this.customers = [];
         // this.departments = [];
-        this.entity.experienceList.forEach((item, index, array) => {
-          if (index != this.actionIndex) {
-            item.showList = false;
-            item.showList2 = false;
-          }
-        });
-        this.friends.forEach((item, index, array) => {
-          if (index != this.actionFriendIndex) {
-            item.showList = false;
-            item.showList2 = false;
-          }
-        });
-        this.chances.forEach((item, index, array) => {
-          if (index != this.actionChanceIndex) {
-            item.showList = false;
-            item.showList2 = false;
-          }
-        });
+        const e = event || window.event;
+        if (e.srcElement.className.indexOf('input') < 0) {
+          this.entity.experienceList.forEach((item, index, array) => {
+            if (index == this.actionIndex) {
+              setTimeout(() => {
+                this.actionIndex = null;
+                item.showList = false;
+                item.showList2 = false;
+              }, 100);
+            }
+          });
+          this.friends.forEach((item, index, array) => {
+            if (this.actionFriendIndex == index) {
+              setTimeout(() => {
+                this.actionFriendIndex = null;
+                item.showList = false;
+                item.showList2 = false;
+              }, 100);
+            }
+          });
+          this.chances.forEach((item, index, array) => {
+            if (this.actionChanceIndex == index) {
+              setTimeout(() => {
+                this.actionChanceIndex = false;
+                item.showList = false;
+                item.showList2 = false;
+              }, 100);
+            }
+          });
+          setTimeout(() => {
+            this.actionType = null;
+          }, 100);
+        }
       });
     },
     created() {

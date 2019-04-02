@@ -112,6 +112,11 @@
       }).catch(data => { this.show = false; })
     }
   },
+  watch: {
+    list(val) {
+      this.$emit('on-change', val);
+    }
+  },
   created () { this.init(); },
   mounted () {}
 }

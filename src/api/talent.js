@@ -28,3 +28,13 @@ export const list = (params) => {
 export const toggleFollow = (params) => {
   return postRequest('/talent/toggle-follow', params);
 };
+
+// 获取所有跟踪记录
+export const getAllRemind = (params) => {
+  return getRequest('/talent/remind-all', params);
+};
+
+// 添加跟踪记录
+export const addRemind = (params) => {
+  return postJson('/talent/remind-add', params);
+};

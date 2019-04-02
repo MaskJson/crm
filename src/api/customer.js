@@ -44,3 +44,8 @@ export const allCustomer = (params) => {
 export const allDepartment = (params) => {
   return getRequest('/customer/department-all', params);
 };
+
+// 获取公司下所有人才
+export const getCustomerTalent = (params) => {
+  return getRequest('/customer/talent-all', params);
+};

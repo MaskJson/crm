@@ -30,7 +30,7 @@
     </div>
     <ManagerView ref="manager" :del="false" :save="{save: true}" route="/talent/talent-edit" :columns="columns" :searchData="searchParams"/>
     <Drawer :width="360" title="客户收藏夹管理" :closable="false" v-model="showFavoriteSetting">
-      <favorite-setting :type="2"/>
+      <favorite-setting :type="2" @on-change="setFolders"/>
     </Drawer>
   </Card>
 </template>
@@ -57,18 +57,12 @@
           city: JSON.stringify(city),
         }
       },
-      folders() {
-        const ref = this.$refs['favorite'];
-        if (ref) {
-          return ref.list;
-        }
-        return [];
-      }
     },
     data() {
       return {
         showFavoriteSetting: false,
         cityList: cityList,
+        folders: [],
         searchData: {
           aptness: null,
           name: null,
@@ -116,7 +110,7 @@
           {
             title: '年薪',
             align: 'center',
-            key: 'projectCount'
+            key: 'salary'
           },
           {
             title: '手机号',
@@ -126,7 +120,7 @@
           {
             title: '标签',
             align: 'center',
-            key: 'phone'
+            key: 'tag'
           },
           {
             title: '状态',
@@ -191,6 +185,9 @@
       }
     },
     methods: {
+      setFolders(list) {
+        this.folders = list;
+      },
       resetSearch() {
         this.searchData = {
           aptness: null,

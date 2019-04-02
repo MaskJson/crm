@@ -32,20 +32,26 @@
           </div>
         </TabPane>
         <TabPane label="客户跟踪摘要">
-          <div v-if="remindList && remindList.length > 0" class="mt-10">
-            <Timeline>
-              <TimelineItem v-for="(item, index) of remindList" :key="'remind' + index">
-                <p class="fs16">{{item.type | typeFilter}}</p>
-                <p class="mt-5"><span class="mR10">创建者：{{item.createUser}}</span><span class="ml-20">创建时间：{{getDateTime(item.createTime)}}</span></p>
-                <p class="pd10 bgf5 mt-5">内容：{{item.type == 2 ? item.meetNotice : item.remark}}</p>
-              </TimelineItem>
-            </Timeline>
-          </div>
+          <Timeline v-if="remindList && remindList.length > 0" class="mt-10">
+            <TimelineItem v-for="(item, index) of remindList" :key="'remind' + index">
+              <p class="fs16">{{item.type | typeFilter}}</p>
+              <p class="mt-5"><span class="mR10">创建者：{{item.createUser}}</span><span class="ml-20">创建时间：{{getDateTime(item.createTime)}}</span></p>
+              <p class="bgf2 mt-5">内容：{{item.type == 2 ? item.meetNotice : item.remark}}</p>
+            </TimelineItem>
+          </Timeline>
+          <div v-else>暂无跟踪记录</div>
+        </TabPane>
+        <TabPane label="人才库">
+          <Form :label-width="150" labelPosition="left">
+            <FormItem v-for="(group, index) of talentGroupByDepartment" :key="'formitem' + index" :label="group.department + '：'">
+              <Table :columns="columns" :data="group.talents || []"></Table>
+            </FormItem>
+          </Form>
         </TabPane>
       </Tabs>
     </Row>
     <!-- 加入收藏夹 -->
-    <ModalUtil ref="bind" title="加入收藏夹" @reset="folderId = null" @on-ok="bindFolder">
+    <ModalUtil ref="bind" title="加入收藏夹" @reset="folderId = null" @on-ok="bindFolder" :loading="show">
       <Form>
         <FormItem label="客户名称：">
           {{ entity.name }}
@@ -108,7 +114,7 @@
 
 <script>
   import { getDateTime, getCustomerInfoUtil, toggleShow, getUserId } from "../../../libs/tools";
-  import { get, toggleFollow, addRemind, remindList } from "../../../api/customer";
+  import { get, toggleFollow, addRemind, remindList, getCustomerTalent } from "../../../api/customer";
   import { list, bindFolder } from "../../../api/folder";
 
   export default {
@@ -137,6 +143,7 @@
         entity: {
 
         },
+        talentGroupByDepartment: [], // 人才库，按部门分类
         remindList: [],
         remind: {
           type: 1,
@@ -155,7 +162,29 @@
           status: [
             { required: true, type: 'number', message: '请选择客户状态', trigger: 'blur' }
           ]
-        }
+        },
+        columns: [
+          {
+            title: '入职时间',
+            align: 'center',
+            render: (h, params) => {
+              return h('span', getDateTime(params.row.startTime));
+            }
+          },
+          {
+            title: '离职时间',
+            align: 'center',
+            render: (h, params) => {
+              return h('span', getDateTime(params.row.endTime));
+            }
+          },
+          {
+            title: '姓名',
+            render: (h, params) => {
+              return h('span', params.row.talent.name)
+            }
+          }
+        ]
       }
     },
     methods: {
@@ -201,6 +230,7 @@
       },
       bindFolder() {
         if (this.folderId) {
+          this.show = true;
           bindFolder({
             itemId: this.entity.id,
             folderId: this.folderId,
@@ -224,17 +254,29 @@
         }).catch(data => { this.show = false; })
       },
       getDateTime: getDateTime,
+      filterTalentGroup(data) {
+        const departments = Array.from(new Set(data.map(item => item.department)));
+        this.talentGroupByDepartment = departments.map(item => {
+          return {
+            department: item,
+            talents: data.filter(d => d.department == item)
+          }
+        });
+      },
       init(id) {
         this.show = true;
         get({id}).then(data => {
           this.show = false;
           this.entity = getCustomerInfoUtil(data);
+          getCustomerTalent({ id: this.entity.id }).then(data => {
+            this.filterTalentGroup(data || []);
+          }).catch(data => {});
         }).catch(data => { this.show = false; });
         list({ type: 1 }).then(data => {
           this.folderList = data;
         }).catch(data => {});
         remindList({id}).then(data => {
-          this.remindList = data;
+          this.remindList = data || [];
         }).catch(data => {});
       }
     },

@@ -1,4 +1,5 @@
 import Cookies from 'js-cookie';
+import { projectStatus } from "./constant";
 
 export const forEach = (arr, fn) => {
   if (!arr.length || !fn) return
@@ -260,12 +261,13 @@ export const getRenderList = (h, data) => {
 // 获取登录用户id
 export const getUserId = () => {
   // 判断用户是否登录
-  let userInfo = Cookies.get('userInfo')
+  // let userInfo = Cookies.get('userInfo')
+  let userInfo = localStorage.getItem('userInfo')
   if (userInfo === null || userInfo === "" || userInfo === undefined) {
     // 未登录
     return;
   }
-  return JSON.parse(Cookies.get("userInfo")).id;
+  return JSON.parse(userInfo).id;
 }
 
 /**
@@ -341,9 +343,15 @@ export const getStatusRender = (h, data) => {
     case 8: text = '新入职，暂时不看机会'; break
     case 9: text = '推荐给客户总监'; break
     case 10: text = '推荐给客户'; break
-
   }
-  return h('span', text)
+  return h ? h('span', text) : text;
+}
+// 获取项目状态
+export const getProjectStatus = (h, data) => {
+  let text = ''
+  const index = projectStatus.findIndex(item => item.value == data);
+  text = index > -1 ? projectStatus[index].label : ''
+  return h ? h('span', text) : text;
 }
 // 过滤人才详情
 export const getTalentInfoUtil = (data) => {

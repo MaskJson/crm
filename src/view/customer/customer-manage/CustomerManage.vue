@@ -16,7 +16,7 @@
         </Select>
       </SearchItem>
       <SearchItem>
-        <Cascader v-model="searchData.city" :data="cityList" class="w200"></Cascader>
+        <Cascader placeholder="请选择城市" v-model="searchData.city" :data="cityList" class="w200"></Cascader>
       </SearchItem>
       <SearchItem>
         <Button type="primary" @click="search">查询</Button>
@@ -30,7 +30,7 @@
     </div>
     <ManagerView ref="manager" :del="false" :save="{save: true}" route="/customer/customer-edit" :columns="columns" :searchData="searchParams"/>
     <Drawer :width="360" title="客户收藏夹管理" :closable="false" v-model="showFavoriteSetting">
-      <favorite-setting ref="favorite" :type="1"/>
+      <favorite-setting ref="favorite" @on-change="setFolders" :type="1"/>
     </Drawer>
   </Card>
 </template>
@@ -55,20 +55,15 @@
           industry,
           folderId,
           city: JSON.stringify(city),
+          test: JSON.stringify([1,2])
         }
       },
-      folders() {
-        const ref = this.$refs['favorite'];
-        if (ref) {
-          return ref.list;
-        }
-        return [];
-      }
     },
     data() {
       return {
         showFavoriteSetting: false,
         cityList: cityList,
+        folders: [],
         searchData: {
           id: null,
           name: null,
@@ -169,6 +164,9 @@
       }
     },
     methods: {
+      setFolders(list) {
+        this.folders = list;
+      },
       resetSearch() {
         this.searchData = {
           id: null,
