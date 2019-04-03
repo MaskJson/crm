@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { projectStatus } from "./constant";
+import { projectStatus, customerTypes } from "./constant";
 
 export const forEach = (arr, fn) => {
   if (!arr.length || !fn) return
@@ -328,6 +328,13 @@ export const getPagRender = (h, data) => {
       }
     }, item)
   }))
+}
+// 获取客户状态
+export const getCustomerType = (h, data) => {
+  let text = '';
+  const index = customerTypes.findIndex(item => item.value == data);
+  text = index > -1 ? customerTypes[index].label : '';
+  return h ? h('span', text) : text;
 }
 // 获取状态render
 export const getStatusRender = (h, data) => {

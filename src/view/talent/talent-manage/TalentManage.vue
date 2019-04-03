@@ -40,6 +40,7 @@
   import { list, toggleFollow } from "../../../api/talent";
   import cityList from '../../../libs/cityList';
   import FavoriteSetting from '../../components/favorite-setting';
+  import talentLogo from '@/assets/images/talent.png'
 
   export default {
     name: "TalentManage",

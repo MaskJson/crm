@@ -32,6 +32,7 @@ axios.interceptors.response.use(response => {
         Message.error(data.message || '请求处理异常');
         break;
       case 401:
+      case 403:
         Message.error(data.message || '未登录或登录超时');
         // 未登录 清除已登录状态
         Cookies.set('userInfo', '');

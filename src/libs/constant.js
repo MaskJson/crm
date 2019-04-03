@@ -149,6 +149,16 @@ export const talentTaleList = [
   {value: 9, label: '其他'}
 ];
 
+export const customerTypes = [
+  {value: 0, label: '普通公司'},
+  {value: 1, label: '列名'},
+  {value: 2, label: '联系中'},
+  {value: 3, label: '合作洽谈'},
+  {value: 4, label: '先推人再签约'},
+  {value: 5, label: '签约'},
+  {value: 6, label: '客户'},
+]
+
 export const aptnessList = [
   {
     aptnessList: null,

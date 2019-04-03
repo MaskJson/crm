@@ -100,7 +100,7 @@
             key: 'type',
             render: (h, params) => {
               const type = params.row.type;
-              return h('span', type == 0 ? '普通公司' : type == 6 ? '客户' : '拓展客户')
+              return h('span', type == 0 ? '普通公司' : type == 6 ? '客户' : '拓展中')
             }
           },
           {

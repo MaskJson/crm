@@ -5,9 +5,10 @@
         <h2>{{entity.name}}</h2>
       </Col>
       <Col class="t-right">
-        <Button type="primary" icon="md-star" :disabled="!entity.id" @click="toggleFollow">{{entity.follow ? '取消关注' : '关注客户'}}</Button>
-        <Button type="primary" class="ml-10" :disabled="!entity.id" @click="toggleBind('remind')">添加跟踪摘要</Button>
-        <Button type="primary" class="ml-10" :disabled="!entity.id" @click="toggleBind('bind')">加入到收藏夹</Button>
+        <Button type="primary" v-if="entity.followUserId == userId || !entity.followUserId" :disabled="!entity.id" @click="toggleBindFollowUser">{{entity.followUserId ? '取消列名' : '列名'}}</Button>
+        <Button type="primary" v-if="entity.followUserId == userId || !entity.followUserId" class="ml-10" icon="md-star" :disabled="!entity.id" @click="toggleFollow">{{entity.follow ? '取消关注' : '关注客户'}}</Button>
+        <Button type="primary" v-if="entity.followUserId == userId || !entity.followUserId" class="ml-10" :disabled="!entity.id" @click="toggleBind('remind')">添加跟踪摘要</Button>
+        <Button type="primary" v-if="entity.followUserId == userId || !entity.followUserId" class="ml-10" :disabled="!entity.id" @click="toggleBind('bind')">加入到收藏夹</Button>
       </Col>
     </Row>
     <Row>
@@ -25,13 +26,18 @@
               <Col span="12">
                 <p class="line mb-10"><span class="label">城市：</span><span>{{entity.city | cityFilter}}</span></p>
                 <p class="line mb-10"><span class="label">公司邮箱：</span><span>{{entity.email}}</span></p>
-                <p class="line mb-10"><span class="label">创建人：</span><span>{{entity.createUser}}</span></p>
+                <!--<p class="line mb-10"><span class="label">创建人：</span><span>{{entity.createUser}}</span></p>-->
+                <p class="line mb-10">
+                  <span class="label">公司状态：</span><span>{{entity.type | customerTypeFilter}}</span>
+                  <span v-if="entity.type && entity.type!=6"> (拓展中)</span>
+                  <span v-if="entity.type">--{{entity.followUser}}</span>
+                </p>
                 <p class="line mb-10"><span class="label">添加时间：</span><span>{{getDateTime(entity.createTime)}}</span></p>
               </Col>
             </Row>
           </div>
         </TabPane>
-        <TabPane label="客户跟踪摘要">
+        <TabPane :label="`客户跟踪摘要 (${remindList.length})`">
           <Timeline v-if="remindList && remindList.length > 0" class="mt-10">
             <TimelineItem v-for="(item, index) of remindList" :key="'remind' + index">
               <p class="fs16">{{item.type | typeFilter}}</p>
@@ -41,12 +47,27 @@
           </Timeline>
           <div v-else>暂无跟踪记录</div>
         </TabPane>
-        <TabPane label="人才库">
-          <Form :label-width="150" labelPosition="left">
-            <FormItem v-for="(group, index) of talentGroupByDepartment" :key="'formitem' + index" :label="group.department + '：'">
-              <Table :columns="columns" :data="group.talents || []"></Table>
-            </FormItem>
-          </Form>
+        <TabPane :label="`人才库 (${talents.length})`">
+          <Collapse>
+            <Panel v-for="(group, index) of talentGroupByDepartment" :key="'panel' + index" :name="index.toString()">
+              {{group.department}}
+              <Table slot="content" :columns="columns" :data="group.talents || []"></Table>
+            </Panel>
+          </Collapse>
+          <!--<Form :label-width="150" labelPosition="left">-->
+            <!--<FormItem v-for="(group, index) of talentGroupByDepartment" :key="'formitem' + index" :label="group.department + '：'">-->
+              <!--<Table :columns="columns" :data="group.talents || []"></Table>-->
+            <!--</FormItem>-->
+          <!--</Form>-->
+        </TabPane>
+        <TabPane :label="`联系人 (${contactLen})`">
+          <Contact :id="entity.id" @on-change="setContactLen"/>
+        </TabPane>
+        <TabPane label="合同">
+          <Project :id="entity.id"/>
+        </TabPane>
+        <TabPane label="项目列表">
+
         </TabPane>
       </Tabs>
     </Row>
@@ -87,13 +108,7 @@
         </FormItem>
         <FormItem label="状态" prop="status" class="ivu-form-item-required">
           <Select placeholder="请选择" v-model="remind.status">
-            <Option :value="0">普通公司</Option>
-            <Option :value="1">列名</Option>
-            <Option :value="2">联系中</Option>
-            <Option :value="3">合作洽谈</Option>
-            <Option :value="4">先推人再签约</Option>
-            <Option :value="5">签约</Option>
-            <Option :value="6">客户</Option>
+            <Option v-for="(item, index) of typeFilter" :key="'type' + index" :value="item.value">{{ item.label }}</Option>
           </Select>
         </FormItem>
         <FormItem label="下次跟踪类别">
@@ -113,12 +128,19 @@
 </template>
 
 <script>
-  import { getDateTime, getCustomerInfoUtil, toggleShow, getUserId } from "../../../libs/tools";
-  import { get, toggleFollow, addRemind, remindList, getCustomerTalent } from "../../../api/customer";
+  import { getDateTime, getCustomerInfoUtil, toggleShow, getUserId, getCustomerType } from "../../../libs/tools";
+  import { get, toggleFollow, addRemind, remindList, getCustomerTalent, toggleBindFollowUser } from "../../../api/customer";
   import { list, bindFolder } from "../../../api/folder";
+  import { customerTypes } from "../../../libs/constant";
+  import Contact from './components/concat';
+  import Project from './components/project';
 
   export default {
     name: "CustomerDetail",
+    components: {
+      Contact,
+      Project
+    },
     filters: {
       cityFilter(v) {
         return (v || []).join(' ');
@@ -128,11 +150,26 @@
       },
       typeFilter(v) {
         return v == 1 ? '电话沟通' : v == 2 ? '客户上门' : '拜访客户';
+      },
+      customerTypeFilter(v) {
+        return getCustomerType(false, v);
       }
     },
     computed: {
       folderListFilter() {
         return this.folderList.filter(item => item.status);
+      },
+      userId() {
+        return getUserId();
+      },
+      typeFilter() {
+        if (!this.entity.type) {
+          return customerTypes.slice(0, 1);
+        } else if (this.entity.type == 6) {
+          return [customerTypes[6]];
+        } else {
+          return customerTypes.slice(1, 6);
+        }
       }
     },
     data() {
@@ -144,6 +181,7 @@
 
         },
         talentGroupByDepartment: [], // 人才库，按部门分类
+        talents: [],
         remindList: [],
         remind: {
           type: 1,
@@ -184,10 +222,15 @@
               return h('span', params.row.talent.name)
             }
           }
-        ]
+        ],
+        contactLen: 0,
       }
     },
     methods: {
+      // 获取联系人数量
+      setContactLen(len) {
+        this.contactLen = len;
+      },
       // 重置跟踪
       resetRemind() {
         this.remind = {
@@ -255,6 +298,7 @@
       },
       getDateTime: getDateTime,
       filterTalentGroup(data) {
+        this.talents = data;
         const departments = Array.from(new Set(data.map(item => item.department)));
         this.talentGroupByDepartment = departments.map(item => {
           return {
@@ -262,6 +306,20 @@
             talents: data.filter(d => d.department == item)
           }
         });
+      },
+      // 取消列名或列名
+      toggleBindFollowUser() {
+        this.show = true;
+        toggleBindFollowUser({
+          customerId: this.entity.id,
+          userId: this.userId,
+          status: !this.entity.type
+        }).then(data => {
+          get({id: this.entity.id}).then(data => {
+            this.show = false;
+            this.entity = getCustomerInfoUtil(data);
+          }).catch(data => {this.show = false;});
+        }).catch(data => {this.show = false;});
       },
       init(id) {
         this.show = true;
@@ -280,12 +338,12 @@
         }).catch(data => {});
       }
     },
-    created() {
+    mounted() {
       const id = (this.$route.query || {}).id;
       if (id) {
         this.init(id);
       }
-    }
+    },
   }
 </script>
 

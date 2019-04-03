@@ -49,3 +49,29 @@ export const allDepartment = (params) => {
 export const getCustomerTalent = (params) => {
   return getRequest('/customer/talent-all', params);
 };
+
+// 获取联系人
+export const getCustomerContact = (params) => {
+  return getRequest('/customer/contact/all', params);
+};
+
+// 添加联系人
+export const saveContact = (params) => {
+  return postJson('/customer/contact/save', params);
+};
+
+// 添加联系记录
+export const addContactRemark = (params) => {
+  return postJson('/customer/contact/remark/save', params);
+};
+
+// 列名或取消列名
+export const toggleBindFollowUser = (params) => {
+  return postRequest('/customer/contact/bindFollowUser-toggle', params);
+};
+
+// 获取客户下所有部门
+export const getCustomerDepartments = (params) => {
+  return getRequest('/customer/department/byId', params);
+};
+

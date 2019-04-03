@@ -126,7 +126,7 @@
                 <div>
                   <div class="inline-block w240">
                     <FormItem label="部门" class="mt-10 myItem left80" prop="department" style="margin-bottom: 20px;">
-                      <Input v-model="entity.experienceList[index].department" :disabled="!entity.experienceList[index].company" placeholder="请输入部门" @on-focus="showList(index, 0, false)" @on-blur="actionIndex = null" @on-change="findCustomerByName(index, 0, false)" class="w200" style="width: 180px;" />
+                      <Input v-model="entity.experienceList[index].department" :disabled="!entity.experienceList[index].company" placeholder="请输入部门" @on-focus="showList(index, 0, false)" @on-blur="" @on-change="findCustomerByName(index, 0, false)" class="w200" style="width: 180px;" />
                       <div class="borderB nameList" style="width: 240px; z-index: 99999999;" v-if="item.showList2 && actionIndex == index && actionType === false">
                         <li class="border bgfff company-item" v-if="departments && departments.length == 0">暂无数据</li>
                         <li class="border bgfff company-item cursor" v-for="(department, index2) of departments" :key="'department1' + index2" @click="setName2(department.name, index, 0)">
@@ -208,7 +208,7 @@
                   </div>
                 </FormItem>
                 <FormItem label="部门" class="mt-10 myItem left80" prop="department" style="margin-bottom: 20px;">
-                  <Input v-model="friends[index].department" placeholder="请输入部门" class="w300" @on-focus="showList(index, 1, false)" @on-blur="actionFriendIndex = null" @on-change="findCustomerByName(index, 1, false)" />
+                  <Input v-model="friends[index].department" placeholder="请输入部门" class="w300" @on-focus="showList(index, 1, false)" @on-blur="" @on-change="findCustomerByName(index, 1, false)" />
                   <div class="borderB nameList" style="width: 300px;" v-if="item.showList2 && actionFriendIndex == index && actionType === false">
                     <li class="border bgfff company-item" v-if="departments && departments.length == 0">暂无数据</li>
                     <li class="border bgfff company-item cursor" v-for="(department, index2) of departments" :key="'department2' + index2" @click="setName2(department.name, index, 1)">
@@ -748,7 +748,6 @@
     },
     mounted() {
       document.addEventListener('click', (event) => {
-        console.log('adfasdfasdfasdf')
         // this.customers = [];
         // this.departments = [];
         const e = event || window.event;
