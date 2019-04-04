@@ -48,17 +48,12 @@
           <div v-else>暂无跟踪记录</div>
         </TabPane>
         <TabPane :label="`人才库 (${talents.length})`">
-          <Collapse>
-            <Panel v-for="(group, index) of talentGroupByDepartment" :key="'panel' + index" :name="index.toString()">
+          <Collapse v-model="name">
+            <Panel v-for="(group, index) of talentGroupByDepartment" :key="'panel' + index" :name="(index + 1).toString()">
               {{group.department}}
               <Table slot="content" :columns="columns" :data="group.talents || []"></Table>
             </Panel>
           </Collapse>
-          <!--<Form :label-width="150" labelPosition="left">-->
-            <!--<FormItem v-for="(group, index) of talentGroupByDepartment" :key="'formitem' + index" :label="group.department + '：'">-->
-              <!--<Table :columns="columns" :data="group.talents || []"></Table>-->
-            <!--</FormItem>-->
-          <!--</Form>-->
         </TabPane>
         <TabPane :label="`联系人 (${contactLen})`">
           <Contact :id="entity.id" @on-change="setContactLen"/>
@@ -175,6 +170,7 @@
     data() {
       return {
         show: false,
+        name: null,
         folderList: [],
         folderId: null,
         entity: {
@@ -306,6 +302,9 @@
             talents: data.filter(d => d.department == item)
           }
         });
+        if (this.talentGroupByDepartment.length) {
+          this.name = '1';
+        }
       },
       // 取消列名或列名
       toggleBindFollowUser() {
@@ -315,10 +314,14 @@
           userId: this.userId,
           status: !this.entity.type
         }).then(data => {
-          get({id: this.entity.id}).then(data => {
-            this.show = false;
-            this.entity = getCustomerInfoUtil(data);
-          }).catch(data => {this.show = false;});
+          this.freshCustomer();
+        }).catch(data => {this.freshCustomer()});
+      },
+      // 刷新客户信息
+      freshCustomer() {
+        get({id: this.entity.id}).then(data => {
+          this.show = false;
+          this.entity = getCustomerInfoUtil(data);
         }).catch(data => {this.show = false;});
       },
       init(id) {

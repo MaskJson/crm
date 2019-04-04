@@ -31,8 +31,8 @@
         <div class="pd-10 bgf2 borderB">工作背景</div>
         <Row class="pd-10" v-if="workDetail.company">
           <Col span="6">
-            <span class="mr-5">{{workDetail.startTime || '--'}}</span>  -
-            <span class="ml-5">{{workDetail.status ? '至今' : workDetail.endTime || '--'}}</span>
+            <span class="mr-5">{{getDateTime(workDetail.startTime) || '--'}}</span>  -
+            <span class="ml-5">{{getDateTime(workDetail.endTime) || '--'}}</span>
           </Col>
           <Col span="18">
             <p>

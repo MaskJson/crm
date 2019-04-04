@@ -75,3 +75,8 @@ export const getCustomerDepartments = (params) => {
   return getRequest('/customer/department/byId', params);
 };
 
+// 删除客户下的联系人
+export const removeCustomerContact = (params) => {
+  return postJson('/customer/contact/del', params);
+};
+

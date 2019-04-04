@@ -2,22 +2,24 @@
   <div>
     <div>
       <SearchItem>
-        <Input placeholder="姓名" class="w200"/>
+        <Input placeholder="姓名" v-model="searchData.name" class="w200"/>
       </SearchItem>
       <SearchItem>
-        <Input placeholder="部门" class="w200"/>
+        <Select v-model="searchData.departmentId" placeholder="请选择部门" class="w200">
+          <Option v-for="(department, index) of departments" :value="department.id" >{{ department.name }}</Option>
+        </Select>
       </SearchItem>
       <SearchItem>
-        <Input placeholder="单位" class="w200"/>
+        <Input placeholder="单位" v-model="searchData.position" class="w200"/>
       </SearchItem>
       <SearchItem>
-        <Input placeholder="手机号" class="w200"/>
+        <Input placeholder="手机号" v-model="searchData.phone" class="w200"/>
       </SearchItem>
       <SearchItem>
-        <Button type="primary" :disabled="!id">查询</Button>
+        <Button type="primary" :disabled="!id" @click="getContact">查询</Button>
       </SearchItem>
       <SearchItem>
-        <Button type="primary" :disabled="!id">重置查询条件</Button>
+        <Button type="primary" :disabled="!id" @click="resetSearch">重置查询条件</Button>
       </SearchItem>
     </div>
     <div class="mt-10">
@@ -25,7 +27,7 @@
         <Button type="primary" @click="showModalDepartment">添加</Button>
       </SearchItem>
       <SearchItem>
-        <Button type="error">批量删除</Button>
+        <Button type="error" @click="removeContact(false)">批量删除</Button>
       </SearchItem>
     </div>
     <Table class="mt-5" :columns="columns" :data="list" border></Table>
@@ -61,13 +63,31 @@
         </FormItem>
       </Form>
     </ModalUtil>
+    <!--  删除确认  -->
+    <ModalUtil ref="modal_remove" :width="360" title="删除确认" @on-ok="delContact" :loading="show">
+      <div class="center pt-30 pb-30">
+        <Icon type="ios-help-circle-outline" class="ivu-tag-color-error" :size="50"/>
+        <br>
+        <span class="fs20">确定删除联系人吗？</span>
+      </div>
+    </ModalUtil>
+    <ModalUtil ref="modal_remark" title="添加联系记录" @reset="resetRemark" @on-ok="addRemark" :loading="show">
+      <Form ref="addRemark" :model="remark" :rules="remarkRule" :label-width="120">
+        <FormItem label="备注：" prop="remark">
+          <Input v-model="remark.remark" class="w300"/>
+        </FormItem>
+        <FormItem label="下次联系时间：">
+          <DatePicker type="datetime" v-model="remark.nextContactTime" class="w300" />
+        </FormItem>
+      </Form>
+    </ModalUtil>
     <SpinUtil :show="show"/>
   </div>
 </template>
 
 <script>
   import {getUserId, toggleShow} from "../../../../libs/tools";
-  import { getCustomerContact, saveContact, addContactRemark, getCustomerDepartments } from "../../../../api/customer";
+  import { getCustomerContact, saveContact, addContactRemark, getCustomerDepartments, removeCustomerContact } from "../../../../api/customer";
 
   export default {
     name: "concat",
@@ -80,9 +100,13 @@
       return {
         show: false,
         showDepartment: false,
-        departments: [],
-        departmentsFilter: [],
-        list: [],
+        remarkIndex: null, // 添加备注记录的下标
+        selected: [], // 批量删除id
+        delId: null, // 单个删除id
+        delType: true,
+        departments: [], // 所有该客户部门
+        departmentsFilter: [], // 过滤部门显示下拉框
+        list: [], // 所有该客户联系人
         searchData: {
           name: null,
           departmentId: null,
@@ -139,9 +163,11 @@
           {
             title: '最新联系记录',
             key: 'remark',
+            align: 'center',
             render: (h, params) => {
               const remarks = params.row.remarks || [];
-              const text = remarks && remarks.length ? remarks[0].remark : '--'
+              const text = remarks && remarks.length ? remarks[0].remark : '--';
+              return h('span', text);
             }
           },
           {
@@ -160,13 +186,14 @@
                   },
                   on: {
                     click: () => {
-
+                      this.delId = params.row.id;
+                      this.removeContact(true);
                     }
                   }
                 }, '删除'),
                 h('Button', {
                   props: {
-                    type: 'error',
+                    type: 'primary',
                     size: 'small'
                   },
                   class: {
@@ -174,13 +201,13 @@
                   },
                   on: {
                     click: () => {
-
+                      this.contact = params.row;
+                      toggleShow(this, 'modal_contact');
                     }
                   }
                 }, '编辑'),
                 h('Button', {
                   props: {
-                    type: 'error',
                     size: 'small'
                   },
                   class: {
@@ -188,7 +215,9 @@
                   },
                   on: {
                     click: () => {
-
+                      this.remark.customerContactId = params.row.id;
+                      this.remarkIndex = params.row._index;
+                      toggleShow(this, 'modal_remark');
                     }
                   }
                 }, '备注记录'),
@@ -220,10 +249,23 @@
         remark: {
           remark: null,
           nextContactTime: null
+        },
+        remarkRule: {
+          remark: [
+            { required: true, type: 'string', message: '请输入备注', trigger: 'change' }
+          ],
         }
       }
     },
     methods: {
+      resetSearch() {
+        this.searchData = {
+          name: null,
+          departmentId: null,
+          position: null,
+          phone: null
+        };
+      },
       showModalDepartment() {
         toggleShow(this, 'modal_contact');
       },
@@ -239,6 +281,7 @@
           this.showDepartment = false;
         }, 150);
       },
+      // 输入过滤部门
       findDepartment() {
         const department = (this.contact.department || '').trim();
         if (!department) {
@@ -249,11 +292,37 @@
           this.departmentsFilter = this.departments.filter(item => item.name.indexOf(department) > -1);
         }
       },
-      getContact() {
-        getCustomerContact({id: this.id}).then(data => {
-          this.list = data;
-        }).catch(data => {});
+      resetRemark() {
+        this.remark = {
+          remark: null,
+          nextContactTime: null
+        };
       },
+      // 添加联系人备注
+      addRemark() {
+        this.$refs['addRemark'].validate(valid => {
+          if (valid) {
+            this.show = true;
+            addContactRemark({
+              createUserId: getUserId(),
+              ...this.remark
+            }).then(data => {
+              this.show = false;
+              this.list[this.remarkIndex].remarks.unshift(data);
+              toggleShow(this, 'modal_remark', false);
+            }).catch(data => { this.show = false; });
+          }
+        });
+      },
+      // 获取联系人
+      getContact() {
+        this.show = true;
+        getCustomerContact({id: this.id, ...this.searchData}).then(data => {
+          this.show = false;
+          this.list = data;
+        }).catch(data => { this.show = false; });
+      },
+      // 获取该客户的部门
       getDepartments() {
         getCustomerDepartments({id: this.id}).then(data => {
           this.departments = data;
@@ -268,6 +337,30 @@
           phone: null,
         }
       },
+      removeContact(flag) {
+        this.delType = flag;
+        toggleShow(this, 'modal_remove');
+      },
+      // 删除联系人
+      delContact() {
+        let arr;
+        if (this.delType) {
+          arr = [this.delId];
+        } else {
+          arr = this.selected.map(item => item.id);
+          if (!arr.length) {
+            this.$Message.warning('请选择要删除的联系人');
+            toggleShow(this, 'modal_remove', false);
+            return;
+          }
+        }
+        this.show = true;
+        toggleShow(this, 'modal_remove', false);
+        removeCustomerContact(arr).then(data => {
+          this.getContact();
+        }).catch(data => {});
+      },
+      // 添加修改联系人
       saveContact() {
         this.$refs['saveContact'].validate(valid => {
           if (valid) {
@@ -293,11 +386,9 @@
         this.getDepartments();
       },
       list(list) {
+        this.selected = [];
         this.$emit('on-change', this.list.length);
       },
-      departments() {
-        console.log('adfadfadfasfads')
-      }
     },
     mounted() {
       document.addEventListener('click', (event) => {
