@@ -8,7 +8,7 @@
         <Card>
           <Row class="operation">
             <Button @click="addRole" type="primary" icon="md-add">添加角色</Button>
-            <Button @click="delAll" icon="md-trash">批量删除</Button>
+            <!--<Button @click="delAll" icon="md-trash">批量删除</Button>-->
             <Button @click="init" icon="md-refresh">刷新</Button>
             <circleLoading v-if="operationLoading"/>
           </Row>
@@ -97,11 +97,11 @@
         selectList: [],
         selectCount: 0,
         columns: [
-          {
-            type: 'selection',
-            width: 60,
-            align: 'center'
-          },
+          // {
+          //   type: 'selection',
+          //   width: 60,
+          //   align: 'center'
+          // },
           {
             title: 'id',
             // width: 60,
@@ -186,21 +186,21 @@
                   },
                   '编辑'
                 ),
-                h(
-                  'Button',
-                  {
-                    props: {
-                      type: 'error',
-                      size: 'small'
-                    },
-                    on: {
-                      click: () => {
-                        this.remove(params.row)
-                      }
-                    }
-                  },
-                  '删除'
-                )
+                // h(
+                //   'Button',
+                //   {
+                //     props: {
+                //       type: 'error',
+                //       size: 'small'
+                //     },
+                //     on: {
+                //       click: () => {
+                //         this.remove(params.row)
+                //       }
+                //     }
+                //   },
+                //   '删除'
+                // )
               ])
             }
           }

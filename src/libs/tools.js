@@ -270,6 +270,18 @@ export const getUserId = () => {
   return JSON.parse(userInfo).id;
 }
 
+// 根据key或许用户信息
+export const getUserInfoByKey = (key) => {
+  // 判断用户是否登录
+  // let userInfo = Cookies.get('userInfo')
+  let userInfo = localStorage.getItem('userInfo')
+  if (userInfo === null || userInfo === "" || userInfo === undefined) {
+    // 未登录
+    return;
+  }
+  return JSON.parse(userInfo)[key];
+}
+
 /**
  * 前端分页获取数据
  * @param page

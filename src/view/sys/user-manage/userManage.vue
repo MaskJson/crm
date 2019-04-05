@@ -32,7 +32,7 @@
           </Row>
           <Row class="operation">
             <Button @click="add" type="primary" icon="md-add">添加用户</Button>
-            <Button @click="delAll" icon="md-trash">批量删除</Button>
+            <!--<Button @click="delAll" icon="md-trash">批量删除</Button>-->
             <circleLoading v-if="operationLoading"/>
           </Row>
           <Row>
@@ -182,31 +182,27 @@
         },
         submitLoading: false,
         columns: [
+          // {
+          //   type: 'selection',
+          //   width: 60,
+          //   align: 'center',
+          // },
           {
-            type: 'selection',
-            width: 60,
-            align: 'center',
-          },
-          {
-            type: 'index',
-            width: 60,
+            key: 'id',
             align: 'center',
           },
           {
             title: '用户名',
             key: 'username',
-            width: 120,
             sortable: true,
           },
           {
             title: '昵称',
             key: 'nickName',
-            width: 120,
           },
           {
             title: '头像',
             key: 'avatar',
-            width: 120,
             align: 'center',
             render: (h, params) => {
               return h('Avatar', {
@@ -220,7 +216,6 @@
             title: '用户角色',
             key: 'role',
             align: 'center',
-            width: 180,
             render: (h, params) => {
               const role = params.row.role || {};
               return h('span',`${role.roleName}(${role.description})`)
@@ -290,7 +285,6 @@
             key: 'createTime',
             sortable: true,
             sortType: 'desc',
-            width: 250,
             render: (h, params) => {
               if (params.row.createTime) {
                 return h('div', moment(params.row.createTime).format('YYYY-MM-DD HH:mm:ss'))
@@ -339,21 +333,21 @@
                 //   },
                 //   params.row.status == 0 ? '禁用' : '启用'
                 // ),
-                h(
-                  'Button',
-                  {
-                    props: {
-                      type: 'error',
-                      size: 'small'
-                    },
-                    on: {
-                      click: () => {
-                        this.remove([params.row.id])
-                      }
-                    }
-                  },
-                  '删除'
-                )
+                // h(
+                //   'Button',
+                //   {
+                //     props: {
+                //       type: 'error',
+                //       size: 'small'
+                //     },
+                //     on: {
+                //       click: () => {
+                //         this.remove([params.row.id])
+                //       }
+                //     }
+                //   },
+                //   '删除'
+                // )
               ]
               return h('div', children)
             }
