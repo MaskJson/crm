@@ -426,3 +426,13 @@ export const toggleShow = (vm, key, flag) => {
   vm.$refs[key].toggleShow(flag);
 };
 
+// get role
+export const getRoleName = (level) => {
+  switch (level) {
+    case 2: return 'PM';
+    case 3: return 'IPL';
+    case 4: return 'MPL';
+    case 5: return 'PT';
+  }
+}
+

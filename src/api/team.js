@@ -17,6 +17,11 @@ export const getTeamMembers = (params) => {
   return getRequest('/team/members', params);
 };
 
+// 获取团队信息
+export const getTeamMembersWithInfo = (params) => {
+  return getRequest('/team/membersWithInfo', params);
+};
+
 // 编辑团队
 export const save = (params) => {
   return postJson('/team/save', params);
