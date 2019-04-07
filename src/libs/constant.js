@@ -34,6 +34,14 @@ export const talentStatus = [
   {value: 10, label: '推荐给客户'}
 ];
 
+export const matches = [
+  {value: 1, label: '城市'},
+  {value: 2, label: '行业'},
+  {value: 3, label: '职能'},
+  {value: 4, label: '学历'},
+  {value: 5, label: '语言能力'},
+];
+
 export const projectStatus = [
   {value: 1, label: '启动阶段'},
   {value: 2, label: '攻坚阶段'},
@@ -47,8 +55,8 @@ export const projectPass = [
   {value: 1, label: '1个月'},
   {value: 2, label: '2个月'},
   {value: 3, label: '3个月'},
-  {value: 4, label: '转正时'},
-  {value: 5, label: '6个月'},
+  {value: 4, label: '6个月'},
+  {value: 5, label: '转正时'},
   {value: 6, label: '低于1个月'}
 ];
 
@@ -137,7 +145,7 @@ export const educationList = [
   {value: 10, label: '博士后'}
 ];
 
-export const talentTaleList = [
+export const background = [
   {value: 1, label: '无名企背景'},
   {value: 2, label: '行业前10强企业经理'},
   {value: 3, label: '行业前20强企业经理'},

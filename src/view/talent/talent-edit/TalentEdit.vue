@@ -184,7 +184,7 @@
         <Select v-model="entity.sourceFrom" class="w300" v-if="entity.sourceType == 1">
           <Option v-for="(item, index) of talentSource" :value="item.value" :key="'source' + index">{{ item.label }}</Option>
         </Select>
-        <Select v-model="entity.sourceFrom" class="w300" v-if="entity.sourceType == 2">
+        <Select v-model="entity.sourceFrom" class="w300" v-if="entity.sourceType == 2" clearable filterable>
           <Option v-for="(item, index) of allCustomers" :value="item.id" :key="'customerS' + index">{{ item.name }}</Option>
         </Select>
       </FormItem>
@@ -254,20 +254,19 @@
         </div>
       </FormItem>
       <FormItem label="人才状态：" prop="status">
-        <Select v-model="entity.status">
+        <Select v-model="entity.status" :disabled="projectId">
           <Option v-for="(item, index) of talentStatus" :key="'status' + index" :value="item.value">{{ item.label }}</Option>
         </Select>
       </FormItem>
-      <FormItem label="关联项目" v-if="remind.status == 10 && !entity.id">
+      <FormItem label="关联项目" v-if="remind.status == 10 && !entity.id && !projectId">
         <Select v-model="entity.projectId">
           <Option v-for="(item, index) of projectList" :key="'project' + index" :value="item.projectId">{{ item.name }}</Option>
         </Select>
       </FormItem>
     </Form>
 
-
     <!--  添加跟踪记录 -->
-    <Form ref="addRemind" :model="remind" :rules="remindRule" :label-width="120" v-if="entity.status != 10 && !entity.id">
+    <Form ref="addRemind" :model="remind" :rules="remindRule" :label-width="120" v-if="entity.status != 10 && !entity.id && !projectId">
       <FormItem label="本次跟踪类别" prop="remindTypeId">
         <Select v-model="remind.type">
           <Option :value="0">请选择</Option>
@@ -329,6 +328,7 @@
   import { getTalentInfoUtil, getUserId } from "../../../libs/tools";
   import { industryList, aptnessList, language, talentSource, talentStatus, educationList, countries } from "../../../libs/constant";
   import { allCustomer, allDepartment } from "../../../api/customer";
+  import { getListByTableName } from "../../../api/common";
   import { checkByPhone, getDetail, save } from "../../../api/talent";
 
   export default {
@@ -339,6 +339,7 @@
     },
     data() {
       return {
+        projectId: null, // 添加项目人才
         phoneError: false,
         show: false,
         status: null,
@@ -503,7 +504,7 @@
         this.entity.industry = value;
       },
       selectHandle2 (value) {
-        this.entity.industry = value;
+        this.entity.aptness = value;
       },
       checkPhone(val) {
         const reg=/^[1][3,4,5,7,8][0-9]{9}$/;
@@ -790,8 +791,11 @@
       if (id) {
         this.init(Number(id));
       }
-      allCustomer({}).then(data => {
-        this.allCustomers = data;
+      // allCustomer({}).then(data => {
+      //   this.allCustomers = data;
+      // }).catch(data => {});
+      getListByTableName({type: 1}).then(data => {
+        this.allCustomers = data || [];
       }).catch(data => {});
       allDepartment({}).then(data => {
         this.allDepartment = data;

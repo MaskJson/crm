@@ -2,7 +2,7 @@
   <Card>
     <div>
       <SearchItem>
-        <Cascader v-model="searchData.city" :data="cityList" class="w200"></Cascader>
+        <Cascader placeholder="城市" v-model="searchData.city" :data="cityList" class="w200"></Cascader>
       </SearchItem>
       <SearchItem>
         <Input placeholder="姓名" class="w200" v-model="searchData.name"/>
@@ -55,7 +55,7 @@
           name,
           industry,
           folderId,
-          city: JSON.stringify(city),
+          city: city.length ? JSON.stringify(city) : null,
         }
       },
     },

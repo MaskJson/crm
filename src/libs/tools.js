@@ -400,16 +400,12 @@ export const getCustomerInfoUtil = (data) => {
  * 获取项目详情
  */
 export const getProjectInfoUtil = (data) => {
-  let {industry, aptness, city, firstApplyTime, finishTime, adviserList} = data;
-  adviserList = adviserList || [];
-  const list = adviserList.map(item => {
-    return item.adviserId
-  })
+  let {industry, aptness, city, matches} = data;
   Object.assign(data, {
     industry: getJsonArray(industry),
     aptness: getJsonArray(aptness),
     city: getJsonArray(city),
-    adviserList: list
+    matches: getJsonArray(matches)
   })
   return data;
 }

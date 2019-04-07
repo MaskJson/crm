@@ -6,7 +6,7 @@
       </SearchItem>
       <SearchItem>
         <Select v-model="searchData.departmentId" placeholder="请选择部门" class="w200">
-          <Option v-for="(department, index) of departments" :value="department.id" >{{ department.name }}</Option>
+          <Option v-for="(department, index) of departments" :key="'dart' + index" :value="department.id" >{{ department.name }}</Option>
         </Select>
       </SearchItem>
       <SearchItem>
