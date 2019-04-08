@@ -105,7 +105,12 @@
         </Col>
         <Col span="8">
           <FormItem label="当前年薪（万元）：">
-            <Input v-model="entity.salary"/>
+            <InputNumber v-model="entity.salary" :min="0"/>
+          </FormItem>
+        </Col>
+        <Col span="8">
+          <FormItem label="意向职位：">
+            <Input v-model="entity.position"/>
           </FormItem>
         </Col>
       </Row>
@@ -254,11 +259,11 @@
         </div>
       </FormItem>
       <FormItem label="人才状态：" prop="status">
-        <Select v-model="entity.status" :disabled="projectId">
+        <Select v-model="entity.status" :disabled="!!projectId">
           <Option v-for="(item, index) of talentStatus" :key="'status' + index" :value="item.value">{{ item.label }}</Option>
         </Select>
       </FormItem>
-      <FormItem label="关联项目" v-if="remind.status == 10 && !entity.id && !projectId">
+      <FormItem label="关联项目" v-if="entity.status == 10 && !entity.id && !projectId">
         <Select v-model="entity.projectId">
           <Option v-for="(item, index) of projectList" :key="'project' + index" :value="item.projectId">{{ item.name }}</Option>
         </Select>
@@ -382,6 +387,7 @@
           phone: '',
           intentionCity: [],
           salary: null,
+          position: null,
           tag: null,
           educationExperience: null,
           projectExperience: null,
@@ -404,7 +410,6 @@
               showList2: false
             }
           ],
-          projectId: null
         },
         entityRule: {
           name: [
@@ -678,6 +683,10 @@
             return false;
           }
         }
+        if (this.entity.status == 10 && !this.entity.projectId) {
+          this.$Message.warning('推荐给客户必须关联项目');
+          return false;
+        }
         let flag = true;
         this.$refs['entity'].validate((valid) => {
           if (!valid) {
@@ -708,6 +717,9 @@
         if (!flag) {
           this.$Message.error('请检查选项是否按要求填写');
         } else {
+          if (this.entity.status != 10) {
+            this.entity.projectId = null;
+          }
           this.submit();
         }
       },
@@ -787,15 +799,21 @@
       });
     },
     created() {
-      const id = (this.$route.query || {}).id;
+      const query = this.$route.query || {};
+      const {id, projectId} = query;
+      if (projectId) {
+        this.projectId = Number(projectId);
+        this.entity.status = 10;
+        this.entity.projectId = Number(projectId);
+      }
       if (id) {
         this.init(Number(id));
       }
-      // allCustomer({}).then(data => {
-      //   this.allCustomers = data;
-      // }).catch(data => {});
       getListByTableName({type: 1}).then(data => {
         this.allCustomers = data || [];
+      }).catch(data => {});
+      getListByTableName({type: 3}).then(data => {
+        this.projectList = data || [];
       }).catch(data => {});
       allDepartment({}).then(data => {
         this.allDepartment = data;

@@ -20,3 +20,33 @@ export const projectList = (params) => {
 export const toggleFollow = (params) => {
   return postRequest('/project/toggle-follow', params);
 };
+
+// 根据进展状态获取项目下的人才
+export const getProjectTalentByStatus = (params) => {
+  return getRequest('/project/talent/getByStatus', params);
+};
+
+// 添加项目人才跟踪
+export const addProjectTalentRemind = (params) => {
+  return postJson('/project/remind/add', params);
+};
+
+// 添加项目进展人才
+export const addProjectTalent = (params) => {
+  return postJson('/project/talent/add', params);
+};
+
+// 获取该项目的所有非淘汰人才
+export const allProjectTalent = (params) => {
+  return getRequest('/project/talent/all', params);
+};
+
+// 获取诊断报告所需数据
+export const getReportData = (params) => {
+  return getRequest('/project/report/data', params);
+};
+
+// 添加诊断报告
+export const addReport = (params) => {
+  return postJson('/project/report/add', params);
+};

@@ -467,6 +467,7 @@
               delete params.createTime;
               delete params.permissions;
               delete params.other;
+              delete params.password;
               editUser(params).then(res => {
                 this.submitLoading = false;
                 this.$Message.success('操作成功');

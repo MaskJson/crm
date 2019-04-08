@@ -323,6 +323,14 @@
         this.$refs['form'].validate(valid => {
           if (valid) {
             const entity = JSON.parse(JSON.stringify(this.entity));
+            if (entity.openType == 2 && !entity.teamId) {
+              this.$Message.error('开放属性为团队开放，请选择项目总监');
+              return;
+            }
+            if (entity.openType == 3 && !entity.teamId) {
+              this.$Message.error('开放属性为特定兼职开放，请选择兼职人员');
+              return;
+            }
             entity.city = JSON.stringify(entity.city);
             entity.matches = JSON.stringify(entity.matches);
             entity.industry = JSON.stringify(entity.industry);

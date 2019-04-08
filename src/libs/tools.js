@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { projectStatus, customerTypes } from "./constant";
+import { projectStatus, customerTypes, language, background, educationList, projectPass } from "./constant";
 
 export const forEach = (arr, fn) => {
   if (!arr.length || !fn) return
@@ -430,5 +430,37 @@ export const getRoleName = (level) => {
     case 4: return 'MPL';
     case 5: return 'PT';
   }
+}
+
+// 获取名企背景
+export const getBackground = (h, data) => {
+  let text = ''
+  const index = background.findIndex(item => item.value == data);
+  text = index > -1 ? background[index].label : ''
+  return h ? h('span', text) : text;
+}
+
+// 获取语言能力
+export const getLanguage = (h, data) => {
+  let text = ''
+  const index = language.findIndex(item => item.value == data);
+  text = index > -1 ? language[index].label : ''
+  return h ? h('span', text) : text;
+}
+
+// 获取名企背景
+export const getEducation = (h, data) => {
+  let text = ''
+  const index = educationList.findIndex(item => item.value == data);
+  text = index > -1 ? educationList[index].label : ''
+  return h ? h('span', text) : text;
+}
+
+// 获取名企背景
+export const getQuality = (h, data) => {
+  let text = ''
+  const index = projectPass.findIndex(item => item.value == data);
+  text = index > -1 ? projectPass[index].label : ''
+  return h ? h('span', text) : text;
 }
 

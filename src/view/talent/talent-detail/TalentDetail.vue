@@ -4,9 +4,9 @@
       <Col span="12">
         <h2>{{entity.name}}</h2>
       </Col>
-      <Col class="t-right">
+      <Col span="12" class="t-right">
         <Button type="primary" icon="md-star" :disabled="!entity.id" @click="toggleFollow">{{entity.follow ? '取消关注' : '关注客户'}}</Button>
-        <Button type="primary" class="ml-10" :disabled="!entity.id" @click="toggleBind('remind')">添加跟踪摘要</Button>
+        <Button type="primary" class="ml-10" v-if="!entity.projectCount" :disabled="!entity.id || entity.type" @click="toggleBind('remind')">添加跟踪摘要</Button>
         <Button type="primary" class="ml-10" :disabled="!entity.id" @click="toggleBind('bind')">加入到收藏夹</Button>
       </Col>
     </Row>
