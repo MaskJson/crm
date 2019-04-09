@@ -8,6 +8,7 @@
         <Button type="primary" icon="md-star" :disabled="!entity.id || (entity.followUserId && entity.followUserId != userId)" @click="toggleFollow">{{entity.follow ? '取消关注' : '关注客户'}}</Button>
         <Button type="primary" class="ml-10" v-if="!entity.projectCount" :disabled="!entity.id || entity.projectCount || (entity.followUserId && entity.followUserId != userId)" @click="toggleBind('remind')">添加跟踪摘要</Button>
         <Button type="primary" class="ml-10" :disabled="!entity.id || (entity.followUserId && entity.followUserId != userId)" @click="toggleBind('bind')">加入到收藏夹</Button>
+        <Button type="primary" @click="showFavoriteSetting = true" class="ml-10">人才收藏夹管理</Button>
       </Col>
     </Row>
     <Row>
@@ -137,6 +138,9 @@
         </FormItem>
       </Form>
     </ModalUtil>
+    <Drawer :width="360" title="客户收藏夹管理" :closable="false" v-model="showFavoriteSetting">
+      <favorite-setting ref="favorite" @on-change="setFolders" :type="2"/>
+    </Drawer>
   </Card>
 </template>
 
@@ -145,12 +149,14 @@
   import { getDetail, toggleFollow, getAllRemind, addRemind } from "../../../api/talent";
   import { talentStatus } from "../../../libs/constant";
   import Detail from './components/detail';
-  import { list, bindFolder } from "../../../api/folder";
+  import { bindFolder } from "../../../api/folder";
+  import FavoriteSetting from '../../components/favorite-setting';
 
   export default {
     name: "TalentDetail",
     components: {
       Detail,
+      FavoriteSetting
     },
     computed: {
       folderListFilter() {
@@ -208,6 +214,9 @@
     },
     methods: {
       getDateTime: getDateTime,
+      setFolders(list) {
+        this.folderList = list;
+      },
       resetRemind() {
         this.remind = {
           type: null, // 本次跟踪类别
@@ -234,9 +243,6 @@
           this.show = false;
           this.entity = getTalentInfoUtil(data);
         }).catch(data => { this.show = false; });
-        list({ type: 1 }).then(data => {
-          this.folderList = data;
-        }).catch(data => {});
         this.getAllRemind(id);
       },
       getAllRemind(id) {

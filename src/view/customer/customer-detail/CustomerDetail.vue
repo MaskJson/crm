@@ -9,6 +9,7 @@
         <Button type="primary" v-if="entity.followUserId == userId || !entity.followUserId" class="ml-10" icon="md-star" :disabled="!entity.id" @click="toggleFollow">{{entity.follow ? '取消关注' : '关注客户'}}</Button>
         <Button type="primary" v-if="entity.followUserId == userId || !entity.followUserId" class="ml-10" :disabled="!entity.id" @click="toggleBind('remind')">添加跟踪摘要</Button>
         <Button type="primary" v-if="entity.followUserId == userId || !entity.followUserId" class="ml-10" :disabled="!entity.id" @click="toggleBind('bind')">加入到收藏夹</Button>
+        <Button type="primary" @click="showFavoriteSetting = true" class="ml-10">客户收藏夹管理</Button>
       </Col>
     </Row>
     <Row>
@@ -118,6 +119,9 @@
         </FormItem>
       </Form>
     </ModalUtil>
+    <Drawer :width="360" title="客户收藏夹管理" :closable="false" v-model="showFavoriteSetting">
+      <favorite-setting ref="favorite" @on-change="setFolders" :type="1"/>
+    </Drawer>
     <SpinUtil :show="show"/>
   </Card>
 </template>
@@ -125,16 +129,18 @@
 <script>
   import { getDateTime, getCustomerInfoUtil, toggleShow, getUserId, getCustomerType } from "../../../libs/tools";
   import { get, toggleFollow, addRemind, remindList, getCustomerTalent, toggleBindFollowUser } from "../../../api/customer";
-  import { list, bindFolder } from "../../../api/folder";
+  import { bindFolder } from "../../../api/folder";
   import { customerTypes } from "../../../libs/constant";
   import Contact from './components/concat';
   import Project from './components/project';
+  import FavoriteSetting from '../../components/favorite-setting';
 
   export default {
     name: "CustomerDetail",
     components: {
       Contact,
-      Project
+      Project,
+      FavoriteSetting
     },
     filters: {
       cityFilter(v) {
@@ -170,6 +176,7 @@
     data() {
       return {
         show: false,
+        showFavoriteSetting: false,
         name: null,
         folderList: [],
         folderId: null,
@@ -223,6 +230,9 @@
       }
     },
     methods: {
+      setFolders(list) {
+        this.folderList = list;
+      },
       // 获取联系人数量
       setContactLen(len) {
         this.contactLen = len;
@@ -333,9 +343,6 @@
             this.filterTalentGroup(data || []);
           }).catch(data => {});
         }).catch(data => { this.show = false; });
-        list({ type: 1 }).then(data => {
-          this.folderList = data;
-        }).catch(data => {});
         remindList({id}).then(data => {
           this.remindList = data || [];
         }).catch(data => {});

@@ -64,12 +64,12 @@
   import { getUserId } from "../../../libs/tools";
   import { getCustomerInfoUtil } from "../../../libs/tools";
   import cityList from '../../../libs/cityList';
-  import IndustrySelect from '@/view/components/industry-select/industry-select.vue'
+  import IndustrySelect from '@/view/components/industry-select/industry-select.vue';
 
   export default {
     name: "CustomerEdit",
     components: {
-      IndustrySelect
+      IndustrySelect,
     },
     data() {
       return {

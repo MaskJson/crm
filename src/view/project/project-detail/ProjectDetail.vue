@@ -10,6 +10,7 @@
         <Button type="primary" class="ml-10" :disabled="!entity.id" @click="toggleBind('bind')">加入到收藏夹</Button>
         <Button type="primary" class="ml-10" :disabled="!entity.id" @click="newProjectTalent">新建项目候选人</Button>
         <Button type="primary" class="ml-10" v-if="roleId == 2" :disabled="!entity.id" @click="toggleBind('choose')">新增项目诊断报告</Button>
+        <Button type="primary" @click="showFavoriteSetting = true" class="ml-10">项目收藏夹管理</Button>
       </Col>
     </Row>
     <Row class="mt-20">
@@ -105,6 +106,9 @@
         <Col>该项目暂无顾问诊断记录</Col>
       </Row>
     </ModalUtil>
+    <Drawer :width="360" title="客户收藏夹管理" :closable="false" v-model="showFavoriteSetting">
+      <favorite-setting ref="favorite" @on-change="setFolders" :type="3"/>
+    </Drawer>
     <SpinUtil :show="show"/>
   </Card>
 </template>
@@ -113,15 +117,17 @@
   import ProjectInfo from './components/ProjectInfo';
   import TalentProcess from './components/TalentProcess';
   import { getUserId, getUserInfoByKey, toggleShow } from "../../../libs/tools";
-  import { bindFolder, list } from "../../../api/folder";
+  import { bindFolder } from "../../../api/folder";
   import { getListByTableName } from "../../../api/common";
   import { toggleFollow, allProjectTalent, addProjectTalent, getReportData, addReport } from "../../../api/project";
+  import FavoriteSetting from '../../components/favorite-setting';
 
   export default {
     name: "ProjectDetail",
     components: {
       ProjectInfo,
-      TalentProcess
+      TalentProcess,
+      FavoriteSetting
     },
     computed: {
       folderListFilter() {
@@ -153,6 +159,9 @@
       }
     },
     methods: {
+      setFolders(list) {
+        this.folderList = list;
+      },
       setEntity(entity) {
         this.show = false;
         this.entity = entity;
@@ -289,9 +298,6 @@
     },
     created() {
       this.getAllProjectTalent();
-      list({ type: 3 }).then(data => {
-        this.folderList = data;
-      }).catch(data => {});
       this.roleId = getUserInfoByKey('roleId');
     }
   }
