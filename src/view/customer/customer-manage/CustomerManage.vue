@@ -56,7 +56,7 @@
     },
     computed: {
       searchParams() {
-        const { id, name, industry, folderId, city } = this.searchData;
+        const { id, name, industry, folderId, city, follow } = this.searchData;
         return {
           id,
           name,
