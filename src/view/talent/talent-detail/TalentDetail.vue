@@ -8,6 +8,8 @@
         <Button type="primary" icon="md-star" :disabled="!entity.id || (entity.followUserId && entity.followUserId != userId)" @click="toggleFollow">{{entity.follow ? '取消关注' : '关注客户'}}</Button>
         <Button type="primary" class="ml-10" v-if="!entity.projectCount" :disabled="!entity.id || entity.projectCount || (entity.followUserId && entity.followUserId != userId)" @click="toggleBind('remind')">添加跟踪摘要</Button>
         <Button type="primary" class="ml-10" :disabled="!entity.id || (entity.followUserId && entity.followUserId != userId)" @click="toggleBind('bind')">加入到收藏夹</Button>
+        <Button type="primary" class="ml-10" v-if="!entity.followUserId" @click="toggleType(true)">设为专属</Button>
+        <Button type="primary" class="ml-10" v-if="entity.followUserId == userId" @click="toggleType(false)">取消专属</Button>
         <Button type="primary" @click="showFavoriteSetting = true" class="ml-10">人才收藏夹管理</Button>
       </Col>
     </Row>
@@ -146,7 +148,7 @@
 
 <script>
   import { getTalentInfoUtil, getProjectStatus, getDateTime, getStatusRender, toggleShow, getUserId } from "../../../libs/tools";
-  import { getDetail, toggleFollow, getAllRemind, addRemind } from "../../../api/talent";
+  import { getDetail, toggleFollow, getAllRemind, addRemind, toggleType } from "../../../api/talent";
   import { talentStatus } from "../../../libs/constant";
   import Detail from './components/detail';
   import { bindFolder } from "../../../api/folder";
@@ -259,6 +261,17 @@
           this.show = false;
           this.entity.follow = !this.entity.follow;
         }).catch(data => { this.show = false; })
+      },
+      toggleType(flag) {
+        this.show = true;
+        toggleType({
+          id: this.entity.id,
+          userId: getUserId(),
+          flag
+        }).then(data => {
+          this.show = false;
+          this.init(this.entity.id);
+        }).catch(data => {});
       },
       bindFolder() {
         if (this.folderId) {

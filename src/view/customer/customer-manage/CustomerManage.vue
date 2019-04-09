@@ -44,8 +44,8 @@
 </template>
 
 <script>
-  import { jsonArray, getCity, globalSearch } from "../../../libs/tools";
-  import { list, toggleFollow } from "../../../api/customer";
+  import { jsonArray, getCity, globalSearch, getUserId } from "../../../libs/tools";
+  import { list, toggleFollow, toggleBindFollowUser } from "../../../api/customer";
   import cityList from '../../../libs/cityList';
   import FavoriteSetting from '../../components/favorite-setting';
 
@@ -122,7 +122,9 @@
             align: 'center',
             width: 200,
             render: (h, params) => {
-              return h('div', [
+              const userId = getUserId();
+              const {followUserId, type} = params.row.followUserId;
+              const btn = [
                 h('Button', {
                   class: {
                     'mr-5': true
@@ -136,37 +138,84 @@
                     }
                   }
                 }, '查看详情'),
-                h('Button', {
-                  class: {
-                    'mr-5': true
-                  },
-                  props: {
-                    type: 'primary',
-                    size: 'small'
-                  },
-                  on: {
-                    click: () => {
-                      this.$router.push({ path: '/customer/customer-edit', query: {id: params.row.id}});
+              ];
+              if (!followUserId || followUserId == userId) {
+                btn.push(h('Button', {
+                    class: {
+                      'mr-5': true
+                    },
+                    props: {
+                      type: 'primary',
+                      size: 'small'
+                    },
+                    on: {
+                      click: () => {
+                        this.$router.push({ path: '/customer/customer-edit', query: {id: params.row.id}});
+                      }
                     }
-                  }
-                }, '编辑'),
-                h('Button', {
-                  props: {
-                    type: 'warning',
-                    size: 'small'
-                  },
-                  on: {
-                    click: () => {
-                      this.$refs['manager'].emitManagerHandler('toggle', {
-                        params: {
-                          id: params.row.id,
-                          follow: !params.row.follow
-                        }
-                      });
+                  }, '编辑'),
+                  h('Button', {
+                    class: {
+                      'mr-5': true
+                    },
+                    props: {
+                      type: 'warning',
+                      size: 'small'
+                    },
+                    on: {
+                      click: () => {
+                        this.$refs['manager'].emitManagerHandler('toggle', {
+                          params: {
+                            id: params.row.id,
+                            follow: !params.row.follow
+                          }
+                        });
+                      }
                     }
-                  }
-                }, params.row.follow ? '取消关注' : '关注')
-              ])
+                  }, params.row.follow ? '取消关注' : '关注'))
+              }
+              if (!followUserId) {
+                btn.push(
+                  h('Button', {
+                    props: {
+                      type: 'warning',
+                      size: 'small'
+                    },
+                    on: {
+                      click: () => {
+                        this.$refs['manager'].emitManagerHandler('toggleBind', {
+                          params: {
+                            customerId: params.row.id,
+                            userId: userId,
+                            status: true
+                          }
+                        });
+                      }
+                    }
+                  }, '列名')
+                )
+              }
+              if (!!followUserId && followUserId == userId) {
+                btn.push(
+                  h('Button', {
+                    props: {
+                      type: 'warning',
+                      size: 'small'
+                    },
+                    on: {
+                      click: () => {
+                        this.$refs['manager'].emitManagerHandler('toggleBind', {
+                          params: {
+                            customerId: params.row.id,
+                            userId: userId,
+                            status: false
+                          }
+                        });
+                      }
+                    }
+                  }, '列名')
+              }
+              return h('div', )
             }
           }
         ]
@@ -194,7 +243,8 @@
       return {
         handlers: {
           search: list,
-          toggle: toggleFollow
+          toggle: toggleFollow,
+          toggleBind: toggleBindFollowUser
         }
       }
     }
