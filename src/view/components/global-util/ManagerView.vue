@@ -70,6 +70,11 @@
       init: {
         type: Boolean,
         default: true
+      },
+      // 单页多表格，指定search
+      search: {
+        type: String,
+        default: null
       }
     },
     data() {
@@ -179,7 +184,7 @@
         }
         const {del, search} = this.handlers;
         switch (type) {
-          case 3: handler = search; handlerData = this.getSearchData();break; // 查
+          case 3: handler = search; if(this.search) handler = this.handlers[this.search]; handlerData = this.getSearchData();break; // 查
           case 1: handler = del;handlerData = [params.id];break; // 根据id 删
           case 2: // 批量删
             handlerData = this.removeChecked();

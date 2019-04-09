@@ -19,6 +19,14 @@
         <Cascader placeholder="请选择城市" v-model="searchData.city" :data="cityList" class="w200"></Cascader>
       </SearchItem>
       <SearchItem>
+        关注状态：
+        <RadioGroup v-model="searchData.follow">
+          <Radio :label="0">全部</Radio>
+          <Radio :label="1">已关注</Radio>
+          <Radio :label="2">未关注</Radio>
+        </RadioGroup>
+      </SearchItem>
+      <SearchItem>
         <Button type="primary" @click="search">查询</Button>
       </SearchItem>
       <SearchItem>
@@ -55,7 +63,7 @@
           industry,
           folderId,
           city: JSON.stringify(city),
-          test: JSON.stringify([1,2])
+          follow: follow == 0 ? null : follow == 1,
         }
       },
     },
@@ -69,7 +77,8 @@
           name: null,
           folderId: null,
           industry: null,
-          city: []
+          city: [],
+          follow: 0
         },
         columns: [
           {
@@ -173,7 +182,8 @@
           name: null,
           folderId: null,
           industry: null,
-          city: []
+          city: [],
+          follow: 0
         }
       },
       search() {

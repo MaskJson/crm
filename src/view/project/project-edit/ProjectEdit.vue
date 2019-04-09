@@ -5,7 +5,7 @@
       <Row>
         <Col span="8">
           <FormItem label="客户" prop="customerId">
-            <Select filterable v-model="entity.customerId">
+            <Select filterable v-model="entity.customerId" @on-change="customerChange">
               <Option v-for="(item, index) of customerList" :key="'customer' + index" :value="item.id">{{ item.name }}</Option>
             </Select>
           </FormItem>
@@ -15,6 +15,17 @@
             <Select multiple v-model="entity.matches">
               <Option v-for="(item, index) of match" :key="'match' + index" :value="item.value">{{ item.label }}</Option>
             </Select>
+          </FormItem>
+        </Col>
+        <Col span="8">
+          <FormItem label="部门：" prop="department" class="relative">
+            <Input v-model="entity.department" @on-focus="focusHandler" @on-change="findDepartment" @on-blur="blurHandler"/>
+            <div class="borderB nameList" v-if="showDepartment">
+              <li class="border bgfff company-item" v-if="departmentsFilter.length == 0">暂无数据</li>
+              <li class="border bgfff company-item cursor" v-for="(department, index) of departmentsFilter" :key="'department' + index" @click="setName(department.name)">
+                {{department.name}}
+              </li>
+            </div>
           </FormItem>
         </Col>
         <Col span="8">
@@ -231,6 +242,7 @@
   import { getUserId, getProjectInfoUtil } from "../../../libs/tools";
   import { getListByTableName } from "../../../api/common";
   import { saveProject, getProjectInfo } from "../../../api/project";
+  import { getCustomerDepartments } from "../../../api/customer";
 
   export default {
     name: "ProjectEdit",
@@ -241,6 +253,7 @@
     data() {
       return {
         show: false,
+        showDepartment: false,
         customerList: [], // 客户列表
         cityList: cityList, // 城市
         industryList: industryList, // 行业
@@ -253,8 +266,11 @@
         match: matches, // 匹配条件
         qualityList: projectPass, // 保证期
         pts: [], // 兼职
+        departments: [], // 部门
+        departmentsFilter: [], // select部门过滤
         entity: {
           customerId: null, // 关联客户
+          department: null, // 部门
           name: null, // 名称
           matches: [], // 匹配条件
           amount: null, //招聘数量
@@ -297,6 +313,9 @@
           customerId: [
             { required: true, type: 'number', message: '请选择客户', trigger: 'change' }
           ],
+          department: [
+            { required: true, type: 'string', message: '请填写客户部门', trigger: 'change' }
+          ],
           priority: [
             { required: true, type: 'number', message: '请选择项目优先级', trigger: 'change' }
           ],
@@ -313,11 +332,43 @@
       }
     },
     methods: {
+      // 项目客户及部门相关
+      customerChange(id) {
+        this.departments = [];
+        getCustomerDepartments({id}).then(data => {
+          this.departments = data || [];
+        }).catch(data => {});
+      },
+      setName(department) {
+        this.entity.department = department;
+      },
+      focusHandler() {
+        this.showDepartment = true;
+        this.findDepartment();
+      },
+      blurHandler() {
+        setTimeout(() => {
+          this.showDepartment = false;
+        }, 150);
+      },
+      // 输入过滤部门
+      findDepartment() {
+        const department = (this.entity.department || '').trim();
+        if (!department) {
+          this.$set(this.departmentsFilter, this.departments);
+          this.departmentsFilter = this.departments;
+        } else {
+          this.$set(this.departmentsFilter, this.departments.filter(item => item.name.indexOf(department) > -1));
+          this.departmentsFilter = this.departments.filter(item => item.name.indexOf(department) > -1);
+        }
+      },
       selectHandle (value) {
         this.entity.industry = value;
+        this.$refs['form'].validate(valid => {});
       },
       selectHandle2 (value) {
         this.entity.aptness = value;
+        this.$refs['form'].validate(valid => {});
       },
       submit() {
         this.$refs['form'].validate(valid => {
@@ -341,6 +392,7 @@
             this.show = true;
             saveProject(entity).then(data => {
               this.show = false;
+              this.$router.push('/project/project-manage');
             }).catch(data => {this.show = false;});
           } else {
             this.$Message.error('请填写带*的必选项');
@@ -364,15 +416,46 @@
         getProjectInfo({id}).then(data => {
           this.show = false;
           this.entity = getProjectInfoUtil(data || {});
+          getCustomerDepartments({id: this.entity.customerId}).then(data => {
+            this.departments = data || [];
+          }).catch(data => {});
         }).catch(data => {
           this.show = false;
           this.$Message.error('获取项目详情失败');
         });
       }
+    },
+    mounted() {
+      document.addEventListener('click', (event) => {
+        const e = event || window.event;
+        if (e.srcElement.className.indexOf('input') < 0) {
+          setTimeout(() => {
+            this.showDepartment = false
+          }, 100);
+        }
+      });
     }
   }
 </script>
 
 <style scoped>
-
+  .company-item {
+    list-style: none;
+    border-bottom: none;
+    padding: 3px 6px;
+    font-size: 12px;
+  }
+  .company-item:hover {
+    background: #f2f2f2;
+  }
+  .nameList {
+    position: absolute;
+    left: 0;
+    top: 35px;
+    width: 300px;
+    border-radius: 4px;
+    overflow: hidden;
+    z-index: 10;
+    border: solid 1px #9ea7b4 !important;
+  }
 </style>

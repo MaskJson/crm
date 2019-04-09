@@ -23,6 +23,14 @@
         <Input placeholder="行业" class="w200" v-model="searchData.name"/>
       </SearchItem>
       <SearchItem>
+        关注状态：
+        <RadioGroup v-model="searchData.follow">
+          <Radio :label="0">全部</Radio>
+          <Radio :label="1">已关注</Radio>
+          <Radio :label="2">未关注</Radio>
+        </RadioGroup>
+      </SearchItem>
+      <SearchItem>
         <Button type="primary" @click="search">查询</Button>
       </SearchItem>
       <SearchItem>
@@ -63,7 +71,8 @@
           customerId: null,
           teamId: null,
           city: [],
-          industry: ''
+          industry: '',
+          follow: 0
         },
         columns: [
           {
@@ -145,13 +154,14 @@
     },
     computed: {
       searchParams() {
-        const { folderId, customerId, teamId, city, industry } = this.searchData;
+        const { folderId, customerId, teamId, city, industry, follow } = this.searchData;
         return {
           folderId,
           customerId,
           teamId,
           city: city.length ? JSON.stringify(city) : null,
-          industry: industry.trim()
+          industry: industry.trim(),
+          follow: follow == 0 ? null : follow == 1
         }
       }
     },
@@ -165,7 +175,8 @@
           customerId: null,
           teamId: null,
           city: [],
-          industry: ''
+          industry: '',
+          follow: 0
         }
       },
       search() {

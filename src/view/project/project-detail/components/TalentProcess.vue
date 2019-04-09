@@ -33,7 +33,7 @@
     props: ['userList'],
     data () {
       // 获取操作选项
-      function renderAction(h, projectTalentId) {
+      function renderAction(h, projectTalentId, type) {
         let action = [];
         // 添加选项
         const getAction = (text, status, actionType) => {
@@ -57,7 +57,7 @@
         };
         switch (this.status) {
           case '0':
-            getAction('推荐给客户', '1', 1);
+            type != 100 ? getAction('推荐给客户', '0', 100) : action.push(h('span', {class: {'cl-error': true}}, '等待项目总监审核'));
             break;
           case '1':
             getAction('通知人才面试','1', 2);
@@ -161,7 +161,7 @@
             align: 'center',
             width: 200,
             render: (h, params) => {
-              return renderAction.call(this, h, params.row.id);
+              return renderAction.call(this, h, params.row.id, params.row.type);
             }
           }
         ],

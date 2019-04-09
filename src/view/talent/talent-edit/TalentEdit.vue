@@ -132,7 +132,7 @@
                   <div class="inline-block w240">
                     <FormItem label="部门" class="mt-10 myItem left80" prop="department" style="margin-bottom: 20px;">
                       <Input v-model="entity.experienceList[index].department" :disabled="!entity.experienceList[index].company" placeholder="请输入部门" @on-focus="showList(index, 0, false)" @on-blur="" @on-change="findCustomerByName(index, 0, false)" class="w200" style="width: 180px;" />
-                      <div class="borderB nameList" style="width: 240px; z-index: 99999999;" v-if="item.showList2 && actionIndex == index && actionType === false">
+                      <div class="borderB nameList" style="width: 180px; z-index: 99999999;" v-if="item.showList2 && actionIndex == index && actionType === false">
                         <li class="border bgfff company-item" v-if="departments && departments.length == 0">暂无数据</li>
                         <li class="border bgfff company-item cursor" v-for="(department, index2) of departments" :key="'department1' + index2" @click="setName2(department.name, index, 0)">
                           {{ department.name }}
@@ -205,7 +205,7 @@
                 </FormItem>
                 <FormItem label="公司名称" class="mT10 myItem left80" prop="company" style="margin-bottom: 20px;">
                   <Input v-model="friends[index].company" placeholder="请输入公司名称" @on-focus="showList(index, 1, true)" @on-blur="" @on-change="findCustomerByName(index, 1, true)" class="w300" />
-                  <div class="borderB nameList" v-if="item.showList && actionFriendIndex == index && actionType === true">
+                  <div class="borderB nameList" style="width: 300px;" v-if="item.showList && actionFriendIndex == index && actionType === true">
                     <li class="border bgfff company-item" v-if="customers && customers.length == 0">暂无数据</li>
                     <li class="border bgfff company-item cursor" v-for="(customer, index2) of customers" :key="'customer2' + index2" @click="setName(customer.name, index, 1)">
                       {{customer.name}}
@@ -240,7 +240,7 @@
               <Form :model="item" :rules="chanceRule" :label-width="80" :ref="'chance' + index">
                 <FormItem label="公司名称" class="mt-10 myItem left80" prop="company" style="margin-bottom: 20px;">
                   <Input v-model="chances[index].company" placeholder="请输入公司名称" @on-focus="showList(index, 2, true)" @on-blur="" @on-change="findCustomerByName(index, 2, true)" class="w300" />
-                  <div class="borderB nameList" v-if="item.showList && actionChanceIndex == index && actionType === true">
+                  <div class="borderB nameList" style="width: 300px;" v-if="item.showList && actionChanceIndex == index && actionType === true">
                     <li class="border bgfff company-item" v-if="customers && customers.length == 0">暂无数据</li>
                     <li class="border bgfff company-item cursor" v-for="(customer, index2) of customers" :key="'customer' + index2" @click="setName(customer.name, index, 2)">
                       {{ customer.name }}
@@ -263,7 +263,7 @@
           <Option v-for="(item, index) of talentStatus" :key="'status' + index" :value="item.value">{{ item.label }}</Option>
         </Select>
       </FormItem>
-      <FormItem label="关联项目" v-if="entity.status == 10 && !entity.id && !projectId">
+      <FormItem label="关联项目" v-if="entity.status == 10 && !projectId">
         <Select v-model="entity.projectId">
           <Option v-for="(item, index) of projectList" :key="'project' + index" :value="item.projectId">{{ item.name }}</Option>
         </Select>
@@ -313,14 +313,14 @@
       <FormItem label="下次联系时间" prop="remindTime" >
         <DatePicker type="datetime" placeholder="日期" v-model="remind.nextRemindTime"></DatePicker>
       </FormItem>
-      <FormItem label="提醒对象" prop="adviserList">
+      <FormItem label="提醒对象" prop="adviserId">
         <Select v-model="remind.adviserId" placeholder="请选择">
           <Option v-for="(user, index) of teamUserList" :value="user.id" :key="'user'+index">{{user.name}}</Option>
         </Select>
       </FormItem>
     </Form>
     <div class="center mt-10">
-      <Button type="primary" class="w120" :disabled="checkPhoneStatus || phoneError" @click="checkSubmit">提交</Button>
+      <Button type="primary" class="w120" :disabled="checkPhoneStatus || phoneError || (!!entity.followUserId && entity.followUserId != userId)" @click="checkSubmit">提交</Button>
     </div>
     <SpinUtil :show="show"/>
   </Card>
@@ -344,6 +344,7 @@
     },
     data() {
       return {
+        userId: null,
         projectId: null, // 添加项目人才
         phoneError: false,
         show: false,
@@ -373,6 +374,7 @@
           header: null,
           name: null,
           sex: 0,
+          type: 0,
           city: [],
           country: null,
           birthday: null,
@@ -693,6 +695,10 @@
             flag = false
           }
         });
+        if (entity.type && (entity.sex == null || !entity.phone || !entity.position)) {
+          this.$Message.warning("专属人才必须完善性别、手机号、意向职位等信息");
+          return false;
+        }
         this.entity.experienceList.forEach((item, index) => {
           this.$refs['itemForm' + index][0].validate((valid) => {
             if (!valid) {
@@ -737,6 +743,7 @@
         entity.intentionCity = JSON.stringify(entity.intentionCity);
         entity.friends = this.friends;
         entity.chances = this.chances;
+        entity.actionUserId = getUserId();
         if (!entity.id && entity.status != 10) {
           this.remind.status = entity.status;
           this.remind.createUserId = getUserId();
@@ -750,6 +757,7 @@
         }).catch(data => { this.show = false; })
       },
       init(id) {
+        this.show = true;
         getDetail({ id }).then(data => {
           this.show = false;
           const entity = getTalentInfoUtil(data);
@@ -799,6 +807,7 @@
       });
     },
     created() {
+      this.userId = getUserId();
       const query = this.$route.query || {};
       const {id, projectId} = query;
       if (projectId) {

@@ -19,6 +19,14 @@
         </Select>
       </SearchItem>
       <SearchItem>
+        关注状态：
+        <RadioGroup v-model="searchData.follow">
+          <Radio :label="0">全部</Radio>
+          <Radio :label="1">已关注</Radio>
+          <Radio :label="2">未关注</Radio>
+        </RadioGroup>
+      </SearchItem>
+      <SearchItem>
         <Button type="primary" @click="search">查询</Button>
       </SearchItem>
       <SearchItem>
@@ -36,8 +44,8 @@
 </template>
 
 <script>
-  import { jsonArray, getCity, globalSearch, getStatusRender } from "../../../libs/tools";
-  import { list, toggleFollow } from "../../../api/talent";
+  import { jsonArray, getCity, globalSearch, getStatusRender, getUserId } from "../../../libs/tools";
+  import { list, toggleFollow, toggleType } from "../../../api/talent";
   import cityList from '../../../libs/cityList';
   import FavoriteSetting from '../../components/favorite-setting';
   import talentLogo from '@/assets/images/talent.png'
@@ -56,11 +64,13 @@
           industry,
           folderId,
           city: city.length ? JSON.stringify(city) : null,
+          follow: follow == 0 ? null : follow == 1
         }
       },
     },
     data() {
       return {
+        userId: null,
         showFavoriteSetting: false,
         cityList: cityList,
         folders: [],
@@ -69,7 +79,8 @@
           name: null,
           folderId: null,
           industry: null,
-          city: []
+          city: [],
+          follow: 0
         },
         columns: [
           {
@@ -133,9 +144,10 @@
           {
             title: '操作',
             align: 'center',
-            width: 200,
+            width: 300,
             render: (h, params) => {
-              return h('div', [
+              const { followUserId } = params.row;
+              const btn = [
                 h('Button', {
                   class: {
                     'mr-5': true
@@ -149,37 +161,87 @@
                     }
                   }
                 }, '查看详情'),
-                h('Button', {
-                  class: {
-                    'mr-5': true
-                  },
-                  props: {
-                    type: 'primary',
-                    size: 'small'
-                  },
-                  on: {
-                    click: () => {
-                      this.$router.push({ path: '/talent/talent-edit', query: {id: params.row.id}});
+              ];
+              if (!followUserId || followUserId == this.userId) {
+                btn.push(
+                  h('Button', {
+                    class: {
+                      'mr-5': true
+                    },
+                    props: {
+                      type: 'primary',
+                      size: 'small'
+                    },
+                    on: {
+                      click: () => {
+                        this.$router.push({ path: '/talent/talent-edit', query: {id: params.row.id}});
+                      }
                     }
-                  }
-                }, '编辑'),
-                h('Button', {
-                  props: {
-                    type: 'warning',
-                    size: 'small'
-                  },
-                  on: {
-                    click: () => {
-                      this.$refs['manager'].emitManagerHandler('toggle', {
-                        params: {
-                          id: params.row.id,
-                          follow: !params.row.follow
-                        }
-                      });
+                  }, '编辑'),
+                  h('Button', {
+                    class: {
+                      'mr-5': true
+                    },
+                    props: {
+                      type: 'warning',
+                      size: 'small'
+                    },
+                    on: {
+                      click: () => {
+                        this.$refs['manager'].emitManagerHandler('toggle', {
+                          params: {
+                            id: params.row.id,
+                            follow: !params.row.follow
+                          }
+                        });
+                      }
                     }
-                  }
-                }, params.row.follow ? '取消关注' : '关注')
-              ])
+                  }, params.row.follow ? '取消关注' : '关注'),
+                )
+              }
+              if (!followUserId) {
+                btn.push(
+                  h('Button', {
+                    props: {
+                      type: 'warning',
+                      size: 'small'
+                    },
+                    on: {
+                      click: () => {
+                        this.$refs['manager'].emitManagerHandler('toggleType', {
+                          params: {
+                            id: params.row.id,
+                            userId: this.userId,
+                            flag: true
+                          }
+                        });
+                      }
+                    }
+                  }, '设为专属')
+                )
+              }
+              if (followUserId == this.userId) {
+                btn.push(
+                  h('Button', {
+                    props: {
+                      type: 'warning',
+                      size: 'small'
+                    },
+                    on: {
+                      click: () => {
+                        this.$refs['manager'].emitManagerHandler('toggleType', {
+                          params: {
+                            id: params.row.id,
+                            userId: this.userId,
+                            flag: false
+                          }
+                        });
+                      }
+                    }
+                  }, '取消专属')
+                )
+              }
+              return h('div', btn);
             }
           }
         ]
@@ -195,7 +257,8 @@
           name: null,
           folderId: null,
           industry: null,
-          city: []
+          city: [],
+          follow: 0
         }
       },
       search() {
@@ -206,9 +269,13 @@
       return {
         handlers: {
           search: list,
-          toggle: toggleFollow
+          toggle: toggleFollow,
+          toggleType: toggleType
         }
       }
+    },
+    created() {
+      this.userId = getUserId();
     }
   }
 </script>

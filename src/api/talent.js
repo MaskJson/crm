@@ -38,3 +38,8 @@ export const getAllRemind = (params) => {
 export const addRemind = (params) => {
   return postJson('/talent/remind-add', params);
 };
+
+// 专属人才变动
+export const toggleType = (params) => {
+  return postRequest('/talent/toggleType', params);
+};

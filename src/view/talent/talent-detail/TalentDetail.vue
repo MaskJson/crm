@@ -5,9 +5,9 @@
         <h2>{{entity.name}}</h2>
       </Col>
       <Col span="12" class="t-right">
-        <Button type="primary" icon="md-star" :disabled="!entity.id" @click="toggleFollow">{{entity.follow ? '取消关注' : '关注客户'}}</Button>
-        <Button type="primary" class="ml-10" v-if="!entity.projectCount" :disabled="!entity.id || entity.type" @click="toggleBind('remind')">添加跟踪摘要</Button>
-        <Button type="primary" class="ml-10" :disabled="!entity.id" @click="toggleBind('bind')">加入到收藏夹</Button>
+        <Button type="primary" icon="md-star" :disabled="!entity.id || (entity.followUserId && entity.followUserId != userId)" @click="toggleFollow">{{entity.follow ? '取消关注' : '关注客户'}}</Button>
+        <Button type="primary" class="ml-10" v-if="!entity.projectCount" :disabled="!entity.id || entity.projectCount || (entity.followUserId && entity.followUserId != userId)" @click="toggleBind('remind')">添加跟踪摘要</Button>
+        <Button type="primary" class="ml-10" :disabled="!entity.id || (entity.followUserId && entity.followUserId != userId)" @click="toggleBind('bind')">加入到收藏夹</Button>
       </Col>
     </Row>
     <Row>
@@ -170,6 +170,7 @@
     },
     data() {
       return {
+        userId: null,
         entity: {
 
         },
@@ -309,6 +310,7 @@
       }
     },
     created() {
+      this.userId = getUserId();
       const id = Number((this.$route.query || {}).id);
       if (id) {
         this.init(id);
