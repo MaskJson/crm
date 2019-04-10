@@ -4,8 +4,8 @@
       <SearchItem>
         <Select placeholder="请选择跟踪类型" v-model="searchData.type" class="w200" clearable>
           <Option :value="1">电话沟通</Option>
-          <Option :value="2">顾问面试（内）</Option>
-          <Option :value="3">顾问面试（外）</Option>
+          <Option :value="2">拜访客户</Option>
+          <Option :value="3">客户上门</Option>
         </Select>
       </SearchItem>
       <SearchItem>
