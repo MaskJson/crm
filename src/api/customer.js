@@ -80,4 +80,9 @@ export const removeCustomerContact = (params) => {
   return postJson('/customer/contact/del', params);
 };
 
+// 结束跟进
+export const finishRemind = (params) => {
+  return postJson('/customer/finish-remind', params);
+};
+
 

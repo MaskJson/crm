@@ -36,7 +36,7 @@
         <Button type="primary" @click="showFavoriteSetting = true">客户收藏夹管理</Button>
       </SearchItem>
     </div>
-    <ManagerView ref="manager" :del="false" :save="{save: true}" route="/talent/talent-edit" :columns="columns" :searchData="searchParams"/>
+    <ManagerView class="talent-manager" ref="manager" :del="false" :save="{save: true}" route="/talent/talent-edit" :columns="columns" :searchData="searchParams"/>
     <Drawer :width="360" title="客户收藏夹管理" :closable="false" v-model="showFavoriteSetting">
       <favorite-setting :type="2" @on-change="setFolders"/>
     </Drawer>
@@ -90,8 +90,15 @@
           },
           {
             title: '姓名',
+            key: 'name',
             align: 'center',
-            key: 'name'
+            render: (h, params) => {
+              return h('div', {
+                class: {
+                  talent: params.row.followUserId
+                }
+              }, params.row.name)
+            }
           },
           {
             title: '职能',
@@ -116,7 +123,7 @@
             align: 'center',
             key: 'city',
             render: (h, params) => {
-              return getCity(h, params.city);
+              return getCity(h, params.row.city);
             }
           },
           {

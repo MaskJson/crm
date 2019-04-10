@@ -177,7 +177,7 @@
       },
       // emitManagerHandler, 响应事件触发
       emitManagerHandler(type, data) {
-        let [handler, handlerData, isAsync, unFresh, params, isBatch] = [null, null, data.isAsync, data.unFresh, data.params || {}, data.isBatch]; // 方法、是否异步、参数、是否批量操作
+        let [handler, handlerData, isAsync, unFresh, params, isBatch] = [null, null, data.isAsync, data.unFresh, data.params || {}, data.isBatch]; // 方法、是否同步、参数、是否批量操作
         if (isBatch && this.removeChecked().length == 0 || type == 2 && this.removeChecked().length == 0) {
           this.$Message.warning('请选择操作项');
           return;

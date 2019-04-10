@@ -87,10 +87,10 @@
           type: 0, // 类型
           city: [], // 所在城市
           industry: [], // 行业
-          phone: null, // 手机
+          phone: '', // 手机
           website: null, // 网址
           scale: null, // 规模
-          email: null, // 邮箱
+          email: '', // 邮箱
           welfare: null, // 福利
           description: null, // 简介
           contractUrl: null, // 合同

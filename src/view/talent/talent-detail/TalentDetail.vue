@@ -86,7 +86,6 @@
     </ModalUtil>
     <!--  添加跟踪记录 -->
     <ModalUtil ref="remind" title="添加跟踪记录" @reset="resetRemind" @on-ok="addRemind" :loading="show">
-      <!--  添加跟踪记录 -->
       <Form ref="addRemind" :model="remind" :rules="remindRule" :label-width="120">
         <FormItem label="本次跟踪类别" prop="type">
           <Select v-model="remind.type">
@@ -95,25 +94,25 @@
             <Option :value="3">顾问面试（外）</Option>
           </Select>
         </FormItem>
-        <FormItem label="沟通记录" v-if="remind.type == 1">
+        <FormItem label="沟通记录" v-if="remind.type == 1" class="ivu-form-item-required">
           <Input type="textarea" :rows="3" v-model="remind.remark"/>
         </FormItem>
         <div v-if="remind.type == 2">
-          <FormItem label="候选人基本情况">
+          <FormItem label="候选人基本情况" class="ivu-form-item-required">
             <Input type="textarea" :rows="3" v-model="remind.situation"/>
           </FormItem>
-          <FormItem label="求职方向不离职原因">
+          <FormItem label="求职方向不离职原因" class="ivu-form-item-required">
             <Input type="textarea" :rows="3" v-model="remind.cause"/>
           </FormItem>
-          <FormItem label="薪资架构">
+          <FormItem label="薪资架构" class="ivu-form-item-required">
             <Input v-model="remind.salary"/>
           </FormItem>
         </div>
         <div v-if="remind.type == 3">
-          <FormItem label="面试时间" prop="meetTime">
+          <FormItem label="面试时间" prop="meetTime" class="ivu-form-item-required">
             <DatePicker type="datetime" placeholder="日期" v-model="remind.meetTime"></DatePicker>
           </FormItem>
-          <FormItem label="面试地点" prop="meetAddress" v-if="[2,3].indexOf(remind.type) > -1">
+          <FormItem label="面试地点" prop="meetAddress" v-if="[2,3].indexOf(remind.type) > -1" class="ivu-form-item-required">
             <Input v-model="remind.meetAddress"/>
           </FormItem>
         </div>
@@ -184,6 +183,7 @@
         },
         talentStatus: talentStatus,
         show: false,
+        showFavoriteSetting: false,
         folderList: [],
         teamUserList: [],
         folderId: null,
@@ -271,7 +271,7 @@
         }).then(data => {
           this.show = false;
           this.init(this.entity.id);
-        }).catch(data => {});
+        }).catch(data => {this.show = false;});
       },
       bindFolder() {
         if (this.folderId) {

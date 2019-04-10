@@ -297,6 +297,9 @@ export const getPageList = (page, data, pageSize) => {
 }
 
 function getJsonArray (data) {
+  if ( !data || data.toString().toUpperCase() == "NULL") {
+    return [];
+  }
   try {
     data = JSON.parse(data)
   } catch (e) {

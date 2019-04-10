@@ -43,3 +43,8 @@ export const addRemind = (params) => {
 export const toggleType = (params) => {
   return postRequest('/talent/toggleType', params);
 };
+
+// 批量结束跟进
+export const finishRemind = (params) => {
+  return postJson('/talent/remind/finish', params);
+};

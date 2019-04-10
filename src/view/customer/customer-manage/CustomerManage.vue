@@ -44,7 +44,7 @@
 </template>
 
 <script>
-  import { jsonArray, getCity, globalSearch, getUserId } from "../../../libs/tools";
+  import { jsonArray, getCity, globalSearch, getUserId, getCustomerType } from "../../../libs/tools";
   import { list, toggleFollow, toggleBindFollowUser } from "../../../api/customer";
   import cityList from '../../../libs/cityList';
   import FavoriteSetting from '../../components/favorite-setting';
@@ -91,7 +91,7 @@
             align: 'center',
             key: 'city',
             render: (h, params) => {
-              return getCity(h, params.city);
+              return getCity(h, params.row.city);
             }
           },
           {
@@ -120,10 +120,10 @@
           {
             title: '操作',
             align: 'center',
-            width: 200,
+            width: 240,
             render: (h, params) => {
               const userId = getUserId();
-              const {followUserId, type} = params.row.followUserId;
+              const {followUserId, type} = params.row;
               const btn = [
                 h('Button', {
                   class: {
@@ -214,8 +214,9 @@
                       }
                     }
                   }, '列名')
+                )
               }
-              return h('div', )
+              return h('div', btn)
             }
           }
         ]

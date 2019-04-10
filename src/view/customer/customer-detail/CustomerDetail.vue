@@ -81,7 +81,7 @@
       </Form>
     </ModalUtil>
     <!--  添加跟踪  -->
-    <ModalUtil ref="remind" title="添加客户跟踪" @reset="resetRemind" @on-ok="addRemind">
+    <ModalUtil ref="remind" title="添加客户跟踪" @reset="resetRemind" :loading="show" @on-ok="addRemind">
       <Form ref="addRemind" :model="remind" :rules="remindRule" :label-width="100" >
         <FormItem label="本次跟踪类别" prop="type">
           <Select v-model="remind.type" placeholder="请选择">
@@ -150,7 +150,7 @@
         return (v || []).join('、');
       },
       typeFilter(v) {
-        return v == 1 ? '电话沟通' : v == 2 ? '客户上门' : '拜访客户';
+        return v == 1 ? '电话沟通' : v == 3 ? '客户上门' : '拜访客户';
       },
       customerTypeFilter(v) {
         return getCustomerType(false, v);
@@ -258,18 +258,21 @@
               this.$Message.warning('电话沟通和面谈必须填写沟通记录');
               return false;
             }
-            if (remind.type == '2' && (!remind.meetTime || !remind.meetAddress || !remind.meetNotice)) {
+            if (remind.type == 2 && (!remind.meetTime || !remind.meetAddress || !remind.meetNotice)) {
               this.$Message.warning('拜访客户必须填拜访信息');
               return false;
             }
-            if ((remind.nextRemindTime && remind.nextType) || (!remind.nextRemindTime && !remind.nextType)) {
+            if ((remind.nextRemindTime || remind.nextType) && (!remind.nextRemindTime || !remind.nextType)) {
               this.$Message.warning('设置下次跟踪，类别和时间需填写完整');
               return false;
             }
-            remind.createUerId = getUserId();
+            remind.createUserId = getUserId();
             remind.customerId = this.entity.id;
+            this.show = true;
             addRemind(remind).then(data => {
               this.show = false;
+              toggleShow(this, 'remind');
+              this.getRemindList(this.entity.id);
             }).catch(data => {this.show = false;})
           }
         });
@@ -343,6 +346,9 @@
             this.filterTalentGroup(data || []);
           }).catch(data => {});
         }).catch(data => { this.show = false; });
+        this.getRemindList(id);
+      },
+      getRemindList(id) {
         remindList({id}).then(data => {
           this.remindList = data || [];
         }).catch(data => {});

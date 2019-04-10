@@ -695,7 +695,7 @@
             flag = false
           }
         });
-        if (entity.type && (entity.sex == null || !entity.phone || !entity.position)) {
+        if (this.entity.type && (this.entity.sex == null || !this.entity.phone || !this.entity.position)) {
           this.$Message.warning("专属人才必须完善性别、手机号、意向职位等信息");
           return false;
         }
@@ -744,7 +744,7 @@
         entity.friends = this.friends;
         entity.chances = this.chances;
         entity.actionUserId = getUserId();
-        if (!entity.id && entity.status != 10) {
+        if (!entity.id && entity.status != 10 && this.remind.type) {
           this.remind.status = entity.status;
           this.remind.createUserId = getUserId();
           entity.remind = this.remind;
