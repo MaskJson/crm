@@ -50,23 +50,9 @@
           </div>
         </TabPane>
         <TabPane label="项目经历">
-          <div v-if="talentProject.length > 0">
-            <div class="bgf5 mB15 pd10" v-for="project of talentProject">
-              <p>
-                <span class="mR20">项目ID：{{project.id}},</span>
-                <span class="mR20">项目名称：{{project.name}}</span>
-              </p>
-              <p>
-                <span class="mR20">项目经理：{{project.supervisionName}},</span>
-                <span class="mR20">客户名称：{{project.customerName}}</span>
-              </p>
-              <p>
-                <span class="mR20">创建时间：{{getDateTime(project.createTime)}},</span>
-                <span class="mR20">状态：{{project.status | projectStatusFilter}}</span>
-              </p>
-            </div>
+          <div class="bgf5 mB15 pd10">
+            <Table :data="projectList" :columns="projectColumns" border></Table>
           </div>
-          <div v-else class="pd100 center">暂无加入项目</div>
         </TabPane>
       </Tabs>
     </Row>
@@ -132,11 +118,11 @@
         <FormItem label="下次联系时间" prop="remindTime" >
           <DatePicker type="datetime" placeholder="日期" v-model="remind.nextRemindTime"></DatePicker>
         </FormItem>
-        <FormItem label="提醒对象" prop="adviserList">
-          <Select v-model="remind.adviserId" placeholder="请选择">
-            <Option v-for="(user, index) of teamUserList" :value="user.id" :key="'user'+index">{{user.name}}</Option>
-          </Select>
-        </FormItem>
+        <!--<FormItem label="提醒对象" prop="adviserId">-->
+          <!--<Select v-model="remind.adviserId" placeholder="请选择">-->
+            <!--<Option v-for="(user, index) of teamUserList" :value="user.id" :key="'user'+index">{{user.name}}</Option>-->
+          <!--</Select>-->
+        <!--</FormItem>-->
       </Form>
     </ModalUtil>
     <Drawer :width="360" title="客户收藏夹管理" :closable="false" v-model="showFavoriteSetting">
@@ -146,8 +132,8 @@
 </template>
 
 <script>
-  import { getTalentInfoUtil, getProjectStatus, getDateTime, getStatusRender, toggleShow, getUserId } from "../../../libs/tools";
-  import { getDetail, toggleFollow, getAllRemind, addRemind, toggleType } from "../../../api/talent";
+  import { getTalentInfoUtil, getProjectStatus, getDateTime, getStatusRender, toggleShow, getUserId, getProjectTalentStatus } from "../../../libs/tools";
+  import { getDetail, toggleFollow, getAllRemind, addRemind, toggleType, getTalentProjects } from "../../../api/talent";
   import { talentStatus } from "../../../libs/constant";
   import Detail from './components/detail';
   import { bindFolder } from "../../../api/folder";
@@ -188,7 +174,8 @@
         teamUserList: [],
         folderId: null,
         talentProject: [],
-        remindList: [],
+        remindList: [], // 跟踪记录
+        projectList: [],// 项目经历
         remind: { // 添加提醒条件
           type: null, // 本次跟踪类别
           status: null, // 人才状态
@@ -211,7 +198,45 @@
           status: [
             { required: true, type: 'number', message: '请选择状态', trigger: 'change' }
           ],
-        }
+        },
+        projectColumns: [
+          {
+            title: '项目id',
+            key: 'id',
+            align: 'center'
+          },
+          {
+            title: '项目名称',
+            key: 'projectName',
+            align: 'center'
+          },
+          {
+            title: '所属客户名称',
+            key: 'customerName',
+            align: 'center'
+          },
+          {
+            title: '部门',
+            key: 'departmentName',
+            align: 'center'
+          },
+          {
+            title: '当前状态',
+            key: 'status',
+            align: 'center',
+            render: (h, params) => {
+              return getProjectTalentStatus(h, params.row.status);
+            }
+          },
+          {
+            title: '最后跟进时间',
+            key: 'updateTime',
+            align: 'center',
+            render: (h, params) => {
+              return h('span', getDateTime(params.row.updateTime));
+            }
+          },
+        ]
       }
     },
     methods: {
@@ -324,6 +349,12 @@
           }
         })
       },
+      // 获取项目经历
+      getProjectList(id) {
+        getTalentProjects({id}).then(data => {
+          this.projectList = data || [];
+        }).catch(data => {});
+      },
       downloadFile() {
 
       }
@@ -333,6 +364,7 @@
       const id = Number((this.$route.query || {}).id);
       if (id) {
         this.init(id);
+        this.getProjectList(id);
       }
     }
   }

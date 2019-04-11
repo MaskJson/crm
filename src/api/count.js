@@ -18,3 +18,13 @@ export const customerPendingList = (params) => {
 export const talentMap = (params) => {
   return getRequest('/count/talent/map', params);
 };
+
+// 获取各个状态的人才
+export const statusTalent = (params) => {
+  return getRequest('/count/talent/map/status', params);
+};
+
+// 获取收藏的人才
+export const folderTalent = (params) => {
+  return getRequest('/count/talent/map/folder', params);
+};

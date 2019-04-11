@@ -5,12 +5,12 @@
         <h2>{{entity.name}}</h2>
       </Col>
       <Col span="12" class="t-right">
-        <Button type="primary" class="ml-10" icon="md-star" :disabled="!entity.id" @click="toggleFollow">{{entity.follow ? '取消关注' : '关注项目'}}</Button>
+        <Button type="primary" class="ml-10" icon="md-star" v-if="entity.createUerId == userId" :disabled="!entity.id" @click="toggleFollow">{{entity.follow ? '取消关注' : '关注项目'}}</Button>
         <Button type="primary" class="ml-10" :disabled="!entity.id" @click="toggleBind('talent')">关联项目候选人</Button>
-        <Button type="primary" class="ml-10" :disabled="!entity.id" @click="toggleBind('bind')">加入到收藏夹</Button>
-        <Button type="primary" class="ml-10" :disabled="!entity.id" @click="newProjectTalent">新建项目候选人</Button>
+        <Button type="primary" class="ml-10" :disabled="!entity.id" v-if="entity.createUerId == userId" @click="toggleBind('bind')">加入到收藏夹</Button>
+        <Button type="primary" class="ml-10" v-if="roleId != 8" :disabled="!entity.id" @click="newProjectTalent">新建项目候选人</Button>
         <Button type="primary" class="ml-10" v-if="roleId == 2" :disabled="!entity.id" @click="toggleBind('choose')">新增项目诊断报告</Button>
-        <Button type="primary" @click="showFavoriteSetting = true" class="ml-10">项目收藏夹管理</Button>
+        <Button type="primary" v-if="entity.createUerId == userId" @click="showFavoriteSetting = true" class="ml-10">项目收藏夹管理</Button>
       </Col>
     </Row>
     <Row class="mt-20">
@@ -137,7 +137,9 @@
     data() {
       return {
         show: false,
+        showFavoriteSetting: false,
         roleId: null,
+        userId: null,
         selectLoading: false,
         folderId: null, // 绑定收藏夹id
         talentId: null, // 关联的人才id
@@ -298,6 +300,7 @@
     },
     created() {
       this.getAllProjectTalent();
+      this.userId = getUserId();
       this.roleId = getUserInfoByKey('roleId');
     }
   }

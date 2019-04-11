@@ -313,11 +313,11 @@
       <FormItem label="下次联系时间" prop="remindTime" >
         <DatePicker type="datetime" placeholder="日期" v-model="remind.nextRemindTime"></DatePicker>
       </FormItem>
-      <FormItem label="提醒对象" prop="adviserId">
-        <Select v-model="remind.adviserId" placeholder="请选择">
-          <Option v-for="(user, index) of teamUserList" :value="user.id" :key="'user'+index">{{user.name}}</Option>
-        </Select>
-      </FormItem>
+      <!--<FormItem label="提醒对象" prop="adviserId">-->
+        <!--<Select v-model="remind.adviserId" placeholder="请选择">-->
+          <!--<Option v-for="(user, index) of teamUserList" :value="user.id" :key="'user'+index">{{user.name}}</Option>-->
+        <!--</Select>-->
+      <!--</FormItem>-->
     </Form>
     <div class="center mt-10">
       <Button type="primary" class="w120" :disabled="checkPhoneStatus || phoneError || (!!entity.followUserId && entity.followUserId != userId)" @click="checkSubmit">提交</Button>

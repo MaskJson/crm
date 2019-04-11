@@ -37,10 +37,10 @@
         <Button type="primary" @click="resetSearch">重置查询条件</Button>
       </SearchItem>
       <SearchItem>
-        <Button type="primary" @click="showFavoriteSetting = true">客户收藏夹管理</Button>
+        <Button type="primary" v-if="roleId == 3" @click="showFavoriteSetting = true">项目收藏夹管理</Button>
       </SearchItem>
     </div>
-    <ManagerView ref="manager" :del="false" :save="{save: true}" route="/talent/talent-edit" :columns="columns" :searchData="searchParams" />
+    <ManagerView ref="manager" :del="false" :save="{save: roleId == 3}" route="/talent/talent-edit" :columns="columns" :searchData="searchParams" />
     <Drawer :width="360" title="项目收藏夹管理" :closable="false" v-model="showFavoriteSetting">
       <favorite-setting :type="3" @on-change="setFolders"/>
     </Drawer>
@@ -48,7 +48,7 @@
 </template>
 
 <script>
-  import { globalSearch, getDateTime } from "../../../libs/tools";
+  import { globalSearch, getDateTime, getUserInfoByKey, getUserId } from "../../../libs/tools";
   import { getListByTableName } from "../../../api/common";
   import { projectList, toggleFollow } from "../../../api/project";
   import cityList from '../../../libs/cityList';
@@ -61,6 +61,7 @@
     },
     data() {
       return {
+        roleId: null, // 角色id
         showFavoriteSetting: false,
         cityList: cityList,
         folders: [],
@@ -72,7 +73,7 @@
           teamId: null,
           city: [],
           industry: '',
-          follow: 0
+          follow: 0,
         },
         columns: [
           {
@@ -102,7 +103,7 @@
             align: 'center',
             width: 200,
             render: (h, params) => {
-              return h('div', [
+              const btn = [
                 h('Button', {
                   class: {
                     'mr-5': true
@@ -116,37 +117,43 @@
                     }
                   }
                 }, '查看详情'),
-                h('Button', {
-                  class: {
-                    'mr-5': true
-                  },
-                  props: {
-                    type: 'primary',
-                    size: 'small'
-                  },
-                  on: {
-                    click: () => {
-                      this.$router.push({ path: '/project/project-edit', query: {id: params.row.id}});
+              ];
+              const userId = getUserId;
+              if (params.row.createUserId == userId) {
+                btn.push(
+                  h('Button', {
+                    class: {
+                      'mr-5': true
+                    },
+                    props: {
+                      type: 'primary',
+                      size: 'small',
+                    },
+                    on: {
+                      click: () => {
+                        this.$router.push({ path: '/project/project-edit', query: {id: params.row.id}});
+                      }
                     }
-                  }
-                }, '编辑'),
-                h('Button', {
-                  props: {
-                    type: 'warning',
-                    size: 'small'
-                  },
-                  on: {
-                    click: () => {
-                      this.$refs['manager'].emitManagerHandler('toggle', {
-                        params: {
-                          id: params.row.id,
-                          follow: !params.row.follow
-                        }
-                      });
+                  }, '编辑'),
+                  h('Button', {
+                    props: {
+                      type: 'warning',
+                      size: 'small'
+                    },
+                    on: {
+                      click: () => {
+                        this.$refs['manager'].emitManagerHandler('toggle', {
+                          params: {
+                            id: params.row.id,
+                            follow: !params.row.follow
+                          }
+                        });
+                      }
                     }
-                  }
-                }, params.row.follow ? '取消关注' : '关注')
-              ])
+                  }, params.row.follow ? '取消关注' : '关注')
+                )
+              }
+              return h('div', btn);
             }
           }
         ]
@@ -161,7 +168,8 @@
           teamId,
           city: city.length ? JSON.stringify(city) : null,
           industry: industry.trim(),
-          follow: follow == 0 ? null : follow == 1
+          follow: follow == 0 ? null : follow == 1,
+          userId: getUserId()
         }
       }
     },
@@ -184,6 +192,7 @@
       }
     },
     created() {
+      this.roleId = getUserInfoByKey('roleId');
       getListByTableName({ type: 1 }).then(data => {
         this.customerList = data || [];
       }).catch(data => {});

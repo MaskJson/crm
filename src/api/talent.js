@@ -48,3 +48,8 @@ export const toggleType = (params) => {
 export const finishRemind = (params) => {
   return postJson('/talent/remind/finish', params);
 };
+
+// 获取人才的项目经历
+export const getTalentProjects = (params) => {
+  return getRequest('/talent/project', params);
+};

@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { projectStatus, customerTypes, language, background, educationList, projectPass } from "./constant";
+import { projectStatus, customerTypes, language, background, educationList, projectPass, projectTalentStatus } from "./constant";
 
 export const forEach = (arr, fn) => {
   if (!arr.length || !fn) return
@@ -459,11 +459,19 @@ export const getEducation = (h, data) => {
   return h ? h('span', text) : text;
 }
 
-// 获取名企背景
+// 获取保证期方式
 export const getQuality = (h, data) => {
   let text = ''
   const index = projectPass.findIndex(item => item.value == data);
   text = index > -1 ? projectPass[index].label : ''
+  return h ? h('span', text) : text;
+}
+
+// 获取项目人才状态
+export const getProjectTalentStatus = (h, data) => {
+  let text = ''
+  const index = projectTalentStatus.findIndex(item => item.value == Number(data));
+  text = index > -1 ? projectTalentStatus[index].label : ''
   return h ? h('span', text) : text;
 }
 

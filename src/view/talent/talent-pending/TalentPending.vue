@@ -63,11 +63,11 @@
         <FormItem label="下次联系时间">
           <DatePicker type="datetime" placeholder="日期" v-model="remind.nextRemindTime"></DatePicker>
         </FormItem>
-        <FormItem label="提醒对象">
-          <Select v-model="remind.adviserId" placeholder="请选择">
-            <Option v-for="(user, index) of teamUserList" :value="user.id" :key="'user'+index">{{user.name}}</Option>
-          </Select>
-        </FormItem>
+        <!--<FormItem label="提醒对象">-->
+          <!--<Select v-model="remind.adviserId" placeholder="请选择">-->
+            <!--<Option v-for="(user, index) of teamUserList" :value="user.id" :key="'user'+index">{{user.name}}</Option>-->
+          <!--</Select>-->
+        <!--</FormItem>-->
       </Form>
     </ModalUtil>
   </Card>

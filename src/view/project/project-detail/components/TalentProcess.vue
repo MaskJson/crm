@@ -25,7 +25,7 @@
 
 <script>
   import { projectTalentStatus, projectProgress } from "../../../../libs/constant";
-  import { getCity, getDateTime, getStatusRender, toggleShow, getUserId } from "../../../../libs/tools";
+  import { getCity, getDateTime, getStatusRender, toggleShow, getUserId, getUserInfoByKey } from "../../../../libs/tools";
   import { getProjectTalentByStatus, addProjectTalentRemind } from "../../../../api/project";
 
   export default {
@@ -98,6 +98,7 @@
       return {
         projectTalentStatus: projectTalentStatus,
         projectTalentRemindStatus: projectProgress,
+        roleId: null,
         show: false,
         id: null,
         status: '0',
@@ -182,7 +183,8 @@
         this.show = true;
         addProjectTalentRemind({
           ...this.actionData,
-          createUserId: getUserId()
+          createUserId: getUserId(),
+          roleId: this.roleId
         }).then(data => {
           toggleShow(this, 'remind', false);
           this.getProjectTalent();
@@ -203,6 +205,7 @@
     created () {
       this.id = Number(this.$route.query.id);
       this.getProjectTalent();
+      this.roleId = getUserInfoByKey('roleId');
     },
     watch: {
       status() {
