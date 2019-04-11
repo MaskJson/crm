@@ -125,7 +125,7 @@
         <!--</FormItem>-->
       </Form>
     </ModalUtil>
-    <Drawer :width="360" title="客户收藏夹管理" :closable="false" v-model="showFavoriteSetting">
+    <Drawer :width="360" title="人才收藏夹管理" :closable="false" v-model="showFavoriteSetting">
       <favorite-setting ref="favorite" @on-change="setFolders" :type="2"/>
     </Drawer>
   </Card>

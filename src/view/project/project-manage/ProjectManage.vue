@@ -40,7 +40,7 @@
         <Button type="primary" v-if="roleId == 3" @click="showFavoriteSetting = true">项目收藏夹管理</Button>
       </SearchItem>
     </div>
-    <ManagerView ref="manager" :del="false" :save="{save: roleId == 3}" route="/talent/talent-edit" :columns="columns" :searchData="searchParams" />
+    <ManagerView ref="manager" :del="false" :save="{save: roleId == 3}" route="/project/project-edit" :columns="columns" :searchData="searchParams" />
     <Drawer :width="360" title="项目收藏夹管理" :closable="false" v-model="showFavoriteSetting">
       <favorite-setting :type="3" @on-change="setFolders"/>
     </Drawer>
@@ -118,7 +118,7 @@
                   }
                 }, '查看详情'),
               ];
-              const userId = getUserId;
+              const userId = getUserId();
               if (params.row.createUserId == userId) {
                 btn.push(
                   h('Button', {

@@ -106,7 +106,7 @@
         <Col>该项目暂无顾问诊断记录</Col>
       </Row>
     </ModalUtil>
-    <Drawer :width="360" title="客户收藏夹管理" :closable="false" v-model="showFavoriteSetting">
+    <Drawer :width="360" title="项目收藏夹管理" :closable="false" v-model="showFavoriteSetting">
       <favorite-setting ref="favorite" @on-change="setFolders" :type="3"/>
     </Drawer>
     <SpinUtil :show="show"/>

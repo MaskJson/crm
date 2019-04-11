@@ -37,7 +37,7 @@
       </SearchItem>
     </div>
     <ManagerView class="talent-manager" ref="manager" :del="false" :save="{save: true}" route="/talent/talent-edit" :columns="columns" :searchData="searchParams"/>
-    <Drawer :width="360" title="客户收藏夹管理" :closable="false" v-model="showFavoriteSetting">
+    <Drawer :width="360" title="人才收藏夹管理" :closable="false" v-model="showFavoriteSetting">
       <favorite-setting :type="2" @on-change="setFolders"/>
     </Drawer>
   </Card>
