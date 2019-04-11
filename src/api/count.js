@@ -28,3 +28,18 @@ export const statusTalent = (params) => {
 export const folderTalent = (params) => {
   return getRequest('/count/talent/map/folder', params);
 };
+
+// 顾问获取诊断待办
+export const reportPendingList = (params) => {
+  return getRequest('/count/report/pending', params);
+};
+
+// 总监查看诊断记录
+export const getReports = (params) => {
+  return getRequest('/count/report/list', params);
+};
+
+// 首页统计
+export const homeCount = (params) => {
+  return getRequest('/count/home', params);
+};
