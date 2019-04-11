@@ -211,13 +211,13 @@
       </Row>
       <h2 class="mb-10">项目推荐</h2>
       <Row>
-        <Col span="12">
-          <FormItem label="项目总监">
-            <Select placeholder="请选择项目总监" v-model="entity.teamId" filterable clearable>
-              <Option v-for="(item, index) of teamList" :key="'team' + index" :value="item.id">{{ item.name }}</Option>
-            </Select>
-          </FormItem>
-        </Col>
+        <!--<Col span="12">-->
+          <!--<FormItem label="项目总监">-->
+            <!--<Select placeholder="请选择项目总监" v-model="entity.teamId" filterable clearable>-->
+              <!--<Option v-for="(item, index) of teamList" :key="'team' + index" :value="item.id">{{ item.name }}</Option>-->
+            <!--</Select>-->
+          <!--</FormItem>-->
+        <!--</Col>-->
         <Col span="12">
           <FormItem label="特定兼职">
             <Select placeholder="请选择特定兼职" v-model="entity.partId" filterable clearable>
