@@ -31,12 +31,17 @@ export const folderTalent = (params) => {
 
 // 顾问获取诊断待办
 export const reportPendingList = (params) => {
-  return getRequest('/count/report/pending', params);
+  return getRequest('/count/project/report/pending', params);
 };
 
 // 总监查看诊断记录
 export const getReports = (params) => {
-  return getRequest('/count/report/list', params);
+  return getRequest('/count/project/report/list', params);
+};
+
+// 总监查看未处理的推荐
+export const getRecommends = (params) => {
+  return getRequest('/count/recommend/pending', params);
 };
 
 // 首页统计

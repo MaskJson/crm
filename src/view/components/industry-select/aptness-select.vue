@@ -107,7 +107,7 @@ export default {
   },
   watch: {
     model(val) {
-      this.selectIndustry = Array.isArray(val) ? val : [];
+      this.selectAptness = Array.isArray(val) ? val : [];
     }
   }
 }

@@ -1,10 +1,10 @@
 <template>
   <Card>
     <Row>
-      <Col span="12">
+      <Col span="8">
         <h2>{{entity.name}}</h2>
       </Col>
-      <Col span="12" class="t-right">
+      <Col span="16" class="t-right">
         <Button type="primary" v-if="entity.followUserId == userId || !entity.followUserId" :disabled="!entity.id" @click="toggleBindFollowUser">{{entity.followUserId ? '取消列名' : '列名'}}</Button>
         <Button type="primary" v-if="entity.followUserId == userId || !entity.followUserId" class="ml-10" icon="md-star" :disabled="!entity.id" @click="toggleFollow">{{entity.follow ? '取消关注' : '关注客户'}}</Button>
         <Button type="primary" v-if="entity.followUserId == userId || !entity.followUserId" class="ml-10" :disabled="!entity.id" @click="toggleBind('remind')">添加跟踪摘要</Button>

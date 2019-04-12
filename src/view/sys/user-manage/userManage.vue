@@ -464,7 +464,6 @@
               // 编辑
               this.submitLoading = true;
               const params = JSON.parse(JSON.stringify(this.userForm));
-              delete params.createTime;
               delete params.permissions;
               delete params.other;
               delete params.password;

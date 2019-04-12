@@ -50,3 +50,8 @@ export const getReportData = (params) => {
 export const addReport = (params) => {
   return postJson('/project/report/add', params);
 };
+
+// 推荐客户二次审核
+export const reviewTalent = (params) => {
+  return postRequest('/project/talent/review', params);
+};

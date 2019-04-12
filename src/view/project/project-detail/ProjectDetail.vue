@@ -1,16 +1,16 @@
 <template>
   <Card>
     <Row>
-      <Col span="12">
+      <Col span="8">
         <h2>{{entity.name}}</h2>
       </Col>
-      <Col span="12" class="t-right">
-        <Button type="primary" class="ml-10" icon="md-star" v-if="entity.createUerId == userId" :disabled="!entity.id" @click="toggleFollow">{{entity.follow ? '取消关注' : '关注项目'}}</Button>
+      <Col span="16" class="t-right">
+        <Button type="primary" class="ml-10" icon="md-star" v-if="entity.createUserId == userId" :disabled="!entity.id" @click="toggleFollow">{{entity.follow ? '取消关注' : '关注项目'}}</Button>
         <Button type="primary" class="ml-10" :disabled="!entity.id" @click="toggleBind('talent')">关联项目候选人</Button>
-        <Button type="primary" class="ml-10" :disabled="!entity.id" v-if="entity.createUerId == userId" @click="toggleBind('bind')">加入到收藏夹</Button>
+        <Button type="primary" class="ml-10" :disabled="!entity.id" v-if="entity.createUserId == userId" @click="toggleBind('bind')">加入到收藏夹</Button>
         <Button type="primary" class="ml-10" v-if="roleId != 8" :disabled="!entity.id" @click="newProjectTalent">新建项目候选人</Button>
         <Button type="primary" class="ml-10" v-if="roleId == 2" :disabled="!entity.id" @click="toggleBind('choose')">新增项目诊断报告</Button>
-        <Button type="primary" v-if="entity.createUerId == userId" @click="showFavoriteSetting = true" class="ml-10">项目收藏夹管理</Button>
+        <Button type="primary" v-if="entity.createUserId == userId" @click="showFavoriteSetting = true" class="ml-10">项目收藏夹管理</Button>
       </Col>
     </Row>
     <Row class="mt-20">
@@ -70,7 +70,7 @@
       </div>
     </ModalUtil>
     <!--  诊断报告 -->
-    <ModalUtil ref="report2" title="项目经理直接诊断" @reset="report.remark = ''" :footerHide="true">
+    <ModalUtil ref="report2" title="项目经理直接诊断" @reset="report.remark = ''" :loading="false" :footerHide="true">
       <Row>
         <Col span="12">
           <p>总人数：{{reportCounts.allCount}}</p>
@@ -138,8 +138,8 @@
       return {
         show: false,
         showFavoriteSetting: false,
-        roleId: null,
-        userId: null,
+        roleId: getUserInfoByKey('roleId'),
+        userId: getUserId(),
         selectLoading: false,
         folderId: null, // 绑定收藏夹id
         talentId: null, // 关联的人才id
@@ -286,7 +286,8 @@
           remark: this.report.remark,
           createUserId: getUserId(),
           type: flag,
-          status: flag != 2
+          status: flag != 2,
+          projectId: this.entity.id
         };
         if (flag == 2) {
           Object.assign(params, this.reportCounts);
@@ -300,8 +301,6 @@
     },
     created() {
       this.getAllProjectTalent();
-      this.userId = getUserId();
-      this.roleId = getUserInfoByKey('roleId');
     }
   }
 </script>

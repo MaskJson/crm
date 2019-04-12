@@ -14,7 +14,7 @@
     components: {
       SearchItem
     },
-    props: ['startTime', 'endTime', 'title'],
+    props: ['startTime', 'endTime', 'title', 'index'],
     data() {
       return {
         startTimeOptions: {},
@@ -25,8 +25,8 @@
     },
     methods: {
       startTimeChange: function(e) { //设置开始时间
-        this.$emit('change', !!this.start ? this.start : null, !!this.end ? this.end : null);
-        if (!this.start) {
+        this.$emit('change', !!this.start ? this.start : null, !!this.end ? this.end : null, this.index);
+        if (!this.start) { // 当开始时间为为空，重置结束时间option
           this.endTimeOptions = {};
         }
         this.endTimeOptions = {
@@ -39,7 +39,7 @@
       endTimeChange: function(e) { //设置结束时间
         this.$emit('change', !!this.start ? this.start : null, !!this.end ? this.end : null);
         let endTime = this.end ? new Date(e).valueOf() - 1 * 24 * 60 * 60 * 1000 : '';
-        if (!this.end) {
+        if (!this.end) { // 结束时间为空，重置开始时间option
           this.startTimeOptions = {};
         } else {
           this.startTimeOptions = {

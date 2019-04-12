@@ -403,7 +403,7 @@
               company: '', // 公司名称
               startTime: null, // 开始时间
               endTime: null, // 结束时间
-              status: false, // 至今
+              status: true, // 至今
               position: '', // 职位
               department: '', // 部门
               remark: '', // 职责
@@ -699,13 +699,21 @@
           this.$Message.warning("专属人才必须完善性别、手机号、意向职位等信息");
           return false;
         }
+        let toNow = false;
         this.entity.experienceList.forEach((item, index) => {
           this.$refs['itemForm' + index][0].validate((valid) => {
             if (!valid) {
               flag = false;
+              if (item.status) {
+                toNow = true;
+              }
             }
           });
         });
+        if (!toNow) {
+          this.$Message.warning("请勾最近一份工作经历（至今）");
+          return;
+        }
         this.friends.forEach((item, index) => {
           this.$refs['friend' + index][0].validate((valid => {
             if (!valid) {
