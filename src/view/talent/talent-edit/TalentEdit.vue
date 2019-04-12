@@ -769,9 +769,12 @@
         getDetail({ id }).then(data => {
           this.show = false;
           const entity = getTalentInfoUtil(data);
+          entity.experienceList.forEach(item => {
+            item.status = false
+          });
           this.entity = entity;
           this.friends = entity.friends || [];
-          this.chances = entity.chances;
+          this.chances = entity.chances || [];
         }).catch(data => { this.show = false; })
       }
     },
