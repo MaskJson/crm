@@ -39,9 +39,13 @@
           </div>
         </TabPane>
         <TabPane :label="`客户跟踪摘要 (${remindList.length})`">
-          <Timeline v-if="remindList && remindList.length > 0" class="mt-10">
-            <TimelineItem v-for="(item, index) of remindList" :key="'remind' + index">
+          <Select class="w300 mb-20" clearable v-model="remindStatus">
+            <Option placeholder="请选择客户状态查看对应跟踪记录" v-for="(item, index) of customerTypes" :value="item.value" :key="'reminds' + index">{{ item.label }}</Option>
+          </Select>
+          <Timeline v-if="remindFilter && remindFilter.length > 0" class="mt-10">
+            <TimelineItem v-for="(item, index) of remindFilter" :key="'remind' + index">
               <p class="fs16">{{item.type | typeFilter}}</p>
+              <p class="mt-5">跟踪状态：{{item.status | customerTypeFilter}}</p>
               <p class="mt-5"><span class="mR10">创建者：{{item.createUser}}</span><span class="ml-20">创建时间：{{getDateTime(item.createTime)}}</span></p>
               <p class="bgf2 mt-5">内容：{{item.type == 2 ? item.meetNotice : item.remark}}</p>
             </TimelineItem>
@@ -60,10 +64,10 @@
           <Contact :id="entity.id" @on-change="setContactLen"/>
         </TabPane>
         <TabPane label="合同">
-          <Project :id="entity.id"/>
-        </TabPane>
-        <TabPane label="项目列表">
 
+        </TabPane>
+        <TabPane :label="`项目列表 (${projectLength})`">
+          <Project ref="project" @on-change="setProjectLength" :id="entity.id"/>
         </TabPane>
       </Tabs>
     </Row>
@@ -171,10 +175,18 @@
         } else {
           return customerTypes.slice(1, 6);
         }
+      },
+      remindFilter() {
+        if (this.remindStatus == null) {
+          return this.remindList;
+        } else {
+          return this.remindList.filter(item => item.status == this.remindStatus);
+        }
       }
     },
     data() {
       return {
+        customerTypes: customerTypes,
         show: false,
         showFavoriteSetting: false,
         name: null,
@@ -185,6 +197,7 @@
         },
         talentGroupByDepartment: [], // 人才库，按部门分类
         talents: [],
+        remindStatus: null,
         remindList: [],
         remind: {
           type: 1,
@@ -206,6 +219,43 @@
         },
         columns: [
           {
+            title: '人才名称',
+            key: 'talentName',
+            align: 'center',
+            render: (h, params) => {
+              return h('div', {
+                class: {
+                  talent: !!params.row.followUserId
+                }
+              }, [
+                h('Button', {
+                  props: {
+                    type: 'text',
+                    size: 'small'
+                  },
+                  class: {
+                    'cl-primary': true,
+                  },
+                  on: {
+                    click: () => {
+                      this.$router.push({ path: '/talent/talent-detail', query: {id: params.row.talentId}});
+                    }
+                  }
+                }, params.row.talent.name)
+              ]);
+            }
+          },
+          {
+            title: '部门',
+            align: 'center',
+            key: 'department'
+          },
+          {
+            title: '职位',
+            align: 'center',
+            key: 'position'
+          },
+          {
             title: '入职时间',
             align: 'center',
             render: (h, params) => {
@@ -219,17 +269,15 @@
               return h('span', getDateTime(params.row.endTime));
             }
           },
-          {
-            title: '姓名',
-            render: (h, params) => {
-              return h('span', params.row.talent.name)
-            }
-          }
         ],
         contactLen: 0,
+        projectLength: 0
       }
     },
     methods: {
+      setProjectLength(len) {
+        this.projectLength = len;
+      },
       setFolders(list) {
         this.folderList = list;
       },

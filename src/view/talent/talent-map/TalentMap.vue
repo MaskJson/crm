@@ -3,10 +3,10 @@
     <Tabs v-model="status" :animated="false">
       <TabPane label="我的人才地图" name="0"></TabPane>
       <TabPane label="收藏的人才地图" name="2"></TabPane>
-      <TabPane label="推荐的人才地图" name="1"></TabPane>
-      <TabPane label="面试的人才地图" name="3"></TabPane>
-      <TabPane label="offer人才地图" name="4"></TabPane>
-      <TabPane label="成功人才地图" name="7"></TabPane>
+      <!--<TabPane label="推荐的人才地图" name="1"></TabPane>-->
+      <!--<TabPane label="面试的人才地图" name="3"></TabPane>-->
+      <!--<TabPane label="offer人才地图" name="4"></TabPane>-->
+      <!--<TabPane label="成功人才地图" name="7"></TabPane>-->
     </Tabs>
     <div class="mt-20">
       <Collapse v-if="treeMap.length > 0">
@@ -17,7 +17,7 @@
               <Panel v-for="(d, indexD) of c.children" :name="'department' + indexD" :key="'department' + indexD">
                 {{d.name}}{{` (${d.zsCount}/${d.allCount})`}}
                 <div slot="content">
-                  <Table :columns="columns" :data="d.children" border></Table>
+                  <Table class="talent-manager " :columns="columns" :data="d.children" border></Table>
                 </div>
               </Panel>
             </Collapse>
@@ -26,41 +26,72 @@
       </Collapse>
       <div class="center pd-40" v-else>暂无相关人才</div>
     </div>
+    <SpinUtil :show="show"/>
   </Card>
 </template>
 
 <script>
-  import { talentMap, statusTalent, folderTalent } from "../../../api/count";
-  import { getUserId, getStatusRender, getProjectTalentStatus, getDateTime } from "../../../libs/tools";
+  import { talentMap, folderTalent } from "../../../api/count";
+  import { getUserId, getStatusRender, getCity } from "../../../libs/tools";
 
   export default {
     name: "TalentMap",
     data() {
       return {
+        show: false,
         status: '0',
         list: [], // 所有相关人才
         statusList: [], // 经历过各个状态的
         folderList: [], // 收藏的人才,
         columns: [
           {
-            title: '姓名',
-            key: 'name',
+            title: '人才名称',
+            key: 'talentName',
             align: 'center',
             render: (h, params) => {
               return h('div', {
                 class: {
-                  talent: params.row.followUserId
+                  talent: !!params.row.followUserId
                 }
-              }, params.row.talentName)
+              }, [
+                h('Button', {
+                  props: {
+                    type: 'text',
+                    size: 'small'
+                  },
+                  class: {
+                    'cl-primary': true,
+                  },
+                  on: {
+                    click: () => {
+                      this.$router.push({ path: '/talent/talent-detail', query: {id: params.row.talentId}});
+                    }
+                  }
+                }, params.row.talentName)
+              ]);
             }
           },
           {
-            title: '项目名称',
-            key: 'projectName',
-            align: 'center'
+            title: '人才状态',
+            align: 'center',
+            render: (h, params) => {
+              return getStatusRender(h, params.row.status);
+            }
           },
           {
-            title: '客户名称',
+            title: '城市',
+            align: 'center',
+            render: (h, params) => {
+              return getCity(h, params.row.city);
+            }
+          },
+          {
+            title: '手机号',
+            align: 'center',
+            key: 'phone'
+          },
+          {
+            title: '公司名称',
             key: 'customerName',
             align: 'center'
           },
@@ -68,27 +99,6 @@
             title: '部门名称',
             key: 'departmentName',
             align: 'center'
-          },
-          {
-            title: '人才状态',
-            align: 'center',
-            render: (h, params) => {
-              return getStatusRender(h, params.row.talentStatus);
-            }
-          },
-          {
-            title: '项目进展状态',
-            align: 'center',
-            render: (h, params) => {
-              return getProjectTalentStatus(h, params.row.status);
-            }
-          },
-          {
-            title: '最后跟进时间',
-            align: 'center',
-            render: (h, params) => {
-              return h('span', getDateTime(params.row.updateTime));
-            }
           },
         ],
       }
@@ -99,12 +109,13 @@
         if (this.status == 0) {
           return this.list;
         } else if (this.status == 2) {
-          const folderIds = this.folderList.map(item => item.id);
-          return this.list.filter(item => folderIds.indexOf(item.talentId) > -1);
-        } else {
-          return this.statusList.filter(item => item.remindStatus == Number(this.status));
+          // const folderIds = this.folderList.map(item => item.id);
+          // return this.list.filter(item => folderIds.indexOf(item.talentId) > -1);
+          return this.folderList;
         }
-        return [];
+        // else {
+        //   return this.statusList.filter(item => item.remindStatus == Number(this.status));
+        // }
       },
       treeMap() {
         const mapCustomers = [];
@@ -145,23 +156,25 @@
         this.show = true;
         talentMap({ userId: getUserId() }).then(data => {
           this.show = false;
-          this.list = data || [];
+          data = data || [];
+          data.forEach(item => {
+            Object.assign(item, item.info);
+          });
+          this.list = data;
         }).catch(data => {this.show = false;})
-      },
-      getStatusTalentMap() {
-        statusTalent({ userId: getUserId() }).then(data => {
-          this.statusList = data || [];
-        }).catch(data => {})
       },
       getFolderTalentMap() {
         folderTalent({ userId: getUserId() }).then(data => {
-          this.folderList = data || [];
+          data = data || [];
+          data.forEach(item => {
+            Object.assign(item, item.info);
+          });
+          this.folderList = data;
         }).catch(data => {})
       }
     },
     created() {
       this.getTalentMap();
-      this.getStatusTalentMap();
       this.getFolderTalentMap();
     }
   }

@@ -85,4 +85,8 @@ export const finishRemind = (params) => {
   return postJson('/customer/finish-remind', params);
 };
 
+// 获取公司项目列表
+export const getProjects = (params) => {
+  return getRequest('/customer/project/page', params);
+};
 

@@ -96,15 +96,30 @@
             align: 'center',
           },
           {
-            title: '姓名',
-            key: 'name',
+            title: '人才名称',
+            key: 'talentName',
             align: 'center',
             render: (h, params) => {
               return h('div', {
                 class: {
-                  talent: params.row.followUserId
+                  talent: !!params.row.followUserId
                 }
-              }, params.row.name)
+              }, [
+                h('Button', {
+                  props: {
+                    type: 'text',
+                    size: 'small'
+                  },
+                  class: {
+                    'cl-primary': true,
+                  },
+                  on: {
+                    click: () => {
+                      this.$router.push({ path: '/talent/talent-detail', query: {id: params.row.talentId}});
+                    }
+                  }
+                }, params.row.name)
+              ]);
             }
           },
           {

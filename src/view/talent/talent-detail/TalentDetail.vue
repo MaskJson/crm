@@ -18,10 +18,14 @@
         <TabPane label="基本信息">
           <Detail :entity="entity"/>
         </TabPane>
-        <TabPane label="跟踪摘要">
-          <Timeline v-if="remindList && remindList.length > 0" class="mt-10">
-            <TimelineItem v-for="(item, index) of remindList" :key="'remind' + index">
-              <p class="fs16">{{item.type | typeFilter}}</p>
+        <TabPane :label="`跟踪摘要（${remindList.length}）`">
+          <Select class="w300 mb-20" placeholder="请选择状态查看对应跟踪记录" clearable v-model="remindStatus">
+            <Option v-for="(item, index) of talentStatus" :key="'statusr' + index" :value="item.value">{{ item.label }}</Option>
+          </Select>
+          <Timeline v-if="remindFilter && remindFilter.length > 0" class="mt-10">
+            <TimelineItem v-for="(item, index) of remindFilter" :key="'remind' + index">
+              <p class="fs16">{{ item.type | typeFilter }}</p>
+              <p class="mt-5">跟踪状态：{{ item.status | talentStatusFilter }}</p>
               <p class="mt-5"><span class="mR10">创建者：{{item.createUser}}</span><span class="ml-20">创建时间：{{getDateTime(item.createTime)}}</span></p>
               <p class="mt-5">人才状态：{{item.status | talentStatusFilter}}</p>
               <div class="bgf2 mt-5 pd-5" v-if="item.type == 1">内容：{{item.remark}}</div>
@@ -49,7 +53,7 @@
             </div>
           </div>
         </TabPane>
-        <TabPane label="项目经历">
+        <TabPane :label="`项目经历（${projectList.length}）`">
           <div class="bgf5 mB15 pd10">
             <Table :data="projectList" :columns="projectColumns" border></Table>
           </div>
@@ -148,6 +152,12 @@
     computed: {
       folderListFilter() {
         return this.folderList.filter(item => item.status);
+      },
+      remindFilter() {
+        if (this.remindStatus == null) {
+          return this.remindList;
+        }
+        return this.remindList.filter(item => item.status == this.remindStatus);
       }
     },
     filters: {
@@ -168,6 +178,7 @@
 
         },
         talentStatus: talentStatus,
+        remindStatus: null,
         show: false,
         showFavoriteSetting: false,
         folderList: [],
@@ -208,7 +219,23 @@
           {
             title: '项目名称',
             key: 'projectName',
-            align: 'center'
+            align: 'center',
+            render: (h, params) => {
+              return h('Button', {
+                props: {
+                  type: 'text',
+                  size: 'small'
+                },
+                class: {
+                  'cl-primary': true
+                },
+                on: {
+                  click: () => {
+                    this.$router.push({ path: '/project/project-detail', query: {id: params.row.projectId}});
+                  }
+                }
+              }, params.row.projectName);
+            }
           },
           {
             title: '所属客户名称',

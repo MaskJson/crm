@@ -50,21 +50,26 @@
             key: 'talentName',
             align: 'center',
             render: (h, params) => {
-              return h('Button', {
-                props: {
-                  type: 'text',
-                  size: 'small'
-                },
+              return h('div', {
                 class: {
-                  'cl-primary': true,
                   talent: !!params.row.followUserId
-                },
-                on: {
-                  click: () => {
-                    this.$router.push({ path: '/talent/talent-detail', query: {id: params.row.talentId}});
-                  }
                 }
-              }, params.row.talentName);
+              }, [
+                h('Button', {
+                  props: {
+                    type: 'text',
+                    size: 'small'
+                  },
+                  class: {
+                    'cl-primary': true,
+                  },
+                  on: {
+                    click: () => {
+                      this.$router.push({ path: '/talent/talent-detail', query: {id: params.row.talentId}});
+                    }
+                  }
+                }, params.row.talentName)
+              ]);
             }
           },
           {

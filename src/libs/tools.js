@@ -414,8 +414,8 @@ export const getProjectInfoUtil = (data) => {
 }
 
 // manager view 查询
-export const globalSearch = (vm) => {
-  vm.$refs['manager'].emitManagerHandler(3, {
+export const globalSearch = (vm, name) => {
+  vm.$refs[name || 'manager'].emitManagerHandler(3, {
     unFresh: true
   });
 }
