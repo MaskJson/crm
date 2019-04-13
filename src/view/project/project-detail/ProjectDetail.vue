@@ -42,7 +42,7 @@
       <Form :label-width="100">
         <FormItem label="添加候选人：">
           <Select v-model="talentId" placeholder="请选择" filterable remote :remote-method="talentRemote">
-            <Option v-for="(item, index) of talents" :key="'talent' + index" :value="item.id">
+            <Option v-for="(item, index) of talents" :key="'talent' + index" :value="item.id" :disabled="projectTalents.indexOf(item.id) > -1">
               {{item.name}}
               <span v-show="projectTalents.indexOf(item.id) > -1" class="cl-error">（已关联）</span>
             </Option>

@@ -44,7 +44,7 @@
 </template>
 
 <script>
-  import { jsonArray, getCity, globalSearch, getUserId, getCustomerType } from "../../../libs/tools";
+  import { jsonArray, getCity, globalSearch, getUserId, getCustomerType, getUserInfoByKey } from "../../../libs/tools";
   import { list, toggleFollow, toggleBindFollowUser } from "../../../api/customer";
   import cityList from '../../../libs/cityList';
   import FavoriteSetting from '../../components/favorite-setting';
@@ -139,7 +139,7 @@
                   }
                 }, '查看详情'),
               ];
-              if (!followUserId || followUserId == userId) {
+              if (!followUserId || followUserId == userId || getUserInfoByKey('roleId' == 3)) {
                 btn.push(h('Button', {
                     class: {
                       'mr-5': true

@@ -52,9 +52,9 @@
             <InputNumber  :min="0" v-model="entity.fee"/>
           </FormItem>
         </Col>
-        <Col span="8">
+        <Col span="8" v-if="entity.id">
           <FormItem label="首推时间">
-            <DatePicker type="datetime" plactholder="首推时间" v-model="entity.firstApplyTime"/>
+            <DatePicker :disabled="true" type="datetime" plactholder="首推时间" v-model="entity.firstApplyTime"/>
           </FormItem>
         </Col>
         <Col span="8">
