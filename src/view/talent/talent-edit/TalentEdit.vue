@@ -283,11 +283,11 @@
       <FormItem label="沟通记录" v-if="remind.type == 1">
         <Input type="textarea" :rows="3" v-model="remind.remark"/>
       </FormItem>
-      <div v-if="remind.type == 2">
+      <div v-if="remind.type == 2 || remind.type == 3">
         <FormItem label="候选人基本情况">
           <Input type="textarea" :rows="3" v-model="remind.situation"/>
         </FormItem>
-        <FormItem label="求职方向不离职原因">
+        <FormItem label="求职方向离职原因">
           <Input type="textarea" :rows="3" v-model="remind.cause"/>
         </FormItem>
         <FormItem label="薪资架构">
@@ -302,6 +302,9 @@
           <Input v-model="remind.meetAddress"/>
         </FormItem>
       </div>
+      <FormItem label="客户">
+        <Select placeholder="请选择客户"></Select>
+      </FormItem>
       <FormItem label="下次跟踪类别" prop="remindTypeId">
         <Select v-model="remind.nextType">
           <Option :value="0">请选择</Option>
@@ -476,7 +479,8 @@
           meetAddress: null, // 面试地点
           talentId: null,
           adviserId: null,
-          followRemindId: null
+          followRemindId: null,
+          customerId: null
         },
         remindRule: {
           type: [
@@ -669,11 +673,11 @@
             return false;
           }
           if (params.type == 2 && (!params.salary || !params.situation || !params.cause)) {
-            this.$Message.warning('室内面试需要填写候选人基本情况、不离职原因和薪资架构');
+            this.$Message.warning('室内面试需要填写候选人基本情况、离职原因和薪资架构');
             return false;
           }
-          if (params.type == 3 && (!params.meetTime || !params.meetAddress)) {
-            this.$Message.warning('室外面试需要填写面试时间和地点');
+          if (params.type == 3 && (!params.meetTime || !params.meetAddress || !params.salary || !params.situation || !params.cause)) {
+            this.$Message.warning('室外面试需要填写面试时间、地点、基本情况、离职原因和薪资架构');
             return false;
           }
           if ((params.nextRemindTime || params.nextType) && (!params.nextRemindTime || !params.nextType)) {

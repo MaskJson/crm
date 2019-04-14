@@ -90,3 +90,7 @@ export const getProjects = (params) => {
   return getRequest('/customer/project/page', params);
 };
 
+// 获取可创建项目的公司
+export const findProjectCustomers = (params) => {
+  return getRequest('/customer/customerOfProject', params);
+};

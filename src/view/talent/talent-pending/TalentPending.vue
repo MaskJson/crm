@@ -28,7 +28,7 @@
         <FormItem label="沟通记录" v-if="remind.type == 1" class="ivu-form-item-required">
           <Input type="textarea" :rows="3" v-model="remind.remark"/>
         </FormItem>
-        <div v-if="remind.type == 2">
+        <div v-if="remind.type == 2 || remind.type == 3">
           <FormItem label="候选人基本情况" class="ivu-form-item-required">
             <Input type="textarea" :rows="3" v-model="remind.situation"/>
           </FormItem>
@@ -230,8 +230,8 @@
           meetTime: null, // 面试时间
           meetAddress: null, // 面试地点
           talentId: null,
-          adviserId: null,
-          followRemindId: null
+          followRemindId: null,
+          customerId: null
         },
         remindRule: {
           type: [
@@ -264,6 +264,7 @@
           adviserId: null,
           followRemindId: null,
           talentType: null,
+          customerId: null
         };
       },
       toggleShow(key, flag) {
@@ -299,8 +300,8 @@
               this.$Message.warning('室内面试需要填写候选人基本情况、不离职原因和薪资架构');
               return false;
             }
-            if (params.type == 3 && (!params.meetTime || !params.meetAddress)) {
-              this.$Message.warning('室外面试需要填写面试时间和地点');
+            if (params.type == 3 && (!params.meetTime || !params.meetAddress || !params.salary || !params.situation || !params.cause)) {
+              this.$Message.warning('室外面试需要填写面试时间、地点、基本情况、离职原因和薪资架构');
               return false;
             }
             if ((params.nextRemindTime || params.nextType) && (!params.nextRemindTime || !params.nextType)) {

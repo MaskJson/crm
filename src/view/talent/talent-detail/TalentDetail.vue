@@ -5,6 +5,7 @@
         <h2>{{entity.name}}</h2>
       </Col>
       <Col span="16" class="t-right">
+        <Button type="primary" @click="edit" v-if="entity.id && (!entity.followUserId || entity.followUserId == userId)">编辑</Button>
         <Button type="primary" icon="md-star" :disabled="!entity.id || (entity.followUserId && entity.followUserId != userId)" @click="toggleFollow">{{entity.follow ? '取消关注' : '关注客户'}}</Button>
         <Button type="primary" class="ml-10" v-if="!entity.projectCount" :disabled="!entity.id || entity.projectCount || (entity.followUserId && entity.followUserId != userId)" @click="toggleBind('remind')">添加跟踪摘要</Button>
         <Button type="primary" class="ml-10" :disabled="!entity.id || (entity.followUserId && entity.followUserId != userId)" @click="toggleBind('bind')">加入到收藏夹</Button>
@@ -33,6 +34,8 @@
                 <p class="mt-5">候选人基本情况：{{item.situation}}</p>
                 <p class="mt-5">求职方向不离职原因：{{item.cause}}</p>
                 <p class="mt-5">薪资架构：{{item.salary}}</p>
+                <p class="mt-5">面试时间：{{getDateTime(item.meetTime)}}</p>
+                <p class="mt-5">面试地点：{{item.meetAddress}}</p>
               </div>
               <div class="bgf2 mt-5 pd-5" v-else>
                 <p class="mt-5">面试时间：{{getDateTime(item.meetTime)}}</p>
@@ -199,8 +202,8 @@
           meetTime: null, // 面试时间
           meetAddress: null, // 面试地点
           talentId: null,
-          adviserId: null,
-          followRemindId: null
+          followRemindId: null,
+          customerId: null
         },
         remindRule: {
           type: [
@@ -268,6 +271,9 @@
     },
     methods: {
       getDateTime: getDateTime,
+      edit() {
+        this.$router.push({ path: '/talent/talent-edit' , query: {id: this.entity.id}});
+      },
       setFolders(list) {
         this.folderList = list;
       },
@@ -284,8 +290,8 @@
           meetTime: null, // 面试时间
           meetAddress: null, // 面试地点
           talentId: null,
-          adviserId: null,
-          followRemindId: null
+          followRemindId: null,
+          customerId: null
         };
       },
       toggleBind(key, flag) {
@@ -353,8 +359,8 @@
               this.$Message.warning('室内面试需要填写候选人基本情况、不离职原因和薪资架构');
               return false;
             }
-            if (params.type == 3 && (!params.meetTime || !params.meetAddress)) {
-              this.$Message.warning('室外面试需要填写面试时间和地点');
+            if (params.type == 3 && (!params.meetTime || !params.meetAddress || !params.salary || !params.situation || !params.cause)) {
+              this.$Message.warning('室外面试需要填写面试时间、地点、基本情况、离职原因和薪资架构');
               return false;
             }
             if ((params.nextRemindTime || params.nextType) && (!params.nextRemindTime || !params.nextType)) {

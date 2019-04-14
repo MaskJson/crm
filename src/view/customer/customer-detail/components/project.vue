@@ -44,11 +44,6 @@
             }
           },
           {
-            title: '需求部门',
-            align: 'center',
-            key: 'departmentName'
-          },
-          {
             title: '创建者',
             align: 'center',
             key: 'createUser'

@@ -18,17 +18,6 @@
           </FormItem>
         </Col>
         <Col span="8">
-          <FormItem label="部门：" prop="department" class="relative">
-            <Input v-model="entity.department" @on-focus="focusHandler" @on-change="findDepartment" @on-blur="blurHandler"/>
-            <div class="borderB nameList" v-if="showDepartment">
-              <li class="border bgfff company-item" v-if="departmentsFilter.length == 0">暂无数据</li>
-              <li class="border bgfff company-item cursor" v-for="(department, index) of departmentsFilter" :key="'department' + index" @click="setName(department.name)">
-                {{department.name}}
-              </li>
-            </div>
-          </FormItem>
-        </Col>
-        <Col span="8">
           <FormItem label="项目优先级" prop="priority">
             <Select v-model="entity.priority">
               <Option :value="1">高</Option>
@@ -242,7 +231,7 @@
   import { getUserId, getProjectInfoUtil } from "../../../libs/tools";
   import { getListByTableName } from "../../../api/common";
   import { saveProject, getProjectInfo } from "../../../api/project";
-  import { getCustomerDepartments } from "../../../api/customer";
+  import { getCustomerDepartments, findProjectCustomers } from "../../../api/customer";
 
   export default {
     name: "ProjectEdit",
@@ -401,7 +390,10 @@
       }
     },
     created() {
-      getListByTableName({ type: 1 }).then(data => {
+      // getListByTableName({ type: 1 }).then(data => {
+      //   this.customerList = data || [];
+      // }).catch(data => {});
+      findProjectCustomers({}).then(data => {
         this.customerList = data || [];
       }).catch(data => {});
       getListByTableName({ type: 4 }).then(data => {
