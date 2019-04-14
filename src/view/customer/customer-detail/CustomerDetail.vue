@@ -171,9 +171,9 @@
         if (!this.entity.type) {
           return customerTypes.slice(0, 1);
         } else if (this.entity.type == 6) {
-          return [customerTypes[6]];
+          return [customerTypes[5]];
         } else {
-          return customerTypes.slice(1, 6);
+          return customerTypes.slice(this.entity.type - 1, 5);
         }
       },
       remindFilter() {

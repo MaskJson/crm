@@ -95,6 +95,19 @@
         <!--</FormItem>-->
       </Form>
     </ModalUtil>
+    <!--  推荐到项目  -->
+    <ModalUtil ref="project" title="推荐项目" @reset="resetProjectTalent" @on-ok="addProjectTalent" :loading="show">
+      <Form ref="projectTalent" :model="projectTalent" :rules="projectTalentRule" :label-width="100">
+        <FormItem label="人才：">
+          {{ talentName }}
+        </FormItem>
+        <FormItem label="项目：">
+          <Select v-model="projectTalent.projectId" placeholder="请选择项目">
+            <Option v-for="(item, index) of projectFilter" :value="item.id" :key="'project' + index">{{ item.name }}</Option>
+          </Select>
+        </FormItem>
+      </Form>
+    </ModalUtil>
   </Card>
 </template>
 
@@ -103,6 +116,8 @@
   import { list, toggleFollow, toggleType, addRemind } from "../../../api/talent";
   import cityList from '../../../libs/cityList';
   import FavoriteSetting from '../../components/favorite-setting';
+  import { addProjectTalent } from "../../../api/project";
+  import { getListByTableName } from "../../../api/common";
 
   export default {
     name: "TalentManage",
@@ -121,10 +136,14 @@
           follow: follow == 0 ? null : follow == 1
         }
       },
+      projectFilter() {
+        return this.projects.filter(item => this.talentProjects.indexOf(item.id) < 0);
+      }
     },
     data() {
       return {
         userId: null,
+        show: false,
         showFavoriteSetting: false,
         cityList: cityList,
         folders: [],
@@ -317,7 +336,7 @@
                   }, '取消专属')
                 )
               }
-              if (!followUserId || followUserId == this.userId || !params.row.projectCount) {
+              if (!followUserId || followUserId == this.userId || !params.row.projects || !params.row.projects.length) {
                 btn.push(
                   h('Button', {
                     props: {
@@ -344,12 +363,21 @@
                   class: {
                     'ml-5': true
                   },
-                })
-              )
+                  on: {
+                    click: () => {
+                      this.talentProjects = params.row.projects || [];
+                      this.projectTalent.talentId = params.row.id;
+                      this.talentName = params.row.name;
+                      toggleShow(this, 'project');
+                    }
+                  }
+                }, '推荐')
+              );
               return h('div', btn);
             }
           }
         ],
+        talentName: null,
         remind: { // 添加提醒条件
           type: null, // 本次跟踪类别
           status: null, // 人才状态
@@ -372,10 +400,34 @@
           status: [
             { required: true, type: 'number', message: '请选择状态', trigger: 'change' }
           ],
-        }
+        },
+        projectTalent: {
+          createUserId: getUserId(),
+          talentId: null,
+          projectId: null,
+          status: 0,
+          type: 1
+        },
+        projectTalentRule: {
+          projectId: [
+            { required: true, type: 'number', message: '请选择项目', trigger: 'change' }
+          ],
+        },
+        projects: [], // 所有项目
+        talentProjects: [], // 当前人才已关联的项目
       }
     },
     methods: {
+      resetProjectTalent() {
+        this.projectTalent = {
+          createUserId: getUserId(),
+          talentId: null,
+          projectId: null,
+          status: 0,
+          type: 1
+        }
+        this.$refs['projectTalent']
+      },
       resetRemind() {
         this.remind = {
           type: null, // 本次跟踪类别
@@ -445,6 +497,17 @@
           }
         })
       },
+      addProjectTalent() {
+        this.$refs['projectTalent'].validate(valid => {
+          if (valid) {
+            this.show = true;
+            addProjectTalent(this.projectTalent).then(data => {
+              this.show = false;
+              toggleShow(this, 'project', false);
+            }).catch(data => {this.show = false});
+          }
+        })
+      }
     },
     provide() {
       return {
@@ -457,6 +520,9 @@
     },
     created() {
       this.userId = getUserId();
+      getListByTableName({ type: 3 }).then(data => {
+        this.projects = data || [];
+      }).catch(data => {});
     }
   }
 </script>
