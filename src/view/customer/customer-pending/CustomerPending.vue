@@ -69,7 +69,7 @@
       return {
         show: false,
         searchData: {
-          userId: null,
+          userId: getUserId(),
           type: null
         },
         columns: [
@@ -279,7 +279,10 @@
       }
     },
     created() {
-      this.searchData.userId = getUserId();
+      const {type} = this.$route.query;
+      if (!!type) {
+        this.searchData.type = Number(type);
+      }
     },
   }
 </script>

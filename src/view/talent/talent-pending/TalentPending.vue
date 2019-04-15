@@ -347,6 +347,10 @@
       }
     },
     created() {
+      const {type} = this.$route.query;
+      if (!!type) {
+        this.searchData.type = Number(type);
+      }
       this.searchData.userId = getUserId();
       getListByTableName({ type: 1 }).then(data => {
         this.customerList = data || [];

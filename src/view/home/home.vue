@@ -1,84 +1,98 @@
 <template>
-  <div>
-    <Row :gutter="20">
-      <i-col span="4" v-for="(infor, i) in inforCardData" :key="`infor-${i}`" style="height: 120px;">
-        <infor-card shadow :color="infor.color" :icon="infor.icon" :icon-size="36">
-          <count-to :end="infor.count" count-class="count-style"/>
-          <p>{{ infor.title }}</p>
-        </infor-card>
-      </i-col>
+  <Card>
+    <Row class="container">
+      <Col span="8" class="pd-10" v-if="roleId != 8">
+        <div class="radius4 border pd-10">
+          <h3>人才常规跟踪待办项</h3>
+          <p class="mt-10">
+            <span class="inline-block">电话沟通：</span>
+            <span class="ml-10 cl-primary cursor" @click="goto('/talent/talent-pending', '1')">{{count.talentFirst}}</span>
+          </p>
+          <p class="mt-10">
+            <span class="inline-block">顾问面试（内）：</span>
+            <span class="ml-10 cl-primary cursor" @click="goto('/talent/talent-pending', '2')">{{count.talentSecond}}</span>
+          </p>
+          <p class="mt-10">
+            <span class="inline-block">顾问面试（外）：</span>
+            <span class="ml-10 cl-primary cursor" @click="goto('/talent/talent-pending', '3')">{{count.talentThird}}</span>
+          </p>
+        </div>
+      </Col>
+      <Col span="8" class="pd-10" v-if="roleId == 3">
+        <div class="radius4 border pd-10">
+          <h3>客户常规跟踪待办项</h3>
+          <p class="mt-10">
+            <span class="inline-block">电话沟通：</span>
+            <span class="ml-10 cl-primary cursor" @click="goto('/customer/customer-pending', '1')">{{count.customerFirst}}</span>
+          </p>
+          <p class="mt-10">
+            <span class="inline-block">拜访客户：</span>
+            <span class="ml-10 cl-primary cursor" @click="goto('/customer/customer-pending', '2')">{{count.customerSecond}}</span>
+          </p>
+          <p class="mt-10">
+            <span class="inline-block">客户上门：</span>
+            <span class="ml-10 cl-primary cursor" @click="goto('/customer/customer-pending', '3')">{{count.customerThird}}</span>
+          </p>
+        </div>
+      </Col>
+      <Col span="8" class="pd-10" v-if="[2,3,6].indexOf(roleId) > -1">
+        <div class="radius4 border pd-10">
+          <h3>项目进展提醒</h3>
+          <p class="mt-10">
+            <span class="inline-block">启动阶段：</span>
+            <span class="ml-10 cl-primary cursor" @click="goto('/project/progress-remind', '1')">{{count.qiDong}}</span>
+          </p>
+          <p class="mt-10">
+            <span class="inline-block">攻坚阶段：</span>
+            <span class="ml-10 cl-primary cursor" @click="goto('/project/progress-remind', '2')">{{count.gongJian}}</span>
+          </p>
+          <p class="mt-10">
+            <span class="inline-block">收尾阶段：</span>
+            <span class="ml-10 cl-primary cursor" @click="goto('/project/progress-remind', '3')">{{count.shouWei}}</span>
+          </p>
+          <p class="mt-10">
+            <span class="inline-block">项目结束：</span>
+            <span class="ml-10 cl-primary cursor" @click="goto('/project/progress-remind', '4')">{{count.jieShu}}</span>
+          </p>
+        </div>
+      </Col>
     </Row>
-    <Row :gutter="20" style="margin-top: 20px;">
-      <i-col span="8">
-        <Card shadow>
-          <chart-pie style="height: 300px;" :value="pieData" text="用户访问来源"></chart-pie>
-        </Card>
-      </i-col>
-      <i-col span="16">
-        <Card shadow>
-          <chart-bar style="height: 300px;" :value="barData" text="每周用户活跃量"/>
-        </Card>
-      </i-col>
-    </Row>
-    <!--<Row style="margin-top: 20px;">-->
-      <!--<Card shadow>-->
-        <!--<example style="height: 310px;"/>-->
-      <!--</Card>-->
-    <!--</Row>-->
-  </div>
+  </Card>
 </template>
 
 <script>
-  import InforCard from '_c/info-card'
-  import CountTo from '_c/count-to'
-  import {ChartBar, ChartPie} from '_c/charts'
-  import Example from './example.vue'
+  import {getUserId, getUserInfoByKey} from "../../libs/tools";
+  import { homeCount } from "../../api/count";
 
   export default {
-  name: 'home',
-  components: {
-    InforCard,
-    CountTo,
-    ChartPie,
-    ChartBar,
-    Example
-  },
-  data () {
-    return {
-      inforCardData: [
-        { title: '新增用户', icon: 'md-person-add', count: 803, color: '#2d8cf0' },
-        { title: '累计点击', icon: 'md-locate', count: 23432, color: '#19be6b' },
-        { title: '新增问答', icon: 'md-help-circle', count: 142, color: '#ff9900' },
-        { title: '分享统计', icon: 'md-share', count: 657, color: '#ed3f14' },
-        { title: '新增互动', icon: 'md-chatbubbles', count: 12, color: '#E46CBB' },
-        { title: '新增页面', icon: 'md-map', count: 14, color: '#9A66E4' }
-      ],
-      pieData: [
-        {value: 335, name: '直接访问'},
-        {value: 310, name: '邮件营销'},
-        {value: 234, name: '联盟广告'},
-        {value: 135, name: '视频广告'},
-        {value: 1548, name: '搜索引擎'}
-      ],
-      barData: {
-        Mon: 13253,
-        Tue: 34235,
-        Wed: 26321,
-        Thu: 12340,
-        Fri: 24643,
-        Sat: 1322,
-        Sun: 1324
+    name: "home",
+    data() {
+      return {
+        userId: getUserId(),
+        roleId: getUserInfoByKey('roleId'),
+        count: {
+
+        }
       }
+    },
+    methods: {
+      goto(path, type) {
+        this.$router.push({path, query: {type}});
+      }
+    },
+    created() {
+      homeCount({ userId: this.userId, roleId: this.roleId }).then(data => {
+        this.count = data || {};
+      }).catch(data => {})
     }
-  },
-  mounted () {
-    //
   }
-}
 </script>
 
-<style lang="less">
-.count-style{
-  font-size: 50px;
-}
+<style scoped>
+  .container {
+    height: 190px;
+  }
+  .container .pd-10 {
+    height: 100%;
+  }
 </style>

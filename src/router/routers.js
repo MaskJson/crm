@@ -30,7 +30,7 @@ export const otherRouter = {
       },
       component: () => import('@/view/home/home.vue')
     }
-    // { path: 'home', title: { i18n: 'home' }, name: 'home_index', component: () => import('@/view/home/home.vue') },
+    // { path: 'home', title: { i18n: 'home' }, name: 'home_index', component: () => import('@/view/home/home2.vue') },
     // { path: 'ownspace', title: '个人中心', name: 'ownspace_index', component: () => import('@/views/own-space/own-space.vue') },
     // { path: 'ownspace-old', title: '个人中心(旧)', name: 'ownspace_old', component: () => import('@/views/own-space/own-space-old.vue') },
     // { path: 'change-pass', title: '修改密码', name: 'change_pass', component: () => import('@/views/change-pass/change-pass.vue') },
