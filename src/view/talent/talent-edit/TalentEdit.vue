@@ -151,10 +151,10 @@
                   <DatePicker placeholder="结束时间" v-model="entity.experienceList[index].endTime" class="w200 ml-10"></DatePicker>
                   <Checkbox class="ml-5" v-model="entity.experienceList[index].status" @on-change="statusChange(index)">至今</Checkbox>
                 </FormItem>
-                <FormItem label="工作职责" class="mt-20" prop="remark" class="left80">
+                <FormItem label="工作职责" class="mt-20 left80" prop="remark">
                   <Input v-model="entity.experienceList[index].remark" type="textarea" :rows="3" placeholder="" class="w500" />
                 </FormItem>
-                <FormItem label="工作业绩" class="mt-20" prop="performance" class="left80">
+                <FormItem label="工作业绩" class="mt-20 left80" prop="performance">
                   <Input v-model="entity.experienceList[index].performance" placeholder="" class="w500" />
                 </FormItem>
                 <FormItem class="mt-20">

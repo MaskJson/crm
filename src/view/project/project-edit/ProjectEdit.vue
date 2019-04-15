@@ -32,7 +32,7 @@
           </FormItem>
         </Col>
         <Col span="8">
-          <FormItem label="招聘数量">
+          <FormItem label="招聘数量" prop="amount">
             <InputNumber  v-model="entity.amount" :activeChange="false" :min="1" :parser="value => value ? Math.ceil(value).toString() : ''"/>
           </FormItem>
         </Col>
@@ -302,8 +302,8 @@
           customerId: [
             { required: true, type: 'number', message: '请选择客户', trigger: 'change' }
           ],
-          department: [
-            { required: true, type: 'string', message: '请填写客户部门', trigger: 'change' }
+          amount: [
+            { required: true, type: 'number', message: '请填写招聘人数', trigger: 'change' }
           ],
           priority: [
             { required: true, type: 'number', message: '请选择项目优先级', trigger: 'change' }
