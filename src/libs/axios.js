@@ -30,6 +30,8 @@ axios.interceptors.response.use(response => {
     switch (data.code) {
       case 400:
         Message.error(data.message || '请求处理异常');
+        console.log(data.data)
+        return Promise.reject(data.data);
         break;
       case 401:
       case 403:
@@ -43,7 +45,7 @@ axios.interceptors.response.use(response => {
         return Promise.resolve(data.data);
     }
   }
-  return Promise.reject(null);
+  return Promise.reject(data.data);
 }, (err) => {
   // 返回状态码不为200时候的错误处理
   Message.error(err.toString());

@@ -170,6 +170,14 @@
             align: 'center'
           },
           {
+            title: '创建时间',
+            key: 'createTime',
+            align: 'center',
+            render: (h, params) => {
+              return h('span', getDateTime(params.row.createTime))
+            }
+          },
+          {
             title: '角色',
             key: 'roleName',
             align: 'center'

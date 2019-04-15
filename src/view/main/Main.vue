@@ -1,5 +1,11 @@
 <style lang="less">
   @import "./main.less";
+  .add-btns {
+    position: absolute;
+    right: 150px;
+    top: 15px;
+    width: 300px;
+  }
 </style>
 
 <template>
@@ -31,7 +37,12 @@
           </div>
         </div>
         <div class="header-avator-con">
-          <full-screen v-model="isFullScreen" @on-change="fullscreenChange"></full-screen>
+          <div class="add-btns">
+            <Button type="primary" class="mr-10" v-if="roleId != 8" @click="goto('/talent/talent-edit')">添加人才</Button>
+            <Button type="primary" class="mr-10" v-if="roleId == 3" @click="goto('/customer/customer-edit')">添加客户</Button>
+            <Button type="primary" v-if="roleId == 3" @click="goto('/project/project-edit')">添加项目</Button>
+          </div>
+          <!--<full-screen v-model="isFullScreen" @on-change="fullscreenChange"></full-screen>-->
           <!--<Dropdown @on-click="handleLanDropdown" class="options">-->
             <!--<Icon type="md-globe" :size="24" class="language"></Icon>-->
             <!--<DropdownMenu slot="list">-->
@@ -76,6 +87,7 @@
 </template>
 
 <script>
+  import { getUserInfoByKey } from "../../libs/tools";
   import shrinkableMenu from "./components/shrinkable-menu/shrinkable-menu.vue";
   import tagsPageOpened from "./components/tags-page-opened.vue";
   import breadcrumbNav from "./components/breadcrumb-nav.vue";
@@ -100,6 +112,7 @@
     },
     data() {
       return {
+        roleId: getUserInfoByKey('roleId'),
         minLogo,
         maxLogo,
         shrink: false,
@@ -143,6 +156,9 @@
       }
     },
     methods: {
+      goto(path) {
+        this.$router.push(path);
+      },
       init() {
         let pathArr = util.setCurrentPath(this, this.$route.name);
         // this.$store.commit("updateMenulist");

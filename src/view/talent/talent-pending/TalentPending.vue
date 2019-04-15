@@ -32,7 +32,7 @@
           <FormItem label="候选人基本情况" class="ivu-form-item-required">
             <Input type="textarea" :rows="3" v-model="remind.situation"/>
           </FormItem>
-          <FormItem label="求职方向不离职原因" class="ivu-form-item-required">
+          <FormItem label="求职方向及离职原因" class="ivu-form-item-required">
             <Input type="textarea" :rows="3" v-model="remind.cause"/>
           </FormItem>
           <FormItem label="薪资架构" class="ivu-form-item-required">
@@ -47,6 +47,11 @@
             <Input v-model="remind.meetAddress"/>
           </FormItem>
         </div>
+        <FormItem label="客户：" prop="customerId">
+          <Select placeholder="请选择客户" filterable clearable v-model="remind.customerId">
+            <Option v-for="(item, index) of customerList" :key="'customer' + index" :value="item.id">{{ item.name }}</Option>
+          </Select>
+        </FormItem>
         <FormItem label="人才状态：" prop="status">
           <Select v-model="remind.status">
             <Option v-for="(item, index) of talentStatus" :key="'status' + index" :value="item.value">{{ item.label }}</Option>
@@ -77,6 +82,7 @@
   import { talentStatus } from "../../../libs/constant";
   import { getUserId, getStatusRender, toggleShow, getDateTime, getRenderList, globalSearch } from "../../../libs/tools";
   import { talentPendingList } from "../../../api/count";
+  import { getListByTableName } from "../../../api/common";
   import { addRemind, finishRemind } from "../../../api/talent";
 
   export default {
@@ -164,11 +170,11 @@
                 case 1:
                   return h('span', `跟踪记录：${params.row.remark}`);break;
                 case 2:
-                  const data = [`人才基本情况：${params.row.situation}`, `不离职原因：${params.row.cause}`, `薪资架构：${params.row.salary}`];
+                  const data = [`人才基本情况：${params.row.situation}`, `离职原因：${params.row.cause}`, `薪资架构：${params.row.salary}`];
                   return getRenderList(h, JSON.stringify(data));
                   break;
                 case 3:
-                  const list = [`面试时间：${getDateTime(params.row.meetTime)}`, `面试地点：${params.row.meetAddress}`];
+                  const list = [`面试时间：${getDateTime(params.row.meetTime)}`, `面试地点：${params.row.meetAddress}`, `人才基本情况：${params.row.situation}`, `离职原因：${params.row.cause}`, `薪资架构：${params.row.salary}`];
                   return getRenderList(h, JSON.stringify(list));
               }
             }
@@ -240,8 +246,13 @@
           status: [
             { required: true, type: 'number', message: '请选择状态', trigger: 'change' }
           ],
+          customerId: [
+            { required: true, type: 'number', message: '请选择客户', trigger: 'change' }
+          ],
         },
         finishId: null, // 结束跟进id
+        customerList: [],
+        talentType: null,
       }
     },
     methods: {
@@ -263,7 +274,6 @@
           talentId: null,
           adviserId: null,
           followRemindId: null,
-          talentType: null,
           customerId: null
         };
       },
@@ -338,6 +348,9 @@
     },
     created() {
       this.searchData.userId = getUserId();
+      getListByTableName({ type: 1 }).then(data => {
+        this.customerList = data || [];
+      }).catch(data => {});
     },
   }
 </script>

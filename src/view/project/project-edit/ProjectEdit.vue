@@ -42,13 +42,13 @@
           </FormItem>
         </Col>
         <Col span="8" v-if="entity.id">
-          <FormItem label="首推时间">
-            <DatePicker :disabled="true" type="datetime" plactholder="首推时间" v-model="entity.firstApplyTime"/>
+          <FormItem label="首推时间" prop="firstApplyTime">
+            <DatePicker plactholder="首推时间" v-model="entity.firstApplyTime"/>
           </FormItem>
         </Col>
         <Col span="8">
-          <FormItem label="计划完成时间">
-            <DatePicker type="datetime" plactholder="计划完成时间" v-model="entity.finishTime"/>
+          <FormItem label="计划完成时间" prop="finishTime">
+            <DatePicker plactholder="计划完成时间" v-model="entity.finishTime"/>
           </FormItem>
         </Col>
         <Col span="8">
@@ -259,7 +259,7 @@
         departmentsFilter: [], // select部门过滤
         entity: {
           customerId: null, // 关联客户
-          department: null, // 部门
+          // department: null, // 部门
           name: null, // 名称
           matches: [], // 匹配条件
           amount: null, //招聘数量
@@ -317,6 +317,12 @@
           aptness: [
             { required: true, type: 'array', message: '请选择职能', trigger: 'change' }
           ],
+          firstApplyTime: [
+            { required: true, type: 'date', message: '请选择首推时间', trigger: 'change' }
+          ],
+          finishTime: [
+            { required: true, type: 'date', message: '请选择预计完成时间', trigger: 'change' }
+          ]
         },
       }
     },
@@ -390,9 +396,6 @@
       }
     },
     created() {
-      // getListByTableName({ type: 1 }).then(data => {
-      //   this.customerList = data || [];
-      // }).catch(data => {});
       findProjectCustomers({}).then(data => {
         this.customerList = data || [];
       }).catch(data => {});

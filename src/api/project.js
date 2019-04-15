@@ -55,3 +55,8 @@ export const addReport = (params) => {
 export const reviewTalent = (params) => {
   return postRequest('/project/talent/review', params);
 };
+
+// 获取对当前用户开放的项目
+export const openByUserId = (params) => {
+  return getRequest('/project/openByUserId', params);
+};

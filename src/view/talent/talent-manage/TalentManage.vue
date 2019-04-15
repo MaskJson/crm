@@ -36,7 +36,7 @@
         <Button type="primary" @click="showFavoriteSetting = true">客户收藏夹管理</Button>
       </SearchItem>
     </div>
-    <ManagerView class="talent-manager" ref="manager" :del="false" :save="{save: true}" route="/talent/talent-edit" :columns="columns" :searchData="searchParams"/>
+    <ManagerView class="talent-manager" ref="manager" :del="false" :save="{save: true}" @on-error="errorHandler" route="/talent/talent-edit" :columns="columns" :searchData="searchParams"/>
     <Drawer :width="360" title="人才收藏夹管理" :closable="false" v-model="showFavoriteSetting">
       <favorite-setting :type="2" @on-change="setFolders"/>
     </Drawer>
@@ -53,7 +53,7 @@
         <FormItem label="沟通记录" v-if="remind.type == 1" class="ivu-form-item-required">
           <Input type="textarea" :rows="3" v-model="remind.remark"/>
         </FormItem>
-        <div v-if="remind.type == 2">
+        <div v-if="remind.type == 2 || remind.type == 3">
           <FormItem label="候选人基本情况" class="ivu-form-item-required">
             <Input type="textarea" :rows="3" v-model="remind.situation"/>
           </FormItem>
@@ -75,6 +75,11 @@
         <FormItem label="人才状态：" prop="status">
           <Select v-model="remind.status">
             <Option v-for="(item, index) of talentStatus" :key="'status' + index" :value="item.value">{{ item.label }}</Option>
+          </Select>
+        </FormItem>
+        <FormItem label="客户：" prop="customerId">
+          <Select placeholder="请选择客户" filterable clearable v-model="remind.customerId">
+            <Option v-for="(item, index) of customerList" :key="'customer' + index" :value="item.id">{{ item.name }}</Option>
           </Select>
         </FormItem>
         <FormItem label="下次跟踪类别" prop="remindTypeId">
@@ -101,13 +106,17 @@
         <FormItem label="人才：">
           {{ talentName }}
         </FormItem>
-        <FormItem label="项目：">
+        <FormItem label="项目：" prop="projectId">
           <Select v-model="projectTalent.projectId" placeholder="请选择项目">
-            <Option v-for="(item, index) of projectFilter" :value="item.id" :key="'project' + index">{{ item.name }}</Option>
+            <Option :disabled="talentProjects.indexOf(item.id) > -1" v-for="(item, index) of projects" :value="item.id" :key="'project' + index">
+              {{ item.name }}
+              <span v-show="talentProjects.indexOf(item.id) > -1">{{`（已处于该项目进展中）`}}</span>
+            </Option>
           </Select>
         </FormItem>
       </Form>
     </ModalUtil>
+    <SpinUtil :show="show"/>
   </Card>
 </template>
 
@@ -116,8 +125,9 @@
   import { list, toggleFollow, toggleType, addRemind } from "../../../api/talent";
   import cityList from '../../../libs/cityList';
   import FavoriteSetting from '../../components/favorite-setting';
-  import { addProjectTalent } from "../../../api/project";
+  import { addProjectTalent, openByUserId } from "../../../api/project";
   import { getListByTableName } from "../../../api/common";
+  import { talentStatus } from "../../../libs/constant";
 
   export default {
     name: "TalentManage",
@@ -142,6 +152,7 @@
     },
     data() {
       return {
+        talentStatus: talentStatus,
         userId: null,
         show: false,
         showFavoriteSetting: false,
@@ -181,7 +192,7 @@
                   },
                   on: {
                     click: () => {
-                      this.$router.push({ path: '/talent/talent-detail', query: {id: params.row.talentId}});
+                      this.$router.push({ path: '/talent/talent-detail', query: {id: params.row.id}});
                     }
                   }
                 }, params.row.name)
@@ -239,7 +250,7 @@
           {
             title: '操作',
             align: 'center',
-            width: 300,
+            width: 400,
             render: (h, params) => {
               const { followUserId } = params.row;
               const btn = [
@@ -349,6 +360,7 @@
                     on: {
                       click: () => {
                         this.remind.talentId = params.row.id;
+                        this.talentType = params.row.type;
                         toggleShow(this, 'remind');
                       }
                     }
@@ -400,6 +412,9 @@
           status: [
             { required: true, type: 'number', message: '请选择状态', trigger: 'change' }
           ],
+          customerId: [
+            { required: true, type: 'number', message: '请选择客户', trigger: 'change' }
+          ],
         },
         projectTalent: {
           createUserId: getUserId(),
@@ -415,6 +430,8 @@
         },
         projects: [], // 所有项目
         talentProjects: [], // 当前人才已关联的项目
+        customerList: [], // 所有客户
+        talentType: null,
       }
     },
     methods: {
@@ -426,7 +443,7 @@
           status: 0,
           type: 1
         }
-        this.$refs['projectTalent']
+        this.$refs['projectTalent'].resetFields();
       },
       resetRemind() {
         this.remind = {
@@ -444,6 +461,7 @@
           followRemindId: null,
           customerId: null
         };
+        this.$refs['addRemind'].resetFields();
       },
       setFolders(list) {
         this.folders = list;
@@ -464,7 +482,7 @@
       addRemind() {
         this.$refs['addRemind'].validate(valid => {
           if (valid) {
-            const talentType = this.entity.type;
+            const talentType = this.talentType;
             const params = this.remind;
             if (params.type == 1 && !params.remark) {
               this.$Message.warning('电话面试需要填写沟通记录');
@@ -486,13 +504,11 @@
               this.$Message.warning('专属人才必须选择下次跟踪类别和时间');
               return false;
             }
-            params.talentId = this.entity.id;
             params.createUserId = getUserId();
             this.show = true;
             addRemind(params).then(data => {
               this.show = false;
               toggleShow(this, 'remind', false);
-              this.getAllRemind(this.entity.id);
             }).catch(data => { this.show = false; })
           }
         })
@@ -507,6 +523,14 @@
             }).catch(data => {this.show = false});
           }
         })
+      },
+      errorHandler(type, data, params) {
+        console.log(type, data, params)
+        if (type == 'toggleType') {
+          if (data == 'info') {
+            this.$router.push({ path: '/talent/talent-edit', query: {id: params.id, zhuanshu: '110'}})
+          }
+        }
       }
     },
     provide() {
@@ -520,9 +544,15 @@
     },
     created() {
       this.userId = getUserId();
-      getListByTableName({ type: 3 }).then(data => {
+      getListByTableName({ type: 1 }).then(data => {
+        this.customerList = data || [];
+      }).catch(data => {});
+      openByUserId({ userId: getUserId() }).then(data => {
         this.projects = data || [];
       }).catch(data => {});
+      // getListByTableName({ type: 3 }).then(data => {
+      //   this.projects = data || [];
+      // }).catch(data => {});
     }
   }
 </script>

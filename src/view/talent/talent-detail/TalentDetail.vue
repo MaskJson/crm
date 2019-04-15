@@ -5,7 +5,7 @@
         <h2>{{entity.name}}</h2>
       </Col>
       <Col span="16" class="t-right">
-        <Button type="primary" @click="edit" v-if="entity.id && (!entity.followUserId || entity.followUserId == userId)">编辑</Button>
+        <Button type="primary" class="mr-10" @click="edit" v-if="entity.id && (!entity.followUserId || entity.followUserId == userId)">编辑</Button>
         <Button type="primary" icon="md-star" :disabled="!entity.id || (entity.followUserId && entity.followUserId != userId)" @click="toggleFollow">{{entity.follow ? '取消关注' : '关注客户'}}</Button>
         <Button type="primary" class="ml-10" v-if="!entity.projectCount" :disabled="!entity.id || entity.projectCount || (entity.followUserId && entity.followUserId != userId)" @click="toggleBind('remind')">添加跟踪摘要</Button>
         <Button type="primary" class="ml-10" :disabled="!entity.id || (entity.followUserId && entity.followUserId != userId)" @click="toggleBind('bind')">加入到收藏夹</Button>
@@ -114,6 +114,11 @@
             <Option v-for="(item, index) of talentStatus" :key="'status' + index" :value="item.value">{{ item.label }}</Option>
           </Select>
         </FormItem>
+        <FormItem label="客户：">
+          <Select placeholder="请选择客户" filterable clearable v-model="remind.customerId">
+            <Option v-for="(item, index) of customerList" :key="'customer' + index" :value="item.id">{{ item.name }}</Option>
+          </Select>
+        </FormItem>
         <FormItem label="下次跟踪类别" prop="remindTypeId">
           <Select v-model="remind.nextType">
             <Option :value="0">请选择</Option>
@@ -142,6 +147,7 @@
   import { getTalentInfoUtil, getProjectStatus, getDateTime, getStatusRender, toggleShow, getUserId, getProjectTalentStatus } from "../../../libs/tools";
   import { getDetail, toggleFollow, getAllRemind, addRemind, toggleType, getTalentProjects } from "../../../api/talent";
   import { talentStatus } from "../../../libs/constant";
+  import { getListByTableName } from "../../../api/common";
   import Detail from './components/detail';
   import { bindFolder } from "../../../api/folder";
   import FavoriteSetting from '../../components/favorite-setting';
@@ -190,6 +196,7 @@
         talentProject: [],
         remindList: [], // 跟踪记录
         projectList: [],// 项目经历
+        customerList: [], // 客户列表
         remind: { // 添加提醒条件
           type: null, // 本次跟踪类别
           status: null, // 人才状态
@@ -243,11 +250,6 @@
           {
             title: '所属客户名称',
             key: 'customerName',
-            align: 'center'
-          },
-          {
-            title: '部门',
-            key: 'departmentName',
             align: 'center'
           },
           {
@@ -399,6 +401,9 @@
         this.init(id);
         this.getProjectList(id);
       }
+      getListByTableName({ type: 1 }).then(data => {
+        this.customerList = data || [];
+      }).catch(data => {});
     }
   }
 </script>

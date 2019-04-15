@@ -166,9 +166,9 @@
                 });
               }
               this.showSpin = false;
-            }).catch(res => {
+            }).catch(data => {
               this.showSpin = false;
-              this.$emit('on-error', type);
+              this.$emit('on-error', type, data, handlerData);
             })
           } else {
             handler(handlerData);

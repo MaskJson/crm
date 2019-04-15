@@ -11,7 +11,7 @@
           </FormItem>
         </Col>
         <Col span="8">
-          <FormItem label="性别：">
+          <FormItem label="性别：" prop="sex">
             <RadioGroup v-model="entity.sex">
               <Radio :label="0">男</Radio>
               <Radio :label="1">女</Radio>
@@ -147,14 +147,14 @@
                   </div>
                 </div>
                 <FormItem label="任职时间">
-                  <DatePicker type="datetime" placeholder="开始时间" v-model="entity.experienceList[index].startTime" class="w200"></DatePicker>
-                  <DatePicker type="datetime" placeholder="结束时间" v-model="entity.experienceList[index].endTime" class="w200 ml-10"></DatePicker>
+                  <DatePicker placeholder="开始时间" v-model="entity.experienceList[index].startTime" class="w200"></DatePicker>
+                  <DatePicker placeholder="结束时间" v-model="entity.experienceList[index].endTime" class="w200 ml-10"></DatePicker>
                   <Checkbox class="ml-5" v-model="entity.experienceList[index].status" @on-change="statusChange(index)">至今</Checkbox>
                 </FormItem>
-                <FormItem label="工作职责" class="mt-10">
+                <FormItem label="工作职责" class="mt-20" prop="remark" class="left80">
                   <Input v-model="entity.experienceList[index].remark" type="textarea" :rows="3" placeholder="" class="w500" />
                 </FormItem>
-                <FormItem label="工作业绩" class="mt-10">
+                <FormItem label="工作业绩" class="mt-20" prop="performance" class="left80">
                   <Input v-model="entity.experienceList[index].performance" placeholder="" class="w500" />
                 </FormItem>
                 <FormItem class="mt-20">
@@ -302,8 +302,10 @@
           <Input v-model="remind.meetAddress"/>
         </FormItem>
       </div>
-      <FormItem label="客户">
-        <Select placeholder="请选择客户"></Select>
+      <FormItem label="客户：" prop="customerId">
+        <Select placeholder="请选择客户" filterable clearable v-model="remind.customerId">
+          <Option v-for="(item, index) of allCustomers" :key="'customer' + index" :value="item.id">{{ item.name }}</Option>
+        </Select>
       </FormItem>
       <FormItem label="下次跟踪类别" prop="remindTypeId">
         <Select v-model="remind.nextType">
@@ -420,6 +422,9 @@
           name: [
             { required: true, type: 'string', message: '请输入姓名', trigger: 'blur' }
           ],
+          sex: [
+            { required: true, type: 'number', message: '请选择性别', trigger: 'change' }
+          ],
           status: [
             { required: true, type: 'number', message: '请选择状态', trigger: 'change' }
           ],
@@ -439,6 +444,12 @@
           ],
           position: [
             { required: true, type: 'string', message: '请输入职位', trigger: 'change' }
+          ],
+          remark: [
+            { required: false, type: 'string', message: '请输入工作职责', trigger: 'blur' }
+          ],
+          performance: [
+            { required: false, type: 'string', message: '请输入工作业绩', trigger: 'blur' }
           ],
         },
         friends: [
@@ -478,7 +489,6 @@
           meetTime: null, // 面试时间
           meetAddress: null, // 面试地点
           talentId: null,
-          adviserId: null,
           followRemindId: null,
           customerId: null
         },
@@ -488,6 +498,9 @@
           ],
           status: [
             { required: true, type: 'number', message: '请选择状态', trigger: 'change' }
+          ],
+          customerId: [
+            { required: true, type: 'number', message: '请选择客户', trigger: 'change' }
           ],
         }
       }
@@ -699,23 +712,27 @@
             flag = false
           }
         });
-        if (this.entity.type && (this.entity.sex == null || !this.entity.phone || !this.entity.position)) {
-          this.$Message.warning("专属人才必须完善性别、手机号、意向职位等信息");
+        if (!flag) {
+          this.$Message.error('请完善人才信息必选项');
+          return;
+        }
+        if (this.entity.type && (this.entity.sex == null || !this.entity.phone)) {
+          this.$Message.warning("专属人才必须完善性别、手机号");
           return false;
         }
         let toNow = false;
         this.entity.experienceList.forEach((item, index) => {
+          if (item.status) {
+            toNow = true;
+          }
           this.$refs['itemForm' + index][0].validate((valid) => {
             if (!valid) {
               flag = false;
-              if (item.status) {
-                toNow = true;
-              }
             }
           });
         });
         if (!toNow) {
-          this.$Message.warning("请勾最近一份工作经历（至今）");
+          this.$Message.warning("请勾选最近一份工作经历（至今）");
           return;
         }
         this.friends.forEach((item, index) => {
@@ -823,16 +840,6 @@
     },
     created() {
       this.userId = getUserId();
-      const query = this.$route.query || {};
-      const {id, projectId} = query;
-      if (projectId) {
-        this.projectId = Number(projectId);
-        this.entity.status = 10;
-        this.entity.projectId = Number(projectId);
-      }
-      if (id) {
-        this.init(Number(id));
-      }
       getListByTableName({type: 1}).then(data => {
         this.allCustomers = data || [];
       }).catch(data => {});
@@ -842,6 +849,21 @@
       allDepartment({}).then(data => {
         this.allDepartment = data;
       }).catch(data => {});
+      const query = this.$route.query || {};
+      const {id, projectId, zhuanshu} = query;
+      if (!!zhuanshu) {
+        this.entityRule.phone[0].required = this.experienceRules.remark[0].required = this.experienceRules.performance[0].required = true;
+        this.$Message.warning('列为专属，必须完善手机号和工作经历的所有信息');
+      }
+      if (projectId) {
+        this.projectId = Number(projectId);
+        this.entity.status = 10;
+        this.entity.projectId = Number(projectId);
+      }
+      if (id) {
+        this.init(Number(id));
+      }
+
     }
   }
 </script>

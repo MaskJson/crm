@@ -194,6 +194,7 @@
       getProjectTalent() {
         this.show = true;
         getProjectTalentByStatus({
+          userId: getUserId(),
           id: this.id,
           status: Number(this.status)
         }).then(data => {

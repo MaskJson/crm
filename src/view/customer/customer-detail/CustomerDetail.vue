@@ -320,6 +320,7 @@
             addRemind(remind).then(data => {
               this.show = false;
               toggleShow(this, 'remind');
+              this.entity.type = remind.status;
               this.getRemindList(this.entity.id);
             }).catch(data => {this.show = false;})
           }
