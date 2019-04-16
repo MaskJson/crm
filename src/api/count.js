@@ -48,3 +48,8 @@ export const getRecommends = (params) => {
 export const homeCount = (params) => {
   return getRequest('/count/home', params);
 };
+
+// 项目进展提醒列表
+export const progressList = (params) => {
+  return getRequest('/count/project/progress', params);
+};

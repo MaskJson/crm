@@ -1,9 +1,22 @@
 <template>
   <Card>
     <Form ref="entity" :model="entity" :rules="entityRule" :label-width="120">
-      <Row>
-        <Col span="8"></Col>
-      </Row>
+      <!--<Row>-->
+        <!--<Col span="8">-->
+          <!--<Upload-->
+            <!--action="/api/common/upload"-->
+            <!--:on-success="resumeSuccess"-->
+            <!--:on-error="resumeError"-->
+          <!--&gt;-->
+            <!--<div style="width: 58px;height:58px;line-height: 58px;">-->
+              <!--<Icon type="ios-camera" size="20"></Icon>-->
+            <!--</div>-->
+          <!--</Upload>-->
+        <!--</Col>-->
+        <!--<Col span="8">-->
+
+        <!--</Col>-->
+      <!--</Row>-->
       <Row>
         <Col span="8">
           <FormItem label="姓名：" prop="name">
@@ -269,7 +282,6 @@
         </Select>
       </FormItem>
     </Form>
-
     <!--  添加跟踪记录 -->
     <Form ref="addRemind" :model="remind" :rules="remindRule" :label-width="120" v-if="entity.status != 10 && !entity.id && !projectId">
       <FormItem label="本次跟踪类别" prop="remindTypeId">
@@ -506,6 +518,13 @@
       }
     },
     methods: {
+      resumeSuccess(file, res) {
+        console.log(file)
+        console.log(res)
+      },
+      resumeError(res) {
+
+      },
       // 添加工作经历
       addExperience () {
         this.entity.experienceList.push({
