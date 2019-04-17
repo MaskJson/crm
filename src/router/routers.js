@@ -26,7 +26,10 @@ export const otherRouter = {
       meta: {
         hideInMenu: true,
         title: '首页',
-        notCache: true
+        notCache: true,
+        meta: {
+          title: '首页'
+        }
       },
       component: () => import('@/view/home/home.vue')
     }
