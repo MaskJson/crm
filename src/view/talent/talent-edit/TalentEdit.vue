@@ -170,7 +170,7 @@
             <div class="borderB pd-10" v-for="(item, index) in entity.experienceList" :key="'form' + index">
               <Form :model="item" :rules="experienceRules" :label-width="80" :ref="'itemForm' + index">
                 <FormItem label="公司名称" class="mt-10 myItem relative left80" prop="company" style="margin-bottom: 20px;">
-                  <Input v-model="entity.experienceList[index].company" placeholder="请输入公司名称" @on-focus="showList(index, 0, true)" @on-blur="" @on-change="findCustomerByName(index, 0, true)" class="w500"></Input>
+                  <Input v-model="entity.experienceList[index].company" placeholder="请输入公司名称" @on-focus="showList(index, 0, true)" @on-blur="" @on-change="findCustomerByName(index, 0, true)" class="w500 zzz"></Input>
                   <div class="borderB nameList" v-if="item.showList && actionIndex == index && actionType === true">
                     <li class="border bgfff company-item" v-if="customers && customers.length == 0">暂无数据</li>
                     <li class="border bgfff company-item cursor" v-for="(customer, index2) of customers" :key="'customer1' + index2" @click="setName(customer.name, index, 0)">
@@ -181,7 +181,7 @@
                 <div>
                   <div class="inline-block w240">
                     <FormItem label="部门" class="mt-10 myItem left80" prop="department" style="margin-bottom: 20px;">
-                      <Input v-model="entity.experienceList[index].department" :disabled="!entity.experienceList[index].company" placeholder="请输入部门" @on-focus="showList(index, 0, false)" @on-blur="" @on-change="findCustomerByName(index, 0, false)" class="w200" style="width: 180px;" />
+                      <Input v-model="entity.experienceList[index].department" :disabled="!entity.experienceList[index].company" placeholder="请输入部门" @on-focus="showList(index, 0, false)" @on-blur="" @on-change="findCustomerByName(index, 0, false)" class="w200 zzz" style="width: 180px;" />
                       <div class="borderB nameList" style="width: 180px; z-index: 99999999;" v-if="item.showList2 && actionIndex == index && actionType === false">
                         <li class="border bgfff company-item" v-if="departments && departments.length == 0">暂无数据</li>
                         <li class="border bgfff company-item cursor" v-for="(department, index2) of departments" :key="'department1' + index2" @click="setName2(department.name, index, 0)">
@@ -254,7 +254,7 @@
                   <Input v-model="friends[index].name" placeholder="请输入名字" class="w300" />
                 </FormItem>
                 <FormItem label="公司名称" class="mT10 myItem left80" prop="company" style="margin-bottom: 20px;">
-                  <Input v-model="friends[index].company" placeholder="请输入公司名称" @on-focus="showList(index, 1, true)" @on-blur="" @on-change="findCustomerByName(index, 1, true)" class="w300" />
+                  <Input v-model="friends[index].company" placeholder="请输入公司名称" @on-focus="showList(index, 1, true)" @on-blur="" @on-change="findCustomerByName(index, 1, true)" class="w300 zzz" />
                   <div class="borderB nameList" style="width: 300px;" v-if="item.showList && actionFriendIndex == index && actionType === true">
                     <li class="border bgfff company-item" v-if="customers && customers.length == 0">暂无数据</li>
                     <li class="border bgfff company-item cursor" v-for="(customer, index2) of customers" :key="'customer2' + index2" @click="setName(customer.name, index, 1)">
@@ -263,7 +263,7 @@
                   </div>
                 </FormItem>
                 <FormItem label="部门" class="mt-10 myItem left80" prop="department" style="margin-bottom: 20px;">
-                  <Input v-model="friends[index].department" placeholder="请输入部门" class="w300" @on-focus="showList(index, 1, false)" @on-blur="" @on-change="findCustomerByName(index, 1, false)" />
+                  <Input v-model="friends[index].department" placeholder="请输入部门" class="w300 zzz" @on-focus="showList(index, 1, false)" @on-blur="" @on-change="findCustomerByName(index, 1, false)" />
                   <div class="borderB nameList" style="width: 300px;" v-if="item.showList2 && actionFriendIndex == index && actionType === false">
                     <li class="border bgfff company-item" v-if="departments && departments.length == 0">暂无数据</li>
                     <li class="border bgfff company-item cursor" v-for="(department, index2) of departments" :key="'department2' + index2" @click="setName2(department.name, index, 1)">
@@ -289,7 +289,7 @@
             <div class="borderB pd-10" v-for="(item, index) in chances" :key="'chance' + index">
               <Form :model="item" :rules="chanceRule" :label-width="80" :ref="'chance' + index">
                 <FormItem label="公司名称" class="mt-10 myItem left80" prop="company" style="margin-bottom: 20px;">
-                  <Input v-model="chances[index].company" placeholder="请输入公司名称" @on-focus="showList(index, 2, true)" @on-blur="" @on-change="findCustomerByName(index, 2, true)" class="w300" />
+                  <Input v-model="chances[index].company" placeholder="请输入公司名称" @on-focus="showList(index, 2, true)" @on-blur="" @on-change="findCustomerByName(index, 2, true)" class="w300 zzz" />
                   <div class="borderB nameList" style="width: 300px;" v-if="item.showList && actionChanceIndex == index && actionType === true">
                     <li class="border bgfff company-item" v-if="customers && customers.length == 0">暂无数据</li>
                     <li class="border bgfff company-item cursor" v-for="(customer, index2) of customers" :key="'customer' + index2" @click="setName(customer.name, index, 2)">
@@ -897,7 +897,7 @@
         // this.customers = [];
         // this.departments = [];
         const e = event || window.event;
-        if (e.srcElement.className.indexOf('input') < 0) {
+        if (e.srcElement.parentElement.className.indexOf('zzz') < 0) {
           this.entity.experienceList.forEach((item, index, array) => {
             if (index == this.actionIndex) {
               setTimeout(() => {
