@@ -1,22 +1,59 @@
 <template>
   <Card>
     <Form ref="entity" :model="entity" :rules="entityRule" :label-width="120">
-      <!--<Row>-->
-        <!--<Col span="8">-->
-          <!--<Upload-->
-            <!--action="/api/common/upload"-->
-            <!--:on-success="resumeSuccess"-->
-            <!--:on-error="resumeError"-->
-          <!--&gt;-->
-            <!--<div style="width: 58px;height:58px;line-height: 58px;">-->
-              <!--<Icon type="ios-camera" size="20"></Icon>-->
-            <!--</div>-->
-          <!--</Upload>-->
-        <!--</Col>-->
-        <!--<Col span="8">-->
-
-        <!--</Col>-->
-      <!--</Row>-->
+      <Row>
+        <Col span="8">
+          <FormItem label="简历：">
+            <Upload
+              v-if="!entity.resume"
+              action="/api/common/upload"
+              :on-success="resumeSuccess"
+              :on-error="resumeError"
+              :format="['doc', 'docx', 'pdf']"
+              :show-upload-list="false"
+              :max-size="5120"
+              :on-format-error="formatErrorResume"
+              :on-exceeded-size="sizeError"
+            >
+              <Button icon="ios-cloud-upload-outline">Upload files</Button>
+            </Upload>
+            <div class="demo-upload-list" v-if="entity.resume">
+              <Icon type="ios-list-box" class="img block" size="60"/>
+              <div class="demo-upload-list-cover">
+                <Icon type="ios-trash-outline" @click.native="handleRemove2"></Icon>
+              </div>
+            </div>
+            <Input v-model="entity.resume" class="hide"/>
+          </FormItem>
+        </Col>
+        <Col span="8" offset="8">
+          <FormItem label="头像：">
+            <Upload
+              v-if="!entity.header"
+              action="/api/common/upload"
+              :on-success="headerSuccess"
+              :on-error="headerError"
+              :format="['jpg', 'jpeg', 'png', 'svg']"
+              :show-upload-list="false"
+              :max-size="5120"
+              :on-format-error="formatErrorHeader"
+              :on-exceeded-size="sizeError"
+            >
+              <div class="border center cursor" style="width: 58px;height:58px;line-height: 58px;">
+                <Icon type="ios-camera" size="20"></Icon>
+              </div>
+            </Upload>
+            <div class="demo-upload-list" v-if="entity.header">
+              <img :src="imgBaseUrl + entity.header">
+              <div class="demo-upload-list-cover">
+                <Icon type="ios-eye-outline" @click.native="handleView(entity.header)"></Icon>
+                <Icon type="ios-trash-outline" @click.native="handleRemove"></Icon>
+              </div>
+            </div>
+            <Input v-model="entity.header" class="hide"/>
+          </FormItem>
+        </Col>
+      </Row>
       <Row>
         <Col span="8">
           <FormItem label="姓名：" prop="name">
@@ -339,6 +376,11 @@
     <div class="center mt-10">
       <Button type="primary" class="w120" :disabled="checkPhoneStatus || phoneError || (!!entity.followUserId && entity.followUserId != userId)" @click="checkSubmit">提交</Button>
     </div>
+    <Modal title="View Image" v-model="visible" :width="600">
+      <div class="center">
+        <img :src="imgBaseUrl + imgName" v-if="visible" style="max-width: 578px;">
+      </div>
+    </Modal>
     <SpinUtil :show="show"/>
   </Card>
 </template>
@@ -352,6 +394,7 @@
   import { allCustomer, allDepartment } from "../../../api/customer";
   import { getListByTableName } from "../../../api/common";
   import { checkByPhone, getDetail, save } from "../../../api/talent";
+  import { imgBaseUrl } from "../../../config";
 
   export default {
     name: "TalentEdit",
@@ -361,6 +404,9 @@
     },
     data() {
       return {
+        imgName: null,
+        visible: false,
+        imgBaseUrl: imgBaseUrl,
         userId: null,
         projectId: null, // 添加项目人才
         phoneError: false,
@@ -518,12 +564,40 @@
       }
     },
     methods: {
-      resumeSuccess(file, res) {
-        console.log(file)
-        console.log(res)
+      handleRemove() {
+        this.entity.header = null;
+      },
+      handleRemove2() {
+        this.entity.resume = null;
+      },
+      handleView (name) {
+        this.imgName = name;
+        this.visible = true;
+      },
+      resumeSuccess(res) {
+        if (res.code == 200) {
+          this.entity.resume = res.data;
+        }
+      },
+      headerSuccess(res) {
+        if (res.code == 200) {
+          this.entity.header = res.data;
+        }
       },
       resumeError(res) {
 
+      },
+      headerError() {
+
+      },
+      formatErrorResume() {
+        this.$Message.error('请上传doc,docx,pdf等格式的文件');
+      },
+      formatErrorHeader() {
+        this.$Message.error('请上传jpg,jpeg,png,svg等格式的文件');
+      },
+      sizeError() {
+        this.$Message.error('请上传5M以内的文件');
       },
       // 添加工作经历
       addExperience () {
@@ -915,5 +989,41 @@
   }
   .w240 {
     width: 280px;
+  }
+  .demo-upload-list{
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    text-align: center;
+    line-height: 60px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #fff;
+    position: relative;
+    box-shadow: 0 1px 1px rgba(0,0,0,.2);
+    margin-right: 4px;
+  }
+  .demo-upload-list img, .demo-upload-list .img{
+    width: 100%;
+    height: 100%;
+  }
+  .demo-upload-list-cover{
+    display: none;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,.6);
+  }
+  .demo-upload-list:hover .demo-upload-list-cover{
+    display: block;
+  }
+  .demo-upload-list-cover i{
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    margin: 0 2px;
   }
 </style>

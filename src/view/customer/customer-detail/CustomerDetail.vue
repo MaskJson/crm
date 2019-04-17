@@ -5,7 +5,8 @@
         <h2>{{entity.name}}</h2>
       </Col>
       <Col span="16" class="t-right">
-        <Button type="primary" v-if="entity.followUserId == userId || !entity.followUserId" :disabled="!entity.id" @click="toggleBindFollowUser">{{entity.followUserId ? '取消列名' : '列名'}}</Button>
+        <Button type="primary" v-if="entity.followUserId == userId || !entity.followUserId" :disabled="!entity.id" @click="edit">编辑</Button>
+        <Button type="primary" v-if="entity.followUserId == userId || !entity.followUserId" :disabled="!entity.id" class="ml-10" @click="toggleBindFollowUser">{{entity.followUserId ? '取消列名' : '列名'}}</Button>
         <Button type="primary" v-if="entity.followUserId == userId || !entity.followUserId" class="ml-10" icon="md-star" :disabled="!entity.id" @click="toggleFollow">{{entity.follow ? '取消关注' : '关注客户'}}</Button>
         <Button type="primary" v-if="entity.followUserId == userId || !entity.followUserId" class="ml-10" :disabled="!entity.id" @click="toggleBind('remind')">添加跟踪摘要</Button>
         <Button type="primary" v-if="entity.followUserId == userId || !entity.followUserId" class="ml-10" :disabled="!entity.id" @click="toggleBind('bind')">加入到收藏夹</Button>
@@ -64,7 +65,30 @@
           <Contact :id="entity.id" @on-change="setContactLen"/>
         </TabPane>
         <TabPane label="合同">
-
+          <div class="pd100 center" v-if="!entity.contractUrl">
+            <div class="center" v-if="!entity.followUserId || entity.followUserId == userId">
+              <Upload
+                v-if="!entity.contractUrl"
+                action="/api/common/upload"
+                :on-success="resumeSuccess"
+                :on-error="resumeError"
+                :format="['doc', 'docx', 'pdf']"
+                :show-upload-list="false"
+                :max-size="5120"
+                :on-format-error="formatErrorResume"
+                :on-exceeded-size="sizeError"
+              >
+                <Button icon="ios-cloud-upload-outline">上传合同</Button>
+              </Upload>
+            </div>
+            <span v-else>暂无上传合同</span>
+            <div class="download cursor border pd-40" v-else @click="downloadFile">
+              <p class="center">
+                <Icon type="md-cloud-download" size="24"/>
+              </p>
+              <p class="center">下载合同</p>
+            </div>
+          </div>
         </TabPane>
         <TabPane :label="`项目列表 (${projectLength})`">
           <Project ref="project" @on-change="setProjectLength" :id="entity.id"/>
@@ -138,6 +162,7 @@
   import Contact from './components/concat';
   import Project from './components/project';
   import FavoriteSetting from '../../components/favorite-setting';
+  import { uploadFile } from "../../../api/common";
 
   export default {
     name: "CustomerDetail",
@@ -275,6 +300,32 @@
       }
     },
     methods: {
+      edit() {
+        this.$router.push('/customer/customer-edit?id=' + this.entity.id);
+      },
+      resumeSuccess(res) {
+        if (res.code == 200) {
+          this.show = true
+          uploadFile({
+            type: 2,
+            id: this.entity.id,
+            path: res.data
+          }).then(data => {
+            this.entity.contractUrl = res.data;
+            this.show = false;
+          }).catch(data => {this.show = false;});
+          // this.entity.contractUrl = res.data;
+        }
+      },
+      resumeError(res) {
+
+      },
+      formatErrorResume() {
+        this.$Message.error('请上传doc,docx,pdf等格式的文件');
+      },
+      sizeError() {
+        this.$Message.error('请上传5M以内的文件');
+      },
       setProjectLength(len) {
         this.projectLength = len;
       },
@@ -401,6 +452,9 @@
         remindList({id}).then(data => {
           this.remindList = data || [];
         }).catch(data => {});
+      },
+      downloadFile() {
+        window.open('/api/common/download?path=' + this.entity.contractUrl);
       }
     },
     mounted() {

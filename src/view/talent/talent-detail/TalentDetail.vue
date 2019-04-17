@@ -46,9 +46,24 @@
           <div v-else>暂无跟踪记录</div>
         </TabPane>
         <TabPane label="人才简历">
-          <div class="pd100 center">
-            <span v-if="!entity.resume">没有上传简历</span>
-            <div class="download pointer border pd-40" v-else @click="downloadFile">
+          <div class="pd100 center" v-if="!entity.resume">
+            <div class="center" v-if="!entity.followUserId || entity.followUserId == userId">
+              <Upload
+                v-if="!entity.resume"
+                action="/api/common/upload"
+                :on-success="resumeSuccess"
+                :on-error="resumeError"
+                :format="['doc', 'docx', 'pdf']"
+                :show-upload-list="false"
+                :max-size="5120"
+                :on-format-error="formatErrorResume"
+                :on-exceeded-size="sizeError"
+              >
+                <Button icon="ios-cloud-upload-outline">上传合同</Button>
+              </Upload>
+            </div>
+            <span v-else>暂无上传简历</span>
+            <div class="download cursor border pd-40" v-else @click="downloadFile">
               <p class="center">
                 <Icon type="md-cloud-download" size="24"/>
               </p>
@@ -147,7 +162,7 @@
   import { getTalentInfoUtil, getProjectStatus, getDateTime, getStatusRender, toggleShow, getUserId, getProjectTalentStatus } from "../../../libs/tools";
   import { getDetail, toggleFollow, getAllRemind, addRemind, toggleType, getTalentProjects } from "../../../api/talent";
   import { talentStatus } from "../../../libs/constant";
-  import { getListByTableName } from "../../../api/common";
+  import { getListByTableName, uploadFile } from "../../../api/common";
   import Detail from './components/detail';
   import { bindFolder } from "../../../api/folder";
   import FavoriteSetting from '../../components/favorite-setting';
@@ -273,6 +288,29 @@
     },
     methods: {
       getDateTime: getDateTime,
+      resumeSuccess(res) {
+        if (res.code == 200) {
+          this.show = true
+          uploadFile({
+            type: 1,
+            id: this.entity.id,
+            path: res.data
+          }).then(data => {
+            this.entity.contractUrl = res.data;
+            this.show = false;
+          }).catch(data => {this.show = false;});
+          // this.entity.contractUrl = res.data;
+        }
+      },
+      resumeError(res) {
+
+      },
+      formatErrorResume() {
+        this.$Message.error('请上传doc,docx,pdf等格式的文件');
+      },
+      sizeError() {
+        this.$Message.error('请上传5M以内的文件');
+      },
       edit() {
         this.$router.push({ path: '/talent/talent-edit' , query: {id: this.entity.id}});
       },
@@ -391,7 +429,7 @@
         }).catch(data => {});
       },
       downloadFile() {
-
+        window.open('/api/common/download?path=' + this.entity.resume);
       }
     },
     created() {

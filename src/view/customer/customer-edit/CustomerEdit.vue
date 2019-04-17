@@ -31,24 +31,27 @@
       <FormItem label="公司简介：">
         <Input type="textarea" :rows="5" :maxlength="500" v-model="entity.description" placeholder="请输入公司简介(500字以内)"/>
       </FormItem>
-      <FormItem label="上传合同：" v-if="entity.type == 2">
+      <FormItem label="上传合同：" v-if="entity.type == 6">
         <Upload
-          ref="upload"
-          :action="action"
-          :max-size="4096"
+          v-if="!entity.contractUrl"
+          action="/api/common/upload"
+          :on-success="resumeSuccess"
+          :on-error="resumeError"
           :format="['doc', 'docx', 'pdf']"
-          :default-file-list="[]"
-          :show-upload-list="true"
-          :before-upload="beforeUpload"
-          :on-success="uploadSuccess"
-          :on-error="uploadError"
-          :on-remove="uploadResumeRemove"
-          :on-format-error="formatError"
-          :on-exceeded-size="exceedSize">
+          :show-upload-list="false"
+          :max-size="5120"
+          :on-format-error="formatErrorResume"
+          :on-exceeded-size="sizeError"
+        >
           <Button icon="ios-cloud-upload-outline">上传合同</Button>
         </Upload>
+        <div class="demo-upload-list" v-if="entity.resume">
+          <Icon type="ios-list-box" class="img block" size="60"/>
+          <div class="demo-upload-list-cover">
+            <Icon type="ios-trash-outline" @click.native="handleRemove2"></Icon>
+          </div>
+        </div>
         <Input v-model="entity.contractUrl" class="hide"/>
-        <span class="mL20" v-if="entity.contractUrl">(已上传)</span>
       </FormItem>
     </Form>
     <div class="center mt-20">
@@ -112,6 +115,23 @@
       }
     },
     methods: {
+      handleRemove2() {
+        this.entity.contractUrl = null;
+      },
+      resumeSuccess(res) {
+        if (res.code == 200) {
+          this.entity.contractUrl = res.data;
+        }
+      },
+      resumeError(res) {
+
+      },
+      formatErrorResume() {
+        this.$Message.error('请上传doc,docx,pdf等格式的文件');
+      },
+      sizeError() {
+        this.$Message.error('请上传5M以内的文件');
+      },
       addCustomer() {
         this.$refs.form.validate(valid => {
           if (valid) {
@@ -172,24 +192,6 @@
           this.phoneError = false;
         }
       },
-      beforeUpload () {
-        this.$refs.upload.clearFiles()
-      },
-      uploadSuccess (response, file, fileList) {
-
-      },
-      uploadResumeRemove() {
-        this.entity.contractUrl = null;
-      },
-      uploadError (err, file, fileList) {
-
-      },
-      formatError () {
-        this.$Message.info('请上传word文件或pdf文件')
-      },
-      exceedSize () {
-        this.$Message.error('此文件大小必须小于4M')
-      },
     },
     created() {
       const query = this.$route.query || {};
@@ -201,5 +203,40 @@
 </script>
 
 <style scoped>
-
+  .demo-upload-list{
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    text-align: center;
+    line-height: 60px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #fff;
+    position: relative;
+    box-shadow: 0 1px 1px rgba(0,0,0,.2);
+    margin-right: 4px;
+  }
+  .demo-upload-list img, .demo-upload-list .img{
+    width: 100%;
+    height: 100%;
+  }
+  .demo-upload-list-cover{
+    display: none;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,0,0,.6);
+  }
+  .demo-upload-list:hover .demo-upload-list-cover{
+    display: block;
+  }
+  .demo-upload-list-cover i{
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    margin: 0 2px;
+  }
 </style>

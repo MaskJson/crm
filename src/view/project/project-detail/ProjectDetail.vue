@@ -5,6 +5,7 @@
         <h2>{{entity.name}}</h2>
       </Col>
       <Col span="16" class="t-right">
+        <Button type="primary" v-if="entity.createUserId == userId" :disabled="!entity.id" @click="edit">编辑</Button>
         <Button type="primary" class="ml-10" icon="md-star" v-if="entity.createUserId == userId" :disabled="!entity.id" @click="toggleFollow">{{entity.follow ? '取消关注' : '关注项目'}}</Button>
         <Button type="primary" class="ml-10" :disabled="!entity.id" @click="toggleBind('talent')">关联项目候选人</Button>
         <Button type="primary" class="ml-10" :disabled="!entity.id" v-if="entity.createUserId == userId" @click="toggleBind('bind')">加入到收藏夹</Button>
@@ -161,6 +162,9 @@
       }
     },
     methods: {
+      edit() {
+        this.$router.push('/project/project-edit?id=' + this.entity.id);
+      },
       setFolders(list) {
         this.folderList = list;
       },
@@ -300,6 +304,7 @@
       }
     },
     created() {
+      console.log(this.userId)
       this.getAllProjectTalent();
     }
   }

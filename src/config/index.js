@@ -18,4 +18,4 @@ export default {
   }
 }
 
-export const imgBaseUrl = "/api/img"
+export const imgBaseUrl = "/api/file/"

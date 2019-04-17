@@ -37,6 +37,45 @@
       </SearchItem>
     </div>
     <ManagerView ref="manager" :del="false" :save="{save: true}" route="/customer/customer-edit" :columns="columns" :searchData="searchParams"/>
+    <!--  添加跟踪  -->
+    <ModalUtil ref="remind" title="添加客户跟踪" @reset="resetRemind" :loading="show" @on-ok="addRemind">
+      <Form ref="addRemind" :model="remind" :rules="remindRule" :label-width="100" >
+        <FormItem label="本次跟踪类别" prop="type">
+          <Select v-model="remind.type" placeholder="请选择">
+            <Option :value="1">电话</Option>
+            <Option :value="2">拜访客户</Option>
+            <Option :value="3">客户上门</Option>
+          </Select>
+        </FormItem>
+        <FormItem label="沟通记录" class="ivu-form-item-required" v-if="remind.type == 1 || remind.type == 3">
+          <Input type="textarea" placeholder="沟通了解情况" :rows="3" v-model="remind.remark"/>
+        </FormItem>
+        <FormItem label="拜访时间" class="ivu-form-item-required" v-if="remind.type == '2'">
+          <DatePicker type="datetime" placeholder="拜访日期" v-model="remind.meetTime"></DatePicker>
+        </FormItem>
+        <FormItem label="拜访地点" class="ivu-form-item-required" v-if="remind.type == '2'">
+          <Input v-model="remind.meetAddress"/>
+        </FormItem>
+        <FormItem label="拜访记录" class="ivu-form-item-required" v-if="remind.type == '2'">
+          <Input type="textarea" :rows="3" v-model="remind.meetNotice"/>
+        </FormItem>
+        <FormItem label="状态" prop="status" class="ivu-form-item-required">
+          <Select placeholder="请选择" v-model="remind.status">
+            <Option v-for="(item, index) of typeFilter" :key="'type' + index" :value="item.value">{{ item.label }}</Option>
+          </Select>
+        </FormItem>
+        <FormItem label="下次跟踪类别">
+          <Select v-model="remind.nextType" placeholder="请选择">
+            <Option :value="1">电话</Option>
+            <Option :value="2">拜访客户</Option>
+            <Option :value="3">客户上门</Option>
+          </Select>
+        </FormItem>
+        <FormItem label="下次联系时间">
+          <DatePicker type="datetime" placeholder="下次跟踪时间" v-model="remind.nextRemindTime"></DatePicker>
+        </FormItem>
+      </Form>
+    </ModalUtil>
     <Drawer :width="360" title="客户收藏夹管理" :closable="false" v-model="showFavoriteSetting">
       <favorite-setting ref="favorite" @on-change="setFolders" :type="1"/>
     </Drawer>
@@ -44,10 +83,11 @@
 </template>
 
 <script>
-  import { jsonArray, getCity, globalSearch, getUserId, getCustomerType, getUserInfoByKey } from "../../../libs/tools";
-  import { list, toggleFollow, toggleBindFollowUser } from "../../../api/customer";
+  import { jsonArray, getCity, globalSearch, getUserId, getCustomerType, getUserInfoByKey, toggleShow } from "../../../libs/tools";
+  import { list, toggleFollow, toggleBindFollowUser, addRemind } from "../../../api/customer";
   import cityList from '../../../libs/cityList';
   import FavoriteSetting from '../../components/favorite-setting';
+  import { customerTypes } from "../../../libs/constant";
 
   export default {
     name: "CustomerManage",
@@ -66,12 +106,26 @@
           follow: follow == 0 ? null : follow == 1,
         }
       },
+      typeFilter() {
+        if (!this.customerType) {
+          return customerTypes.slice(0, 1);
+        } else if (this.customerType == 6) {
+          return [customerTypes[5]];
+        } else {
+          return customerTypes.slice(this.customerType - 1, 5);
+        }
+      },
     },
     data() {
       return {
+        customerTypes: customerTypes,
+        show: false,
         showFavoriteSetting: false,
         cityList: cityList,
         folders: [],
+        customerType: null,
+        customerId: null,
+        remindIndex: null,
         searchData: {
           id: null,
           name: null,
@@ -79,6 +133,24 @@
           industry: null,
           city: [],
           follow: 0
+        },
+        remind: {
+          type: 1,
+          status: null,
+          remark: null,
+          meetTime: null,
+          meetAddress: null,
+          meetNotice: null,
+          nextType: null,
+          nextRemindTime: null,
+        },
+        remindRule: {
+          type: [
+            { required: true, type: 'number', message: '请选择跟踪类别', trigger: 'blur' }
+          ],
+          status: [
+            { required: true, type: 'number', message: '请选择客户状态', trigger: 'blur' }
+          ]
         },
         columns: [
           {
@@ -120,7 +192,7 @@
           {
             title: '操作',
             align: 'center',
-            width: 240,
+            width: 320,
             render: (h, params) => {
               const userId = getUserId();
               const {followUserId, type} = params.row;
@@ -216,6 +288,27 @@
                   }, '取消列名')
                 )
               }
+              if (!followUserId || followUserId == userId) {
+                btn.push(
+                  h('Button', {
+                    props: {
+                      type: 'primary',
+                      size: 'small'
+                    },
+                    class: {
+                      'ml-5': true
+                    },
+                    on: {
+                      click: () => {
+                        this.remindIndex = params.row._index;
+                        this.customerId = params.row.id;
+                        this.customerType = params.row.type;
+                        toggleShow(this, 'remind');
+                      }
+                    }
+                  }, '添加跟踪')
+                )
+              }
               return h('div', btn)
             }
           }
@@ -238,7 +331,47 @@
       },
       search() {
         globalSearch(this);
-      }
+      },
+      // 重置跟踪
+      resetRemind() {
+        this.remind = {
+          type: 1,
+          status: null,
+          remark: null,
+          meetTime: null,
+          meetAddress: null,
+          meetNotice: null,
+          nextType: null,
+          nextRemindTime: null,
+        };
+      },
+      addRemind() {
+        this.$refs['addRemind'].validate(valid => {
+          if (valid) {
+            const remind = {...this.remind};
+            if ((remind.type == 1 || remind.type == 3) && !remind.remark) {
+              this.$Message.warning('电话沟通和面谈必须填写沟通记录');
+              return false;
+            }
+            if (remind.type == 2 && (!remind.meetTime || !remind.meetAddress || !remind.meetNotice)) {
+              this.$Message.warning('拜访客户必须填拜访信息');
+              return false;
+            }
+            if ((remind.nextRemindTime || remind.nextType) && (!remind.nextRemindTime || !remind.nextType)) {
+              this.$Message.warning('设置下次跟踪，类别和时间需填写完整');
+              return false;
+            }
+            remind.createUserId = getUserId();
+            remind.customerId = this.customerId;
+            this.show = true;
+            addRemind(remind).then(data => {
+              this.show = false;
+              toggleShow(this, 'remind', false);
+              this.$refs['manager'].list[this.remindIndex].type = remind.status;
+            }).catch(data => {this.show = false;})
+          }
+        });
+      },
     },
     provide() {
       return {

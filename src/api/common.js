@@ -1,4 +1,4 @@
-import { getRequest } from "../libs/axios";
+import { getRequest, postRequest } from "../libs/axios";
 
 /**
  * 公共模块
@@ -9,3 +9,9 @@ import { getRequest } from "../libs/axios";
 export const getListByTableName = (params) => {
   return getRequest('/common/list', params);
 };
+
+// 下载文件
+export const uploadFile = (params) => {
+  return postRequest('/common/file', params);
+};
+

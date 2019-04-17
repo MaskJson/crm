@@ -170,10 +170,11 @@
   }
   }
   .download {
-    width: 180px;
+    width: 180px !important;
     height: 120px;
     border-radius: 4px;
     transition: all .2s;
+    margin: 0 auto;
   }
   .download:hover {
     border-color: #348EED;

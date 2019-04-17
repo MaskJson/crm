@@ -41,7 +41,7 @@
             <InputNumber  :min="0" v-model="entity.fee"/>
           </FormItem>
         </Col>
-        <Col span="8" v-if="entity.id">
+        <Col span="8">
           <FormItem label="首推时间" prop="firstApplyTime">
             <DatePicker plactholder="首推时间" v-model="entity.firstApplyTime"/>
           </FormItem>
