@@ -76,8 +76,8 @@
             getAction('签订offer确定入职','4', 10);
             break;
           case '4':
-            getAction('辞职中，确定入职时间','4', 11);
-            getAction('确认入职，选择保证期','5', 12);
+            getAction('辞职中','4', 11);
+            getAction('确认入职','5', 12);
             break;
           case '5':
             getAction('进入保证期','6', 13);
@@ -91,7 +91,13 @@
           getAction('淘汰', '8', 15);
         }
         if (this.status=='7' || this.status=='8') {
-          action.push(h('span', this.status=='7'?'已通过保证期':type == 200 ? '已在其他项目入职':'已淘汰'))
+          action.push(h('span',{
+            class: {
+              'cl-success': this.status=='7',
+              'cl-error': this.status=='8'&&type!=200,
+              'cl-primary': this.status=='8'&&type==200
+            }
+          }, this.status=='7'?'已通过保证期':type == 200 ? '已在其他项目入职':'已淘汰'))
         }
         return action;
       }
