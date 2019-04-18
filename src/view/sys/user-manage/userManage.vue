@@ -65,14 +65,14 @@
         <FormItem label="密码" prop="password" v-if="modalType===0" :error="errorPass">
           <Input type="password" v-model="userForm.password" autocomplete="off"/>
         </FormItem>
-        <FormItem label="用户类型" prop="type">
-          <Select v-model="userForm.type" placeholder="请选择">
-            <Option :value="0">普通用户</Option>
-            <Option :value="1">管理员</Option>
-          </Select>
-        </FormItem>
+        <!--<FormItem label="用户类型" prop="type">-->
+          <!--<Select v-model="userForm.type" placeholder="请选择">-->
+            <!--<Option :value="0">普通用户</Option>-->
+            <!--<Option :value="1">管理员</Option>-->
+          <!--</Select>-->
+        <!--</FormItem>-->
         <FormItem label="角色分配" prop="roleId">
-          <Select v-model="userForm.roleId">
+          <Select v-model="userForm.roleId" :disabled="userForm.id">
             <Option v-for="item in roleList" :value="item.id" :key="'role-' + item.id" :label="item.roleName">
               <!-- <div style="display:flex;flex-direction:column"> -->
               <span style="margin-right:10px;">{{ item.roleName }}</span>
@@ -228,7 +228,7 @@
             width: 200,
             render: (h, params) => {
               let re = ''
-              if (params.row.status === 0) {
+              if (params.row.status) {
                 return h('div', [
                   h(
                     'Tag',
@@ -246,7 +246,7 @@
                     '正常启用'
                   )
                 ])
-              } else if (params.row.status === -1) {
+              } else {
                 return h('div', [
                   h(
                     'Tag',
@@ -261,24 +261,6 @@
                 ])
               }
             },
-            filters: [
-              {
-                label: '正常启用',
-                value: 0
-              },
-              {
-                label: '禁用',
-                value: -1
-              }
-            ],
-            filterMultiple: false,
-            filterMethod (value, row) {
-              if (value === 0) {
-                return row.status === 0
-              } else if (value === -1) {
-                return row.status === -1
-              }
-            }
           },
           {
             title: '创建时间',
@@ -316,23 +298,23 @@
                   },
                   '编辑'
                 ),
-                // h(
-                //   'Button',
-                //   {
-                //     props: {
-                //       size: 'small'
-                //     },
-                //     style: {
-                //       marginRight: '5px'
-                //     },
-                //     on: {
-                //       click: () => {
-                //         this.enable(params.row.id, params.row.status == 0 ? -1 : 0, params.row.nickName)
-                //       }
-                //     }
-                //   },
-                //   params.row.status == 0 ? '禁用' : '启用'
-                // ),
+                h(
+                  'Button',
+                  {
+                    props: {
+                      size: 'small'
+                    },
+                    style: {
+                      marginRight: '5px'
+                    },
+                    on: {
+                      click: () => {
+                        this.enable(params.row.id, !params.row.status, params.row.nickName)
+                      }
+                    }
+                  },
+                  params.row.status == 1 ? '禁用' : '启用'
+                ),
                 // h(
                 //   'Button',
                 //   {
@@ -539,8 +521,8 @@
       },
       enable (id, status, nickName) {
         this.$Modal.confirm({
-          title: `确认${status == 0 ? '启用' : '禁用'}`,
-          content: `您确认要${status == 0 ? '启用' : '禁用'}用户 ` + nickName + ' ?',
+          title: `确认${status ? '启用' : '禁用'}`,
+          content: `您确认要${status ? '启用' : '禁用'}用户 ` + nickName + ' ?',
           onOk: () => {
             this.operationLoading = true;
             enableUser({
