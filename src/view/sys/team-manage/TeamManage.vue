@@ -53,7 +53,7 @@
       <Form ref="connectForm" :label-width="120">
         <FormItem label="离职人："><span>{{leaveUserName}}</span></FormItem>
         <FormItem label="交接团队（总监）：" class="ivu-form-item-required">
-          <Select placeholder="请选择交接人" v-model="connect.connectTeamId">
+          <Select placeholder="请选择交接人" v-model="connect.connectTeamId" @on-change="connectChange">
             <Option v-for="(item, index) of teamFilter" :value="item.id" :key="'team' + index">{{item.nickName}}</Option>
           </Select>
         </FormItem>
@@ -210,6 +210,9 @@
         this.$refs['manager'].emitManagerHandler('connectTeam', {
           params: this.connect
         })
+      },
+      connectChange(team) {
+        this.connect.connectUserId = team.userId;
       },
       resetConnect() {
         this.connect = {
