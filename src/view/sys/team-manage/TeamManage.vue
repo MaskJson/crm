@@ -52,9 +52,9 @@
     <ModalUtil ref="connect" title="团队交接" @on-ok="connectHandler" :loading="show" @reset="resetConnect">
       <Form ref="connectForm" :label-width="120">
         <FormItem label="离职人："><span>{{leaveUserName}}</span></FormItem>
-        <FormItem label="交接团队（总监）：">
+        <FormItem label="交接团队（总监）：" class="ivu-form-item-required">
           <Select placeholder="请选择交接人" v-model="connect.connectTeamId">
-            <Option v-for="(item, index) of teams" :value="item.id" :key="'team' + index">{{item.nickName}}</Option>
+            <Option v-for="(item, index) of teamFilter" :value="item.id" :key="'team' + index">{{item.nickName}}</Option>
           </Select>
         </FormItem>
       </Form>
@@ -159,10 +159,16 @@
                     },
                     on: {
                       click: () => {
-                        this.leaveUserName = params.row.nickName;
-                        this.connect.teamId = params.row.id;
-                        this.connect.userId = params.row.userId;
-                        toggleShow(this, 'connect');
+                        this.$Modal.confirm({
+                          title: '交接确认',
+                          content: '确认要交接吗？交接后此用户所有相关操作将转移给交接人，该用户将被删除！',
+                          onOk: () => {
+                            this.leaveUserName = params.row.nickName;
+                            this.connect.teamId = params.row.id;
+                            this.connect.userId = params.row.userId;
+                            toggleShow(this, 'connect');
+                          }
+                        });
                       }
                     }
                   }, '团队交接'),
@@ -200,13 +206,18 @@
           this.$Message.error('请选择交接人');
           return false;
         }
-        this.show = false;
+        this.show = true;
         this.$refs['manager'].emitManagerHandler('connectTeam', {
           params: this.connect
         })
       },
       resetConnect() {
-        Object.assign(this.connect, { connectTeamId: null, connectUserId: null});
+        this.connect = {
+          userId: null,
+          teamId: null,
+          connectTeamId: null,
+          connectUserId: null
+        };
       },
       search() {
         globalSearch(this);
@@ -307,6 +318,7 @@
         } else if (type == 'save') {
           toggleShow(this, 'edit', false);
         } else if (type == 'connectTeam') {
+          this.getAllTeam();
           toggleShow(this, 'connect', false);
         }
       },
@@ -338,6 +350,7 @@
         this.pts = users.filter(item => item.roleId == 8);
         this.pls = users.filter(item => item.roleId == 4 || item.roleId == 5);
       }).catch(data => {})
+      this.getAllTeam();
     }
   }
 </script>

@@ -93,6 +93,16 @@
         <Button @click="viewImage=false">关闭</Button>
       </div>
     </Modal>
+    <ModalUtil ref="connect" title="人员交接" @on-ok="connectHandler" :loading="show" @reset="resetConnect">
+      <Form ref="connectForm" :label-width="120">
+        <FormItem label="离职人："><span>{{leaveUserName}}</span></FormItem>
+        <FormItem label="交接人：" class="ivu-form-item-required">
+          <Select placeholder="请选择交接人" v-model="connect.connectUserId">
+            <Option v-for="(item, index) of userFileter" :value="item.id" :key="'user' + index">{{item.nickName}}</Option>
+          </Select>
+        </FormItem>
+      </Form>
+    </ModalUtil>
   </div>
 </template>
 
@@ -109,9 +119,11 @@
     initDepartment,
     loadDepartment
   } from '@/api/index'
+  import { toggleShow } from "../../../libs/tools";
   import circleLoading from '../../my-components/circle-loading.vue'
   import moment from 'moment'
   import md5 from 'js-md5';
+  import { getTeamManagerUsers, connectMember} from "../../../api/team";
 
   export default {
     name: 'user-manage',
@@ -127,6 +139,7 @@
         }
       }
       return {
+        show: false,
         accessToken: {},
         loading: true,
         operationLoading: false,
@@ -332,21 +345,68 @@
                 //   '删除'
                 // )
               ]
+              const roleId = params.row.roleId;
+              if (roleId != 1 && roleId != 3) {
+                children.push(
+                  h('Button', {
+                    props: {
+                      size: 'small',
+                      type: 'warning'
+                    },
+                    on: {
+                      click: () => {
+                        this.$Modal.confirm({
+                          title: '交接确认',
+                          content: '确认要交接吗？交接后此用户所有相关操作将转移给交接人，该用户将被删除！',
+                          onOk: () => {
+                            this.leaveUserName = params.row.nickName;
+                            this.connect = {
+                              userId: params.row.id,
+                            };
+                            toggleShow(this, 'connect');
+                          }
+                        });
+                      }
+                    }
+                  }, '离职交接')
+                )
+              }
               return h('div', children)
             }
           }
         ],
         data: [],
         exportData: [],
-        total: 0
+        total: 0,
+        leaveUserName: '',
+        connect: {
+          userId: null,
+          connectUserId: null
+        },
+        users: [],
+        connectRoleId: null
       }
     },
     computed: {
       selectCount() {
         return this.selectList.length;
+      },
+      userFileter() {
+        return this.users.filter(item => item.roleId == this.connectRoleId);
       }
     },
     methods: {
+      connectHandler() {
+        if (!this.connect.connectUserId) {
+          this.$Message.error('请选择交接人');
+          return false;
+        }
+        this.show = true;
+        connectMember(this.connect).then(data => {
+          this.show = false;
+          toggleShow(this, 'connect', false);
+        }).catch(data => {this.show = false;})
+      },
       init () {
         this.accessToken = {
           accessToken: this.getStore('accessToken')
@@ -354,6 +414,12 @@
         // this.initDepartmentData();
         this.getUserList()
         // this.initDepartmentTreeData();
+      },
+      resetConnect() {
+        this.connect = {
+          userId: null,
+          connectUserId: null
+        }
       },
       changePage (v) {
         this.searchForm.page = v;
@@ -568,11 +634,17 @@
           return;
         }
         this.remove(this.selectList.map(item => item.id));
+      },
+      allUser() {
+        getTeamManagerUsers({}).then(data => {
+          this.users = data || [];
+        }).catch(data => {})
       }
     },
     mounted () {
       this.init();
       this.getAllRoleList();
+      this.allUser();
     }
   }
 </script>
