@@ -49,12 +49,22 @@
         </FormItem>
       </Form>
     </ModalUtil>
+    <ModalUtil ref="connect" title="团队交接" @on-ok="connectHandler" :loading="show" @reset="resetConnect">
+      <Form ref="connectForm" :label-width="120">
+        <FormItem label="离职人："><span>{{leaveUserName}}</span></FormItem>
+        <FormItem label="交接团队（总监）：">
+          <Select placeholder="请选择交接人" v-model="connect.connectTeamId">
+            <Option v-for="(item, index) of teams" :value="item.id" :key="'team' + index">{{item.nickName}}</Option>
+          </Select>
+        </FormItem>
+      </Form>
+    </ModalUtil>
   </Card>
 </template>
 
 <script>
   import { globalSearch, toggleShow, getRoleName } from "../../../libs/tools";
-  import { getTeamList, getTeamManagerUsers, getTeamMembers, save, getTeamMembersWithInfo } from "../../../api/team";
+  import { getTeamList, getTeamManagerUsers, getTeamMembers, save, getTeamMembersWithInfo, allTeam, connectTeam } from "../../../api/team";
 
   export default {
     name: "TeamManage",
@@ -73,6 +83,14 @@
         pls: [],
         // 树形结构
         tree: [],
+        teams: [],
+        leaveUserName: '',
+        connect: {
+          userId: null,
+          teamId: null,
+          connectTeamId: null,
+          connectUserId: null
+        },
         entity: {
           id: null, // teamId,
           userId: null // userId
@@ -119,7 +137,10 @@
                   h('Button', {
                     props: {
                       size: 'small',
-                      type: 'primary'
+                      type: 'primary',
+                    },
+                    class: {
+                      'mr-5': true
                     },
                     on: {
                       click: () => {
@@ -131,6 +152,20 @@
                       }
                     }
                   }, '编辑团队'),
+                  h('Button', {
+                    props: {
+                      size: 'small',
+                      type: 'primary'
+                    },
+                    on: {
+                      click: () => {
+                        this.leaveUserName = params.row.nickName;
+                        this.connect.teamId = params.row.id;
+                        this.connect.userId = params.row.userId;
+                        toggleShow(this, 'connect');
+                      }
+                    }
+                  }, '团队交接'),
                 ])
               } else {
                 return h('Button', {
@@ -154,7 +189,25 @@
         ]
       }
     },
+    computed: {
+      teamFilter() {
+        return this.teams.filter(item => item.id != this.connect.teamId);
+      }
+    },
     methods: {
+      connectHandler() {
+        if (!this.connect.connectTeamId) {
+          this.$Message.error('请选择交接人');
+          return false;
+        }
+        this.show = false;
+        this.$refs['manager'].emitManagerHandler('connectTeam', {
+          params: this.connect
+        })
+      },
+      resetConnect() {
+        Object.assign(this.connect, { connectTeamId: null, connectUserId: null});
+      },
       search() {
         globalSearch(this);
       },
@@ -175,6 +228,12 @@
       searchInfo(flag, id) {
         const handlerKey = flag ? 'getInfo' : 'tree';
         this.$refs['manager'].emitManagerHandler(handlerKey, { unFresh: true, params: {id}});
+      },
+      // 获取所有可交接的团队
+      getAllTeam() {
+        allTeam({}).then(data => {
+          this.teams = data || [];
+        }).catch(data => {})
       },
       // 编辑提交
       save() {
@@ -247,6 +306,8 @@
           toggleShow(this, 'info');
         } else if (type == 'save') {
           toggleShow(this, 'edit', false);
+        } else if (type == 'connectTeam') {
+          toggleShow(this, 'connect', false);
         }
       },
       errorHandler() {
@@ -259,7 +320,8 @@
           search: getTeamList,
           getInfo: getTeamMembers,
           save: save,
-          tree: getTeamMembersWithInfo
+          tree: getTeamMembersWithInfo,
+          connectTeam: connectTeam
         }
       }
     },

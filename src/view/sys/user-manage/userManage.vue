@@ -111,6 +111,7 @@
   } from '@/api/index'
   import circleLoading from '../../my-components/circle-loading.vue'
   import moment from 'moment'
+  import md5 from 'js-md5';
 
   export default {
     name: 'user-manage',
@@ -433,6 +434,7 @@
                 return;
               }
               const params = JSON.parse(JSON.stringify(this.userForm));
+              params.password = md5(params.password).toUpperCase();
               this.submitLoading = true;
               addUser(params).then(res => {
                 this.submitLoading = false;

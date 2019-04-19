@@ -32,10 +32,10 @@ export const allTeam = (params) => {
 
 // 团队交接
 export const connectTeam = (params) => {
-  return postRequest('/team/connect/cp', params);
+  return postRequest('/team/connect/team', params);
 };
 
 // 普通用户交接
-export const connectTeamCommon = (params) => {
-  return postRequest('/team/connect/common', params);
+export const connectMember = (params) => {
+  return postRequest('/team/connect/member', params);
 };
