@@ -172,7 +172,7 @@
         userForm: {
           // sex: 1,
           type: 0,
-          status: 0,
+          status: 1,
           nickName: '',
           avatar: 'https://s1.ax1x.com/2018/05/19/CcdVQP.png',
           roleId: null,
@@ -323,11 +323,11 @@
                     },
                     on: {
                       click: () => {
-                        this.enable(params.row.id, !params.row.status, params.row.nickName)
+                        this.enable(params.row.id, !!params.row.status ? 0 : 1, params.row.nickName)
                       }
                     }
                   },
-                  params.row.status == 1 ? '禁用' : '启用'
+                  !!params.row.status ? '禁用' : '启用'
                 ),
                 // h(
                 //   'Button',
