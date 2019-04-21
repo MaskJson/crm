@@ -57,7 +57,7 @@
           <FormItem label="候选人基本情况" class="ivu-form-item-required">
             <Input type="textarea" :rows="3" v-model="remind.situation"/>
           </FormItem>
-          <FormItem label="求职方向不离职原因" class="ivu-form-item-required">
+          <FormItem label="求职方向离职原因" class="ivu-form-item-required">
             <Input type="textarea" :rows="3" v-model="remind.cause"/>
           </FormItem>
           <FormItem label="薪资架构" class="ivu-form-item-required">
@@ -75,11 +75,6 @@
         <FormItem label="人才状态：" prop="status">
           <Select v-model="remind.status">
             <Option v-for="(item, index) of talentStatus" :key="'status' + index" :value="item.value">{{ item.label }}</Option>
-          </Select>
-        </FormItem>
-        <FormItem label="客户：" prop="customerId">
-          <Select placeholder="请选择客户" filterable clearable v-model="remind.customerId">
-            <Option v-for="(item, index) of customerList" :key="'customer' + index" :value="item.id">{{ item.name }}</Option>
           </Select>
         </FormItem>
         <FormItem label="下次跟踪类别" prop="remindTypeId">
@@ -403,7 +398,6 @@
           meetAddress: null, // 面试地点
           talentId: null,
           followRemindId: null,
-          customerId: null
         },
         remindRule: {
           type: [
@@ -411,9 +405,6 @@
           ],
           status: [
             { required: true, type: 'number', message: '请选择状态', trigger: 'change' }
-          ],
-          customerId: [
-            { required: true, type: 'number', message: '请选择客户', trigger: 'change' }
           ],
         },
         projectTalent: {
@@ -430,7 +421,6 @@
         },
         projects: [], // 所有项目
         talentProjects: [], // 当前人才已关联的项目
-        customerList: [], // 所有客户
         talentType: null,
       }
     },
@@ -459,7 +449,6 @@
           meetAddress: null, // 面试地点
           talentId: null,
           followRemindId: null,
-          customerId: null
         };
         this.$refs['addRemind'].resetFields();
       },
@@ -544,9 +533,6 @@
     },
     created() {
       this.userId = getUserId();
-      getListByTableName({ type: 1 }).then(data => {
-        this.customerList = data || [];
-      }).catch(data => {});
       openByUserId({ userId: getUserId() }).then(data => {
         this.projects = data || [];
       }).catch(data => {});

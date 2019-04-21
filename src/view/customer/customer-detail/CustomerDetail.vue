@@ -118,6 +118,9 @@
             <Option :value="3">客户上门</Option>
           </Select>
         </FormItem>
+        <FormItem label="联系人：" prop="contactId">
+          <Option v-for="(item, index) of contacts" :key="'contact' + index" :value="item.id">{{item.name}}</Option>
+        </FormItem>
         <FormItem label="沟通记录" class="ivu-form-item-required" v-if="remind.type == 1 || remind.type == 3">
           <Input type="textarea" placeholder="沟通了解情况" :rows="3" v-model="remind.remark"/>
         </FormItem>
@@ -134,6 +137,9 @@
           <Select placeholder="请选择" v-model="remind.status">
             <Option v-for="(item, index) of typeFilter" :key="'type' + index" :value="item.value">{{ item.label }}</Option>
           </Select>
+        </FormItem>
+        <FormItem label="签约时间：" v-if="remind.status == 6">
+          <DatePicker placeholder="请选择签约时间" v-model="remind.contactTime"></DatePicker>
         </FormItem>
         <FormItem label="下次跟踪类别">
           <Select v-model="remind.nextType" placeholder="请选择">
@@ -233,13 +239,19 @@
           meetNotice: null,
           nextType: null,
           nextRemindTime: null,
+          contactId: null,
+          contactTime: null
         },
+        contacts: [],
         remindRule: {
           type: [
-            { required: true, type: 'number', message: '请选择跟踪类别', trigger: 'blur' }
+            { required: true, type: 'number', message: '请选择跟踪类别', trigger: 'change' }
           ],
           status: [
-            { required: true, type: 'number', message: '请选择客户状态', trigger: 'blur' }
+            { required: true, type: 'number', message: '请选择客户状态', trigger: 'change' }
+          ],
+          contactId: [
+            { required: true, type: 'number', message: '请选择联系人', trigger: 'change' }
           ]
         },
         columns: [
@@ -333,8 +345,9 @@
         this.folderList = list;
       },
       // 获取联系人数量
-      setContactLen(len) {
-        this.contactLen = len;
+      setContactLen(contacts) {
+        this.contacts = contacts;
+        this.contactLen = contacts.length;
       },
       // 重置跟踪
       resetRemind() {
@@ -347,6 +360,8 @@
           meetNotice: null,
           nextType: null,
           nextRemindTime: null,
+          contactId: null,
+          contactTime: null,
         };
       },
       addRemind() {
@@ -365,6 +380,10 @@
               this.$Message.warning('设置下次跟踪，类别和时间需填写完整');
               return false;
             }
+            if (remind.status == 6 && !remind.contactTime) {
+              this.$Message.warning('签约状态下，请选择签约时间');
+              return false;
+            }
             remind.createUserId = getUserId();
             remind.customerId = this.entity.id;
             this.show = true;
@@ -378,6 +397,12 @@
         });
       },
       toggleBind(key, flag) {
+        if (key == 'remind') {
+          if (this.contactLen == 0) {
+            this.$Message.warning('请添加客户联系人');
+            return;
+          }
+        }
         toggleShow(this, key, flag);
       },
       bindFolder() {

@@ -130,7 +130,7 @@
               const children = this.map.filter(talent => talent.departmentName == item);
               const allCount = children.length;
               const zsCount = children.filter(item => !!item.followUserId).length;
-              custAllCount = custZsCount + allCount;
+              custAllCount = custAllCount + allCount;
               custZsCount = custZsCount + zsCount;
               return {
                 name: item,

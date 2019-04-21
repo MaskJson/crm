@@ -72,7 +72,7 @@
           <!--</Select>-->
         <!--</FormItem>-->
         <FormItem label="角色分配" prop="roleId">
-          <Select v-model="userForm.roleId" :disabled="userForm.id">
+          <Select v-model="userForm.roleId">
             <Option v-for="item in roleList" :value="item.id" :key="'role-' + item.id" :label="item.roleName">
               <!-- <div style="display:flex;flex-direction:column"> -->
               <span style="margin-right:10px;">{{ item.roleName }}</span>

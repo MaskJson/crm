@@ -387,7 +387,7 @@
       },
       list(list) {
         this.selected = [];
-        this.$emit('on-change', this.list.length);
+        this.$emit('on-change', this.list);
       },
     },
     mounted() {

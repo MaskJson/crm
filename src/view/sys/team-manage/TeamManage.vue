@@ -34,15 +34,20 @@
         <FormItem label="兼职：" class="mb-5">
           <Checkbox v-for="(item, index) of pts" :key="'pt' + index" :label="item.checked" v-model="item.checked">{{ item.nickName }}</Checkbox>
         </FormItem>
-        <p class="mt-5 mb-5 cl-error">中级顾问和兼职没有下级成员</p>
+        <p class="mt-5 mb-5 cl-error">顾问和兼职没有下级成员</p>
         <p class="cl-primary" v-show="pms.filter(item => item.checked).length">项目经理：</p>
         <FormItem v-show="item.checked" v-for="(item, index) of pms" :key="'pm_check' + index" :label="item.nickName + '：'" class="mb-5">
           <CheckboxGroup v-model="item.children">
-            <Checkbox v-for="(item, index) of pls" :key="'pl1' + index" :label="item.id">{{ item.nickName }}</Checkbox>
+            <Checkbox v-for="(item, index) of pls.concat(ipls).concat(mpls).concat(pts)" :key="'pl1' + index" :label="item.id">{{ item.nickName }}</Checkbox>
           </CheckboxGroup>
         </FormItem>
         <p class="cl-primary" v-show="ipls.filter(item => item.checked).length">高级顾问：</p>
         <FormItem v-show="item.checked" v-for="(item, index) of ipls" :key="'ipl_check' + index" :label="item.nickName + '：'" class="mb-5">
+          <CheckboxGroup v-model="item.children">
+            <Checkbox v-for="(item, index) of pls.concat(mpls)" :key="'pl1' + index" :label="item.id">{{ item.nickName }}</Checkbox>
+          </CheckboxGroup>
+        </FormItem>
+        <FormItem v-show="item.checked" v-for="(item, index) of mpls" :key="'ipl_check' + index" :label="item.nickName + '：'" class="mb-5">
           <CheckboxGroup v-model="item.children">
             <Checkbox v-for="(item, index) of pls" :key="'pl1' + index" :label="item.id">{{ item.nickName }}</Checkbox>
           </CheckboxGroup>
@@ -302,7 +307,7 @@
           members.forEach(item => {
             item.title = item.nickName + '--' + getRoleName(item.level);
             item.expand = true;
-            if (item.level < 4) {
+            if (item.level < 5) {
               item.children = arr.filter(child => child.parentId == item.id).map(item => {
                 return {
                   title: item.nickName

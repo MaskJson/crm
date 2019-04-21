@@ -351,11 +351,6 @@
           <Input v-model="remind.meetAddress"/>
         </FormItem>
       </div>
-      <FormItem label="客户：" prop="customerId">
-        <Select placeholder="请选择客户" filterable clearable v-model="remind.customerId">
-          <Option v-for="(item, index) of allCustomers" :key="'customer' + index" :value="item.id">{{ item.name }}</Option>
-        </Select>
-      </FormItem>
       <FormItem label="下次跟踪类别" prop="remindTypeId">
         <Select v-model="remind.nextType">
           <Option :value="0">请选择</Option>
@@ -548,7 +543,6 @@
           meetAddress: null, // 面试地点
           talentId: null,
           followRemindId: null,
-          customerId: null
         },
         remindRule: {
           type: [
@@ -556,9 +550,6 @@
           ],
           status: [
             { required: true, type: 'number', message: '请选择状态', trigger: 'change' }
-          ],
-          customerId: [
-            { required: true, type: 'number', message: '请选择客户', trigger: 'change' }
           ],
         }
       }
@@ -933,9 +924,6 @@
     },
     created() {
       this.userId = getUserId();
-      getListByTableName({type: 1}).then(data => {
-        this.allCustomers = data || [];
-      }).catch(data => {});
       getListByTableName({type: 3}).then(data => {
         this.projectList = data || [];
       }).catch(data => {});

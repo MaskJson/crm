@@ -109,7 +109,7 @@
           <FormItem label="候选人基本情况" class="ivu-form-item-required">
             <Input type="textarea" :rows="3" v-model="remind.situation"/>
           </FormItem>
-          <FormItem label="求职方向不离职原因" class="ivu-form-item-required">
+          <FormItem label="求职方向离职原因" class="ivu-form-item-required">
             <Input type="textarea" :rows="3" v-model="remind.cause"/>
           </FormItem>
           <FormItem label="薪资架构" class="ivu-form-item-required">
@@ -127,11 +127,6 @@
         <FormItem label="人才状态：" prop="status">
           <Select v-model="remind.status">
             <Option v-for="(item, index) of talentStatus" :key="'status' + index" :value="item.value">{{ item.label }}</Option>
-          </Select>
-        </FormItem>
-        <FormItem label="客户：">
-          <Select placeholder="请选择客户" filterable clearable v-model="remind.customerId">
-            <Option v-for="(item, index) of customerList" :key="'customer' + index" :value="item.id">{{ item.name }}</Option>
           </Select>
         </FormItem>
         <FormItem label="下次跟踪类别" prop="remindTypeId">
@@ -211,7 +206,6 @@
         talentProject: [],
         remindList: [], // 跟踪记录
         projectList: [],// 项目经历
-        customerList: [], // 客户列表
         remind: { // 添加提醒条件
           type: null, // 本次跟踪类别
           status: null, // 人才状态
@@ -225,7 +219,6 @@
           meetAddress: null, // 面试地点
           talentId: null,
           followRemindId: null,
-          customerId: null
         },
         remindRule: {
           type: [
@@ -331,7 +324,6 @@
           meetAddress: null, // 面试地点
           talentId: null,
           followRemindId: null,
-          customerId: null
         };
       },
       toggleBind(key, flag) {
@@ -439,9 +431,6 @@
         this.init(id);
         this.getProjectList(id);
       }
-      getListByTableName({ type: 1 }).then(data => {
-        this.customerList = data || [];
-      }).catch(data => {});
     }
   }
 </script>
