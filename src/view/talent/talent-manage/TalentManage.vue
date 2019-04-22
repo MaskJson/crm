@@ -74,7 +74,17 @@
         </div>
         <FormItem label="人才状态：" prop="status">
           <Select v-model="remind.status">
-            <Option v-for="(item, index) of talentStatus" :key="'status' + index" :value="item.value">{{ item.label }}</Option>
+            <Option :disabled="item.value == 10 && !!offerCount" v-for="(item, index) of talentStatus" :key="'status' + index" :value="item.value">
+              {{ item.label }}<span v-show="!!offerCount">{{`（该人才已在其他项目入职）`}}</span>
+            </Option>
+          </Select>
+        </FormItem>
+        <FormItem label="项目：" prop="projectId" v-if="remind.status == 10" class="ivu-form-item-required">
+          <Select v-model="remind.projectId" placeholder="请选择项目">
+            <Option :disabled="talentProjects.indexOf(item.id) > -1" v-for="(item, index) of projects" :value="item.id" :key="'project' + index">
+              {{ item.name }}{{`（${item.customerName}）`}}
+              <span v-show="talentProjects.indexOf(item.id) > -1">{{`（已处于该项目进展中）`}}</span>
+            </Option>
           </Select>
         </FormItem>
         <FormItem label="下次跟踪类别" prop="remindTypeId">
@@ -101,13 +111,16 @@
         <FormItem label="人才：">
           {{ talentName }}
         </FormItem>
-        <FormItem label="项目：" prop="projectId">
+        <FormItem label="推荐项目：" prop="projectId">
           <Select v-model="projectTalent.projectId" placeholder="请选择项目">
             <Option :disabled="talentProjects.indexOf(item.id) > -1" v-for="(item, index) of projects" :value="item.id" :key="'project' + index">
-              {{ item.name }}
+              {{ item.name }}{{`（${item.customerName}）`}}
               <span v-show="talentProjects.indexOf(item.id) > -1">{{`（已处于该项目进展中）`}}</span>
             </Option>
           </Select>
+        </FormItem>
+        <FormItem label="推荐理由：" prop="remark">
+          <Input placeholder="推荐理由" type="textarea" v-model="projectTalent.remark" :rows="3"/>
         </FormItem>
       </Form>
     </ModalUtil>
@@ -116,7 +129,7 @@
 </template>
 
 <script>
-  import { jsonArray, getCity, globalSearch, getStatusRender, getUserId, toggleShow } from "../../../libs/tools";
+  import { jsonArray, getCity, globalSearch, getStatusRender, getUserId, toggleShow, getUserInfoByKey } from "../../../libs/tools";
   import { list, toggleFollow, toggleType, addRemind } from "../../../api/talent";
   import cityList from '../../../libs/cityList';
   import FavoriteSetting from '../../components/favorite-setting';
@@ -354,8 +367,10 @@
                     },
                     on: {
                       click: () => {
+                        this.remindIndex = params.row._index;
                         this.remind.talentId = params.row.id;
                         this.talentType = params.row.type;
+                        this.offerCount = params.row.offerCount;
                         toggleShow(this, 'remind');
                       }
                     }
@@ -398,7 +413,10 @@
           meetAddress: null, // 面试地点
           talentId: null,
           followRemindId: null,
+          projectId: null
         },
+        offerCount: null, // 当前跟踪人才 offerCount
+        remindIndex: null, // 当前跟踪index
         remindRule: {
           type: [
             { required: true, type: 'number', message: '请选择类型', trigger: 'change' }
@@ -412,14 +430,19 @@
           talentId: null,
           projectId: null,
           status: 0,
-          type: 1
+          type: 1,
+          remark: null,
+          roleId: getUserInfoByKey('roleId'),
         },
         projectTalentRule: {
           projectId: [
             { required: true, type: 'number', message: '请选择项目', trigger: 'change' }
           ],
+          remark: [
+            { required: true, type: 'string', message: '请填写推荐理由', trigger: 'blur' }
+          ],
         },
-        projects: [], // 所有项目
+        projects: [], // 所有对当前用户开放的项目
         talentProjects: [], // 当前人才已关联的项目
         talentType: null,
       }
@@ -431,8 +454,10 @@
           talentId: null,
           projectId: null,
           status: 0,
-          type: 1
-        }
+          type: 1,
+          remark: null,
+          roleId: getUserInfoByKey('roleId'),
+        };
         this.$refs['projectTalent'].resetFields();
       },
       resetRemind() {
@@ -449,7 +474,9 @@
           meetAddress: null, // 面试地点
           talentId: null,
           followRemindId: null,
+          projectId: null
         };
+        this.offerCount = null;
         this.$refs['addRemind'].resetFields();
       },
       setFolders(list) {
@@ -493,11 +520,19 @@
               this.$Message.warning('专属人才必须选择下次跟踪类别和时间');
               return false;
             }
+            if (params.status == 10 && !params.projectId) {
+              this.$Message.warning('请选择推荐客户关联的项目');
+              return false;
+            }
             params.createUserId = getUserId();
+            params.roleId = getUserInfoByKey('roleId');
             this.show = true;
             addRemind(params).then(data => {
               this.show = false;
               toggleShow(this, 'remind', false);
+              if (!!params.projectId) {
+                this.$refs['manager'].list[this.remindIndex].projects.push(params.projectId);
+              }
             }).catch(data => { this.show = false; })
           }
         })

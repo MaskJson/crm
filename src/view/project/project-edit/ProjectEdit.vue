@@ -41,11 +41,11 @@
             <InputNumber  :min="0" v-model="entity.fee"/>
           </FormItem>
         </Col>
-        <Col span="8">
-          <FormItem label="首推时间" prop="firstApplyTime">
-            <DatePicker plactholder="首推时间" v-model="entity.firstApplyTime"/>
-          </FormItem>
-        </Col>
+        <!--<Col span="8">-->
+          <!--<FormItem label="首推时间" prop="firstApplyTime">-->
+            <!--<DatePicker plactholder="首推时间" v-model="entity.firstApplyTime"/>-->
+          <!--</FormItem>-->
+        <!--</Col>-->
         <Col span="8">
           <FormItem label="计划完成时间" prop="finishTime">
             <DatePicker plactholder="计划完成时间" v-model="entity.finishTime"/>
@@ -200,15 +200,15 @@
       </Row>
       <h2 class="mb-10">项目推荐</h2>
       <Row>
-        <!--<Col span="12">-->
-          <!--<FormItem label="项目总监">-->
-            <!--<Select placeholder="请选择项目总监" v-model="entity.teamId" filterable clearable>-->
-              <!--<Option v-for="(item, index) of teamList" :key="'team' + index" :value="item.id">{{ item.name }}</Option>-->
-            <!--</Select>-->
-          <!--</FormItem>-->
-        <!--</Col>-->
         <Col span="12">
-          <FormItem label="特定兼职">
+          <FormItem label="主顾问：">
+            <Select placeholder="请选择主顾问" v-model="entity.adviseId">
+              <Option v-for="(item, index) of advisers" :key="'adviser' + index" :value="item.id">{{ item.nickName }}</Option>
+            </Select>
+          </FormItem>
+        </Col>
+        <Col span="12">
+          <FormItem label="特定兼职：">
             <Select placeholder="请选择特定兼职" v-model="entity.partId" filterable clearable>
               <Option v-for="(item, index) of pts" :key="'pt' + index" :value="item.id">{{ item.name }}</Option>
             </Select>
@@ -232,6 +232,8 @@
   import { getListByTableName } from "../../../api/common";
   import { saveProject, getProjectInfo } from "../../../api/project";
   import { getCustomerDepartments, findProjectCustomers } from "../../../api/customer";
+  import { getMembers } from "../../../api/team";
+  import { getAllUsers } from "../../../api";
 
   export default {
     name: "ProjectEdit",
@@ -251,7 +253,6 @@
         background: background, // 企业背景
         educationList: educationList, // 学历
         countries: countries, // 国家
-        teamList: [], // 团队
         match: matches, // 匹配条件
         qualityList: projectPass, // 保证期
         pts: [], // 兼职
@@ -259,6 +260,7 @@
         departmentsFilter: [], // select部门过滤
         entity: {
           customerId: null, // 关联客户
+          adviseId: null, // 主顾问
           // department: null, // 部门
           name: null, // 名称
           matches: [], // 匹配条件
@@ -317,13 +319,26 @@
           aptness: [
             { required: true, type: 'array', message: '请选择职能', trigger: 'change' }
           ],
-          firstApplyTime: [
-            { required: true, type: 'date', message: '请选择首推时间', trigger: 'change' }
-          ],
+          // firstApplyTime: [
+          //   { required: true, type: 'date', message: '请选择首推时间', trigger: 'change' }
+          // ],
           finishTime: [
             { required: true, type: 'date', message: '请选择预计完成时间', trigger: 'change' }
           ]
         },
+        users: [], // 所有用户
+        members: [], // 团队所有成员
+      }
+    },
+    computed: {
+      advisers() {
+        const type = this.entity.openType;
+        if (type != 2) {
+          return this.users;
+        } else {
+          const ids = this.members.map(item => item.userId);
+          return this.users.filter(item => ids.indexOf(item.id) > -1 || item.id == getUserId());
+        }
       }
     },
     methods: {
@@ -402,8 +417,13 @@
       getListByTableName({ type: 4 }).then(data => {
         this.pts = data || [];
       }).catch(data => {});
-      getListByTableName({ type: 5 }).then(data => {
-        this.teamList = data || [];
+      // 获取团队成员
+      getMembers({id: getUserId()}).then(data => {
+        this.members = data || [];
+      }).catch(data => {});
+      // 获取所有系统用户
+      getAllUsers({}).then(data => {
+        this.users = data || [];
       }).catch(data => {});
       const id = (this.$route.query || {}).id;
       if (id) {

@@ -166,17 +166,19 @@
             title: '跟踪内容',
             align: 'center',
             render: (h, params) => {
+              let arr = [];
               switch (params.row.type) {
                 case 1:
-                  return h('span', `跟踪记录：${params.row.remark}`);break;
+                  arr = [`跟踪记录：${params.row.remark}`];
+                  break;
                 case 2:
-                  const data = [`人才基本情况：${params.row.situation}`, `离职原因：${params.row.cause}`, `薪资架构：${params.row.salary}`];
-                  return getRenderList(h, JSON.stringify(data));
+                  arr = [`人才基本情况：${params.row.situation}`, `离职原因：${params.row.cause}`, `薪资架构：${params.row.salary}`];
                   break;
                 case 3:
-                  const list = [`面试时间：${getDateTime(params.row.meetTime)}`, `面试地点：${params.row.meetAddress}`, `人才基本情况：${params.row.situation}`, `离职原因：${params.row.cause}`, `薪资架构：${params.row.salary}`];
-                  return getRenderList(h, JSON.stringify(list));
+                  arr = [`面试时间：${getDateTime(params.row.meetTime)}`, `面试地点：${params.row.meetAddress}`, `人才基本情况：${params.row.situation}`, `离职原因：${params.row.cause}`, `薪资架构：${params.row.salary}`];
+                  break;
               }
+              return getRenderList(h, JSON.stringify(arr));
             }
           },
           {

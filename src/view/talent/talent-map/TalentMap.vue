@@ -32,10 +32,10 @@
 
 <script>
   import { talentMap, folderTalent } from "../../../api/count";
-  import { getUserId, getStatusRender, getCity } from "../../../libs/tools";
+  import { getUserId, getStatusRender, getRenderList, getDateTime } from "../../../libs/tools";
 
   export default {
-    name: "TalentMap",
+    name: "talent-map",
     data() {
       return {
         show: false,
@@ -79,27 +79,46 @@
             }
           },
           {
-            title: '城市',
+            title: '职位',
             align: 'center',
             render: (h, params) => {
-              return getCity(h, params.row.city);
+              return h('span', (params.row.info || {}).position)
             }
           },
           {
-            title: '手机号',
+            title: '最近跟踪记录',
             align: 'center',
-            key: 'phone'
+            render: (h, params) => {
+              const remind = params.row.remind;
+              if (remind && remind.type){
+                let arr = [];
+                switch (remind.type) {
+                  case 1:
+                    arr = [`负责人：${remind.createUser}`, `跟踪记录：${remind.remark}`];
+                    break;
+                  case 2:
+                    arr = [`负责人：${remind.createUser}`, `人才基本情况：${remind.situation}`, `离职原因：${remind.cause}`, `薪资架构：${params.row.salary}`];
+                    break;
+                  case 3:
+                    arr = [`负责人：${remind.createUser}`, `面试时间：${getDateTime(remind.meetTime)}`, `面试地点：${remind.meetAddress}`, `人才基本情况：${remind.situation}`, `离职原因：${remind.cause}`, `薪资架构：${remind.salary}`];
+                    break;
+                }
+                return getRenderList(h, JSON.stringify(arr));
+              } else {
+                return h('span', '');
+              }
+            }
           },
           {
-            title: '公司名称',
-            key: 'customerName',
-            align: 'center'
-          },
-          {
-            title: '部门名称',
-            key: 'departmentName',
-            align: 'center'
-          },
+            title: '跟踪时间',
+            align: 'center',
+            render: (h, params) => {
+              const remind = params.row.remind;
+              if (remind && remind.type){
+                return h('span', getDateTime(remind.createTime));
+              }
+            }
+          }
         ],
       }
     },
@@ -120,20 +139,34 @@
       treeMap() {
         const mapCustomers = [];
         this.map.forEach(item => {
-          const index = mapCustomers.findIndex(c => c.id == item.customerId);
+          const info = item.info || {};
+          const index = mapCustomers.findIndex(c => c.id == info.customerId);
           if (index < 0) {
-            const id = item.customerId;
-            const departmentsSet = new Set(this.map.filter(item => item.customerId == id).map(item => item.departmentName));
+            const id = info.customerId;
+            const cusDepartments = this.map.filter(item => (item.info || {}).customerId == id).map(item => {return {departmentId: item.departmentId, departmentName: item.departmentName }});
+            const departmentsSet = [];
+            // 公司部门去重
+            cusDepartments.forEach(item => {
+              let flag = true;
+              departmentsSet.forEach(d => {
+                if (d.departmentId == item.departmentId) {
+                  flag = false;
+                }
+              });
+              if (flag) {
+                departmentsSet.push(item);
+              }
+            });
             let custAllCount = 0;
             let custZsCount = 0;
-            const departments = Array.from(departmentsSet).map(item => {
-              const children = this.map.filter(talent => talent.departmentName == item);
+            const departments = departmentsSet.map(item => {
+              const children = this.map.filter(talent => (talent.info || {}).departmentId == item.departmentId);
               const allCount = children.length;
               const zsCount = children.filter(item => !!item.followUserId).length;
               custAllCount = custAllCount + allCount;
               custZsCount = custZsCount + zsCount;
               return {
-                name: item,
+                name: item.departmentName,
                 allCount,
                 zsCount,
                 children

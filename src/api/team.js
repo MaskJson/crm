@@ -39,3 +39,8 @@ export const connectTeam = (params) => {
 export const connectMember = (params) => {
   return postRequest('/team/connect/member', params);
 };
+
+// 获取团队所有成员
+export const getMembers = (params) => {
+  return getRequest('/team/getMemberByUserId', params);
+};

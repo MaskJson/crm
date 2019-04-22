@@ -119,7 +119,9 @@
           </Select>
         </FormItem>
         <FormItem label="联系人：" prop="contactId">
-          <Option v-for="(item, index) of contacts" :key="'contact' + index" :value="item.id">{{item.name}}</Option>
+          <Select v-model="remind.contactId" placeholder="选择联系人">
+            <Option v-for="(item, index) of contacts" :key="'contact' + index" :value="item.id">{{item.name}}</Option>
+          </Select>
         </FormItem>
         <FormItem label="沟通记录" class="ivu-form-item-required" v-if="remind.type == 1 || remind.type == 3">
           <Input type="textarea" placeholder="沟通了解情况" :rows="3" v-model="remind.remark"/>
@@ -138,8 +140,8 @@
             <Option v-for="(item, index) of typeFilter" :key="'type' + index" :value="item.value">{{ item.label }}</Option>
           </Select>
         </FormItem>
-        <FormItem label="签约时间：" v-if="remind.status == 6">
-          <DatePicker placeholder="请选择签约时间" v-model="remind.contactTime"></DatePicker>
+        <FormItem label="合同时间：" v-if="remind.status == 5">
+          <DatePicker placeholder="请选择合同时间" v-model="remind.contactTime"></DatePicker>
         </FormItem>
         <FormItem label="下次跟踪类别">
           <Select v-model="remind.nextType" placeholder="请选择">
@@ -204,7 +206,7 @@
         } else if (this.entity.type == 6) {
           return [customerTypes[5]];
         } else {
-          return customerTypes.slice(this.entity.type - 1, 5);
+          return customerTypes.slice(this.customerType != 1 ? this.customerType - 1 : 1, 5);
         }
       },
       remindFilter() {
@@ -389,8 +391,8 @@
             this.show = true;
             addRemind(remind).then(data => {
               this.show = false;
+              this.entity.type = remind.status == 5 && remind.contactTime || remind.status == 6 ? 6 : status;
               toggleShow(this, 'remind');
-              this.entity.type = remind.status;
               this.getRemindList(this.entity.id);
             }).catch(data => {this.show = false;})
           }

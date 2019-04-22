@@ -44,7 +44,7 @@
         <p class="cl-primary" v-show="ipls.filter(item => item.checked).length">高级顾问：</p>
         <FormItem v-show="item.checked" v-for="(item, index) of ipls" :key="'ipl_check' + index" :label="item.nickName + '：'" class="mb-5">
           <CheckboxGroup v-model="item.children">
-            <Checkbox v-for="(item, index) of pls.concat(mpls)" :key="'pl1' + index" :label="item.id">{{ item.nickName }}</Checkbox>
+            <Checkbox v-for="(item, index) of pls" :key="'pl1' + index" :label="item.id">{{ item.nickName }}</Checkbox>
           </CheckboxGroup>
         </FormItem>
         <FormItem v-show="item.checked" v-for="(item, index) of mpls" :key="'ipl_check' + index" :label="item.nickName + '：'" class="mb-5">

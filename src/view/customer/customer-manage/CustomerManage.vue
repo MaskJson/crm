@@ -8,6 +8,16 @@
         <Input placeholder="客户名称" class="w200" v-model="searchData.name"/>
       </SearchItem>
       <SearchItem>
+        <Select placeholder="选择客户类型" clearable v-model="searchData.type">
+          <Option :value="0">普通客户</Option>
+          <Option :value="2">联系中</Option>
+          <Option :value="3">合作洽谈</Option>
+          <Option :value="4">先推人再签约</Option>
+          <Option :value="5">签约</Option>
+          <Option :value="6">客户</Option>
+        </Select>
+      </SearchItem>
+      <SearchItem>
         <Input placeholder="行业" class="w200" v-model="searchData.industry"/>
       </SearchItem>
       <SearchItem>
@@ -47,6 +57,11 @@
             <Option :value="3">客户上门</Option>
           </Select>
         </FormItem>
+        <FormItem label="联系人：" prop="contactId">
+          <Select v-model="remind.contactId" placeholder="选择联系人">
+            <Option v-for="(item, index) of contacts" :key="'contact' + index" :value="item.id">{{item.name}}</Option>
+          </Select>
+        </FormItem>
         <FormItem label="沟通记录" class="ivu-form-item-required" v-if="remind.type == 1 || remind.type == 3">
           <Input type="textarea" placeholder="沟通了解情况" :rows="3" v-model="remind.remark"/>
         </FormItem>
@@ -64,6 +79,9 @@
             <Option v-for="(item, index) of typeFilter" :key="'type' + index" :value="item.value">{{ item.label }}</Option>
           </Select>
         </FormItem>
+        <FormItem label="合同时间：" v-if="remind.status == 5">
+          <DatePicker placeholder="请选择合同时间" v-model="remind.contactTime"></DatePicker>
+        </FormItem>
         <FormItem label="下次跟踪类别">
           <Select v-model="remind.nextType" placeholder="请选择">
             <Option :value="1">电话</Option>
@@ -79,12 +97,13 @@
     <Drawer :width="360" title="客户收藏夹管理" :closable="false" v-model="showFavoriteSetting">
       <favorite-setting ref="favorite" @on-change="setFolders" :type="1"/>
     </Drawer>
+    <SpinUtil :show="show"/>
   </Card>
 </template>
 
 <script>
   import { jsonArray, getCity, globalSearch, getUserId, getCustomerType, getUserInfoByKey, toggleShow } from "../../../libs/tools";
-  import { list, toggleFollow, toggleBindFollowUser, addRemind } from "../../../api/customer";
+  import { list, toggleFollow, toggleBindFollowUser, addRemind, getCustomerContact } from "../../../api/customer";
   import cityList from '../../../libs/cityList';
   import FavoriteSetting from '../../components/favorite-setting';
   import { customerTypes } from "../../../libs/constant";
@@ -112,7 +131,7 @@
         } else if (this.customerType == 6) {
           return [customerTypes[5]];
         } else {
-          return customerTypes.slice(this.customerType - 1, 5);
+          return customerTypes.slice(this.customerType != 1 ? this.customerType - 1 : 1, 5);
         }
       },
     },
@@ -132,7 +151,9 @@
           folderId: null,
           industry: null,
           city: [],
-          follow: 0
+          follow: 0,
+          type: null,
+          userId: getUserId()
         },
         remind: {
           type: 1,
@@ -143,13 +164,19 @@
           meetNotice: null,
           nextType: null,
           nextRemindTime: null,
+          contactId: null,
+          contactTime: null,
         },
+        contacts: [],
         remindRule: {
           type: [
             { required: true, type: 'number', message: '请选择跟踪类别', trigger: 'blur' }
           ],
           status: [
             { required: true, type: 'number', message: '请选择客户状态', trigger: 'blur' }
+          ],
+          contactId: [
+            { required: true, type: 'number', message: '请选择联系人', trigger: 'change' }
           ]
         },
         columns: [
@@ -300,10 +327,18 @@
                     },
                     on: {
                       click: () => {
-                        this.remindIndex = params.row._index;
-                        this.customerId = params.row.id;
-                        this.customerType = params.row.type;
-                        toggleShow(this, 'remind');
+                        getCustomerContact({id: params.row.id}).then(data => {
+                          this.show = false;
+                          this.contacts = data || [];
+                          if (this.contacts.length == 0) {
+                            this.$Message.error('暂无联系人，请前往详情页添加');
+                            return false;
+                          }
+                          this.remindIndex = params.row._index;
+                          this.customerId = params.row.id;
+                          this.customerType = params.row.type;
+                          toggleShow(this, 'remind');
+                        }).catch(data => {this.show = false;})
                       }
                     }
                   }, '添加跟踪')
@@ -343,6 +378,8 @@
           meetNotice: null,
           nextType: null,
           nextRemindTime: null,
+          contactId: null,
+          contactTime: null,
         };
       },
       addRemind() {
@@ -359,6 +396,10 @@
             }
             if ((remind.nextRemindTime || remind.nextType) && (!remind.nextRemindTime || !remind.nextType)) {
               this.$Message.warning('设置下次跟踪，类别和时间需填写完整');
+              return false;
+            }
+            if (remind.status == 6 && !remind.contactTime) {
+              this.$Message.warning('签约状态下，请选择签约时间');
               return false;
             }
             remind.createUserId = getUserId();

@@ -19,7 +19,7 @@ axios.interceptors.request.use(config => {
   return config;
 }, err => {
   Message.error('请求超时');
-  return Promise.resolve(err);
+  return Promise.reject(err);
 });
 
 // http response 拦截器
@@ -30,7 +30,6 @@ axios.interceptors.response.use(response => {
     switch (data.code) {
       case 400:
         Message.error(data.message || '请求处理异常');
-        console.log(data.data)
         return Promise.reject(data.data);
         break;
       case 401:

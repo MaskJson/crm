@@ -30,7 +30,7 @@ export const talentStatus = [
   {value: 6, label: '1年后看机会'},
   {value: 7, label: '2年后看机会'},
   {value: 8, label: '新入职，暂时不看机会'},
-  {value: 9, label: '推荐给客户总监'},
+  // {value: 9, label: '推荐给客户总监'},
   {value: 10, label: '推荐给客户'}
 ];
 
@@ -161,7 +161,7 @@ export const background = [
 
 export const customerTypes = [
   {value: 0, label: '普通公司'},
-  // {value: 1, label: '列名'},
+  // {value: 1, label: '列名拓展'},
   {value: 2, label: '联系中'},
   {value: 3, label: '合作洽谈'},
   {value: 4, label: '先推人再签约'},

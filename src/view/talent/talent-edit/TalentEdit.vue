@@ -314,8 +314,10 @@
         </Select>
       </FormItem>
       <FormItem label="关联项目" v-if="entity.status == 10 && !projectId">
-        <Select v-model="entity.projectId">
-          <Option v-for="(item, index) of projectList" :key="'project' + index" :value="item.projectId">{{ item.name }}</Option>
+        <Select v-model="entity.projectId" placeholder="请选择项目">
+          <Option v-for="(item, index) of projects" :value="item.id" :key="'project' + index">
+            {{ item.name }}{{`（${item.customerName}）`}}
+          </Option>
         </Select>
       </FormItem>
     </Form>
@@ -390,6 +392,7 @@
   import { getListByTableName } from "../../../api/common";
   import { checkByPhone, getDetail, save } from "../../../api/talent";
   import { imgBaseUrl } from "../../../config";
+  import { openByUserId } from "../../../api/project";
 
   export default {
     name: "TalentEdit",
@@ -422,6 +425,7 @@
         allCustomers: [], // 所有客户
         allDepartment: [], // 所有部门
         projectList: [], // 所有项目
+        projects: [], // 对当前用户开放的项目
         teamUserList: [], // 团队
         actionIndex: null, // 聚焦的经历下标
         actionFriendIndex: null, // 好友推荐公司聚焦
@@ -924,6 +928,9 @@
     },
     created() {
       this.userId = getUserId();
+      openByUserId({ userId: getUserId() }).then(data => {
+        this.projects = data || [];
+      }).catch(data => {});
       getListByTableName({type: 3}).then(data => {
         this.projectList = data || [];
       }).catch(data => {});
