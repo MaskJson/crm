@@ -1,12 +1,12 @@
 <template>
   <Card>
     <Tabs v-model="status" :animated="false">
-      <TabPane label="我的人才地图" name="0"></TabPane>
-      <TabPane label="收藏的人才地图" name="2"></TabPane>
-      <!--<TabPane label="推荐的人才地图" name="1"></TabPane>-->
-      <!--<TabPane label="面试的人才地图" name="3"></TabPane>-->
-      <!--<TabPane label="offer人才地图" name="4"></TabPane>-->
-      <!--<TabPane label="成功人才地图" name="7"></TabPane>-->
+      <TabPane :label="`我的人才地图（${list.length}）`" name="0"></TabPane>
+      <TabPane :label="`收藏的人才地图（${folderList.length}）`" name="2"></TabPane>
+      <TabPane :label="`推荐的人才地图（${statusList.filter(item => item.status == 1).length}）`" name="1"></TabPane>
+      <TabPane :label="`面试的人才地图（${statusList.filter(item => item.status == 3).length}）`" name="3"></TabPane>
+      <TabPane :label="`offer人才地图（${statusList.filter(item => item.status == 4).length}）`" name="4"></TabPane>
+      <TabPane :label="`成功人才地图（${statusList.filter(item => item.status == 7).length}）`" name="7"></TabPane>
     </Tabs>
     <div class="mt-20">
       <Collapse v-if="treeMap.length > 0">
@@ -31,11 +31,11 @@
 </template>
 
 <script>
-  import { talentMap, folderTalent } from "../../../api/count";
+  import { talentMap, folderTalent, statusTalent } from "../../../api/count";
   import { getUserId, getStatusRender, getRenderList, getDateTime } from "../../../libs/tools";
 
   export default {
-    name: "talent-map",
+    name: "TalentMap",
     data() {
       return {
         show: false,
@@ -64,7 +64,7 @@
                   },
                   on: {
                     click: () => {
-                      this.$router.push({ path: '/talent/talent-detail', query: {id: params.row.talentId}});
+                      this.$router.push('/talent/talent-detail?id=' + params.row.talentId);
                     }
                   }
                 }, params.row.talentName)
@@ -97,7 +97,7 @@
                     arr = [`负责人：${remind.createUser}`, `跟踪记录：${remind.remark}`];
                     break;
                   case 2:
-                    arr = [`负责人：${remind.createUser}`, `人才基本情况：${remind.situation}`, `离职原因：${remind.cause}`, `薪资架构：${params.row.salary}`];
+                    arr = [`负责人：${remind.createUser}`, `人才基本情况：${remind.situation}`, `离职原因：${remind.cause}`, `薪资架构：${remind.salary}`];
                     break;
                   case 3:
                     arr = [`负责人：${remind.createUser}`, `面试时间：${getDateTime(remind.meetTime)}`, `面试地点：${remind.meetAddress}`, `人才基本情况：${remind.situation}`, `离职原因：${remind.cause}`, `薪资架构：${remind.salary}`];
@@ -120,6 +120,9 @@
             }
           }
         ],
+        projectColumns: [
+
+        ]
       }
     },
     // 根据状态从数据中过滤出树状所需数据
@@ -128,13 +131,10 @@
         if (this.status == 0) {
           return this.list;
         } else if (this.status == 2) {
-          // const folderIds = this.folderList.map(item => item.id);
-          // return this.list.filter(item => folderIds.indexOf(item.talentId) > -1);
           return this.folderList;
+        } else {
+          return this.statusList.filter(item => item.remindStatus == Number(this.status));
         }
-        // else {
-        //   return this.statusList.filter(item => item.remindStatus == Number(this.status));
-        // }
       },
       treeMap() {
         const mapCustomers = [];
@@ -191,6 +191,7 @@
           this.show = false;
           data = data || [];
           data.forEach(item => {
+            item.talentId = item.id;
             Object.assign(item, item.info);
           });
           this.list = data;
@@ -200,15 +201,26 @@
         folderTalent({ userId: getUserId() }).then(data => {
           data = data || [];
           data.forEach(item => {
+            item.talentId = item.id;
             Object.assign(item, item.info);
           });
           this.folderList = data;
         }).catch(data => {})
+      },
+      getProjectTalentMap() {
+        statusTalent({userId: getUserId()}).then(data => {
+          data = data || [];
+          data.forEach(item => {
+            Object.assign(item, item.info);
+          });
+          this.statusList = data;
+        }).catch(data => {});
       }
     },
     created() {
       this.getTalentMap();
       this.getFolderTalentMap();
+      this.getProjectTalentMap();
     }
   }
 </script>

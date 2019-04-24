@@ -16,6 +16,58 @@
     </Row>
     <Row>
       <Tabs>
+        <TabPane label="简历原件">
+          <div class="pd100 center" v-if="!entity.resume">
+            <div class="center" v-if="!entity.followUserId || entity.followUserId == userId">
+              <Upload
+                v-if="!entity.resume"
+                action="/api/common/upload"
+                :on-success="resumeSuccess"
+                :on-error="resumeError"
+                :format="['doc', 'docx', 'pdf']"
+                :show-upload-list="false"
+                :max-size="5120"
+                :on-format-error="formatErrorResume"
+                :on-exceeded-size="sizeError"
+              >
+                <Button icon="ios-cloud-upload-outline">上传简历</Button>
+              </Upload>
+            </div>
+            <span v-else>暂无上传简历</span>
+            <div class="download cursor border pd-40" v-else @click="downloadFile(entity.resume)">
+              <p class="center">
+                <Icon type="md-cloud-download" size="24"/>
+              </p>
+              <p class="center">下载简历</p>
+            </div>
+          </div>
+        </TabPane>
+        <TabPane label="简历附件">
+          <div class="pd100 center" v-if="!entity.resume2">
+            <div class="center" v-if="!entity.followUserId || entity.followUserId == userId">
+              <Upload
+                v-if="!entity.resume"
+                action="/api/common/upload"
+                :on-success="resumeSuccess2"
+                :on-error="resumeError"
+                :format="['doc', 'docx', 'pdf']"
+                :show-upload-list="false"
+                :max-size="5120"
+                :on-format-error="formatErrorResume"
+                :on-exceeded-size="sizeError"
+              >
+                <Button icon="ios-cloud-upload-outline">上传附件</Button>
+              </Upload>
+            </div>
+            <span v-else>暂无上传附件</span>
+            <div class="download cursor border pd-40" v-else @click="downloadFile(entity.resume2)">
+              <p class="center">
+                <Icon type="md-cloud-download" size="24"/>
+              </p>
+              <p class="center">下载简历</p>
+            </div>
+          </div>
+        </TabPane>
         <TabPane label="基本信息">
           <Detail :entity="entity"/>
         </TabPane>
@@ -44,32 +96,6 @@
             </TimelineItem>
           </Timeline>
           <div v-else>暂无跟踪记录</div>
-        </TabPane>
-        <TabPane label="人才简历">
-          <div class="pd100 center" v-if="!entity.resume">
-            <div class="center" v-if="!entity.followUserId || entity.followUserId == userId">
-              <Upload
-                v-if="!entity.resume"
-                action="/api/common/upload"
-                :on-success="resumeSuccess"
-                :on-error="resumeError"
-                :format="['doc', 'docx', 'pdf']"
-                :show-upload-list="false"
-                :max-size="5120"
-                :on-format-error="formatErrorResume"
-                :on-exceeded-size="sizeError"
-              >
-                <Button icon="ios-cloud-upload-outline">上传合同</Button>
-              </Upload>
-            </div>
-            <span v-else>暂无上传简历</span>
-            <div class="download cursor border pd-40" v-else @click="downloadFile">
-              <p class="center">
-                <Icon type="md-cloud-download" size="24"/>
-              </p>
-              <p class="center">下载简历</p>
-            </div>
-          </div>
         </TabPane>
         <TabPane :label="`项目经历（${projectList.length}）`">
           <div class="bgf5 mB15 pd10">
@@ -105,7 +131,7 @@
         <FormItem label="沟通记录" v-if="remind.type == 1" class="ivu-form-item-required">
           <Input type="textarea" :rows="3" v-model="remind.remark"/>
         </FormItem>
-        <div v-if="remind.type == 2">
+        <div  v-if="remind.type == 2 || remind.type == 3">
           <FormItem label="候选人基本情况" class="ivu-form-item-required">
             <Input type="textarea" :rows="3" v-model="remind.situation"/>
           </FormItem>
@@ -300,6 +326,22 @@
           this.show = true
           uploadFile({
             type: 1,
+            flag: true,
+            id: this.entity.id,
+            path: res.data
+          }).then(data => {
+            this.entity.contractUrl = res.data;
+            this.show = false;
+          }).catch(data => {this.show = false;});
+          // this.entity.contractUrl = res.data;
+        }
+      },
+      resumeSuccess2(res) {
+        if (res.code == 200) {
+          this.show = true
+          uploadFile({
+            type: 1,
+            flag: false,
             id: this.entity.id,
             path: res.data
           }).then(data => {
@@ -444,8 +486,8 @@
           this.projectList = data || [];
         }).catch(data => {});
       },
-      downloadFile() {
-        window.open('/api/common/download?path=' + this.entity.resume);
+      downloadFile(fileName) {
+        window.open('/api/common/download?path=' + fileName);
       }
     },
     created() {

@@ -127,6 +127,7 @@ util.setCurrentPath = function (vm, name) {
         return false;
       }
     })[0];
+    currentPathObj = currentPathObj || {name: vm.$route.name, path: vm.$route.path, title: vm.$route.title || vm.$route.meta.title};
     currentPathObj.children = !!currentPathObj.children ? currentPathObj.children : [];
     if (currentPathObj.children && currentPathObj.children.length < 1 && currentPathObj.name === 'home') {
       currentPathArr = [

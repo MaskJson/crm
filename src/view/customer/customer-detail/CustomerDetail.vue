@@ -137,10 +137,10 @@
         </FormItem>
         <FormItem label="状态" prop="status" class="ivu-form-item-required">
           <Select placeholder="请选择" v-model="remind.status">
-            <Option v-for="(item, index) of typeFilter" :key="'type' + index" :value="item.value">{{ item.label }}</Option>
+            <Option v-for="(item, index) of typesFilter" :key="'type' + index" :value="item.value">{{ item.label }}</Option>
           </Select>
         </FormItem>
-        <FormItem label="合同时间：" v-if="remind.status == 5">
+        <FormItem label="合同期：" v-if="remind.status == 5">
           <DatePicker placeholder="请选择合同时间" v-model="remind.contactTime"></DatePicker>
         </FormItem>
         <FormItem label="下次跟踪类别">
@@ -163,7 +163,7 @@
 </template>
 
 <script>
-  import { getDateTime, getCustomerInfoUtil, toggleShow, getUserId, getCustomerType } from "../../../libs/tools";
+  import { getDateTime, getCustomerInfoUtil, toggleShow, getUserId, getCustomerType, getRenderList, getStatusRender } from "../../../libs/tools";
   import { get, toggleFollow, addRemind, remindList, getCustomerTalent, toggleBindFollowUser } from "../../../api/customer";
   import { bindFolder } from "../../../api/folder";
   import { customerTypes } from "../../../libs/constant";
@@ -190,7 +190,7 @@
         return v == 1 ? '电话沟通' : v == 3 ? '客户上门' : '拜访客户';
       },
       customerTypeFilter(v) {
-        return getCustomerType(false, v);
+        return getCustomerType(false, v) || '列名未联系';
       }
     },
     computed: {
@@ -200,13 +200,21 @@
       userId() {
         return getUserId();
       },
-      typeFilter() {
-        if (!this.entity.type) {
+      typesFilter() {
+        const type = this.entity.type;
+        console.log(type)
+        if (!type) {
           return customerTypes.slice(0, 1);
-        } else if (this.entity.type == 6) {
+        } else if (type == 6) {
           return [customerTypes[5]];
         } else {
-          return customerTypes.slice(this.customerType != 1 ? this.customerType - 1 : 1, 5);
+          if (type == 1 || type == 2) {
+            return customerTypes.slice(1, 3);
+          } else if (type == 3) {
+            return customerTypes.slice(2, 4);
+          } else if (type == 4) {
+            return customerTypes.slice(3, 5);
+          }
         }
       },
       remindFilter() {
@@ -285,29 +293,50 @@
             }
           },
           {
-            title: '部门',
-            align: 'center',
-            key: 'department'
-          },
-          {
-            title: '职位',
+            title: '岗位',
             align: 'center',
             key: 'position'
           },
           {
-            title: '入职时间',
+            title: '状态',
             align: 'center',
             render: (h, params) => {
-              return h('span', getDateTime(params.row.startTime));
+              const talent = params.row.talent || {};
+              return getStatusRender(h, talent.status);
             }
           },
           {
-            title: '离职时间',
+            title: '最近跟踪记录',
             align: 'center',
             render: (h, params) => {
-              return h('span', getDateTime(params.row.endTime));
+              const remind = params.row.remind || {};
+              if (remind && remind.type){
+                let arr = [];
+                switch (remind.type) {
+                  case 1:
+                    arr = [ `跟踪记录：${remind.remark}`];
+                    break;
+                  case 2:
+                    arr = [ `人才基本情况：${remind.situation}`, `离职原因：${remind.cause}`, `薪资架构：${remind.salary}`];
+                    break;
+                  case 3:
+                    arr = [ `面试时间：${getDateTime(remind.meetTime)}`, `面试地点：${remind.meetAddress}`, `人才基本情况：${remind.situation}`, `离职原因：${remind.cause}`, `薪资架构：${remind.salary}`];
+                    break;
+                }
+                return getRenderList(h, JSON.stringify(arr));
+              } else {
+                return h('span', '');
+              }
             }
           },
+          {
+            title: '跟踪用户',
+            align: 'center',
+            render: (h, params) => {
+              const remind = params.row.remind || {};
+              return h('span', remind.createUser);
+            }
+          }
         ],
         contactLen: 0,
         projectLength: 0
@@ -391,7 +420,7 @@
             this.show = true;
             addRemind(remind).then(data => {
               this.show = false;
-              this.entity.type = remind.status == 5 && remind.contactTime || remind.status == 6 ? 6 : status;
+              this.entity.type = remind.status == 5 && remind.contactTime || remind.status == 6 ? 6 : remind.status;
               toggleShow(this, 'remind');
               this.getRemindList(this.entity.id);
             }).catch(data => {this.show = false;})
@@ -403,6 +432,9 @@
           if (this.contactLen == 0) {
             this.$Message.warning('请添加客户联系人');
             return;
+          }
+          if (this.entity.type == 6) {
+            this.remind.status = 6;
           }
         }
         toggleShow(this, key, flag);

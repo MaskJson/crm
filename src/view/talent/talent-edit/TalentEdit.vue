@@ -26,7 +26,31 @@
             <Input v-model="entity.resume" class="hide"/>
           </FormItem>
         </Col>
-        <Col span="8" offset="8">
+        <Col span="8">
+          <FormItem label="附件：">
+            <Upload
+              v-if="!entity.resume"
+              action="/api/common/upload"
+              :on-success="resumeSuccess2"
+              :on-error="resumeError"
+              :format="['doc', 'docx', 'pdf']"
+              :show-upload-list="false"
+              :max-size="5120"
+              :on-format-error="formatErrorResume"
+              :on-exceeded-size="sizeError"
+            >
+              <Button icon="ios-cloud-upload-outline">Upload files</Button>
+            </Upload>
+            <div class="demo-upload-list" v-if="entity.resume2">
+              <Icon type="ios-list-box" class="img block" size="60"/>
+              <div class="demo-upload-list-cover">
+                <Icon type="ios-trash-outline" @click.native="handleRemove2"></Icon>
+              </div>
+            </div>
+            <Input v-model="entity.resume2" class="hide"/>
+          </FormItem>
+        </Col>
+        <Col span="8">
           <FormItem label="头像：">
             <Upload
               v-if="!entity.header"
@@ -86,7 +110,7 @@
       <Row>
         <Col span="8">
           <FormItem label="出生日期：">
-            <DatePicker type="datetime" v-model="entity.birthday"></DatePicker>
+            <DatePicker style="z-index: 999999;" type="datetime" v-model="entity.birthday"></DatePicker>
           </FormItem>
         </Col>
         <Col span="8">
@@ -433,6 +457,7 @@
         actionType: true,
         entity: {
           resume: null,
+          resume2: null,
           header: null,
           name: null,
           sex: 0,
@@ -572,6 +597,11 @@
       resumeSuccess(res) {
         if (res.code == 200) {
           this.entity.resume = res.data;
+        }
+      },
+      resumeSuccess2(res) {
+        if (res.code == 200) {
+          this.entity.resume2 = res.data;
         }
       },
       headerSuccess(res) {
@@ -933,6 +963,9 @@
       }).catch(data => {});
       getListByTableName({type: 3}).then(data => {
         this.projectList = data || [];
+      }).catch(data => {});
+      getListByTableName({type: 1}).then(data => {
+        this.allCustomers = data || [];
       }).catch(data => {});
       allDepartment({}).then(data => {
         this.allDepartment = data;

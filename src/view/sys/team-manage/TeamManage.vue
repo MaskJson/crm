@@ -260,7 +260,7 @@
         const teamObj = {};
         keys.forEach((key, index) => {
           teamObj[key] = this[key].filter(item => item.checked).map(item => {
-            if (index < 2) {
+            if (index < 3) {
               return {
                 userId: item.id,
                 children: JSON.stringify(item.children)

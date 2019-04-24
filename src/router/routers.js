@@ -19,17 +19,19 @@ export const otherRouter = {
   name: 'otherRouter',
   redirect: '/home',
   component: Main,
+  title: '首页',
+  meta: {
+    title: '首页'
+  },
   children: [
     {
       path: 'home',
       name: 'home',
+      title: '首页',
       meta: {
         hideInMenu: true,
         title: '首页',
         notCache: true,
-        meta: {
-          title: '首页'
-        }
       },
       component: () => import('@/view/home/home.vue')
     }

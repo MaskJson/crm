@@ -4,7 +4,7 @@
       v-for="item in currentPath"
       :href="item.path"
       :key="item.name"
-    >{{ itemTitle(item) }}
+    ><span class="cursor" @click="goto(item)">{{ itemTitle(item) }}</span>
     </BreadcrumbItem>
   </Breadcrumb>
 </template>
@@ -22,8 +22,14 @@
         } else {
           return item.title;
         }
+      },
+      goto(item) {
+        console.log(item)
+        if (item.name == 'home') {
+          this.$router.push('/home');
+        }
       }
-    }
+    },
   };
 </script>
 

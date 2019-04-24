@@ -79,7 +79,7 @@
             <Option v-for="(item, index) of typeFilter" :key="'type' + index" :value="item.value">{{ item.label }}</Option>
           </Select>
         </FormItem>
-        <FormItem label="合同时间：" v-if="remind.status == 5">
+        <FormItem label="合同期：" v-if="remind.status == 5">
           <DatePicker placeholder="请选择合同时间" v-model="remind.contactTime"></DatePicker>
         </FormItem>
         <FormItem label="下次跟踪类别">
@@ -126,12 +126,19 @@
         }
       },
       typeFilter() {
-        if (!this.customerType) {
+        const type = this.customerType;
+        if (!type) {
           return customerTypes.slice(0, 1);
-        } else if (this.customerType == 6) {
+        } else if (type == 6) {
           return [customerTypes[5]];
         } else {
-          return customerTypes.slice(this.customerType != 1 ? this.customerType - 1 : 1, 5);
+          if (type == 1 || type == 2) {
+            return customerTypes.slice(1, 3);
+          } else if (type == 3) {
+            return customerTypes.slice(2, 4);
+          } else if (type == 4) {
+            return customerTypes.slice(3, 5);
+          }
         }
       },
     },
