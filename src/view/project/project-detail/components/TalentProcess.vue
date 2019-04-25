@@ -6,7 +6,7 @@
     </Tabs>
     <Table :data="list" :columns="column" border></Table>
 
-    <ModalUtil ref="remind" title="新增项目人才跟踪记录" :width="600" @on-ok="addRemind">
+    <ModalUtil ref="remind" title="新增项目人才跟踪记录" :loading="show" :width="600" @on-ok="addRemind">
       <Form ref="form" :model="actionData" :label-width="110">
         <FormItem label="本次跟踪状态" prop="remindType">
           <Select v-model="actionData.type" :disabled="true">

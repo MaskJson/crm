@@ -1,9 +1,9 @@
 <template>
   <SearchItem>
     <span>{{title}}</span>
-    <DatePicker type="datetime" placeholder="开始时间" v-model="start" @on-change="startTimeChange" :options="startTimeOptions"></DatePicker>
+    <DatePicker type="date" placeholder="开始时间" v-model="start" @on-change="startTimeChange" :options="startTimeOptions"></DatePicker>
     <span class="mlr5">-</span>
-    <DatePicker type="datetime" placeholder="结束时间" v-model="end" @on-change="endTimeChange" :options="endTimeOptions"></DatePicker>
+    <DatePicker type="date" placeholder="结束时间" v-model="end" @on-change="endTimeChange" :options="endTimeOptions"></DatePicker>
   </SearchItem>
 </template>
 

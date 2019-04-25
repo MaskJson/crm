@@ -94,3 +94,18 @@ export const getProjects = (params) => {
 export const findProjectCustomers = (params) => {
   return getRequest('/customer/customerOfProject', params);
 };
+
+// 审核通过
+export const auditPass = (params) => {
+  return postJson('/customer/audit/pass', params);
+};
+
+// 审核通过
+export const auditRefuse = (params) => {
+  return postJson('/customer/audit/refuse', params);
+};
+
+// 获取待审核列表
+export const auditList = (params) => {
+  return getRequest('/customer/audit/list', params);
+};

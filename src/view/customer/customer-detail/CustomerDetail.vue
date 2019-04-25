@@ -141,7 +141,7 @@
           </Select>
         </FormItem>
         <FormItem label="合同期：" v-if="remind.status == 5">
-          <DatePicker placeholder="请选择合同时间" v-model="remind.contactTime"></DatePicker>
+          <DateUtil :start="remind.contactTimeStart" :end="remind.contactTimeEnd" @change="timeChange"></DateUtil>
         </FormItem>
         <FormItem label="下次跟踪类别">
           <Select v-model="remind.nextType" placeholder="请选择">
@@ -211,7 +211,7 @@
           if (type == 1 || type == 2) {
             return customerTypes.slice(1, 3);
           } else if (type == 3) {
-            return customerTypes.slice(2, 4);
+            return customerTypes.slice(2, 5);
           } else if (type == 4) {
             return customerTypes.slice(3, 5);
           }
@@ -285,10 +285,10 @@
                   },
                   on: {
                     click: () => {
-                      this.$router.push({ path: '/talent/talent-detail', query: {id: params.row.talentId}});
+                      this.$router.push('/talent/talent-detail?id=' + params.row.talentId);
                     }
                   }
-                }, params.row.talent.name)
+                }, params.row.talentName)
               ]);
             }
           },
@@ -301,8 +301,7 @@
             title: '状态',
             align: 'center',
             render: (h, params) => {
-              const talent = params.row.talent || {};
-              return getStatusRender(h, talent.status);
+              return getStatusRender(h, params.row.status);
             }
           },
           {
@@ -314,13 +313,13 @@
                 let arr = [];
                 switch (remind.type) {
                   case 1:
-                    arr = [ `跟踪记录：${remind.remark}`];
+                    arr = [ `跟踪时间：${getDateTime(remind.createTime)}`,`跟踪记录：${remind.remark}`];
                     break;
                   case 2:
-                    arr = [ `人才基本情况：${remind.situation}`, `离职原因：${remind.cause}`, `薪资架构：${remind.salary}`];
+                    arr = [ `跟踪时间：${getDateTime(remind.createTime)}`, `人才基本情况：${remind.situation}`, `离职原因：${remind.cause}`, `薪资架构：${remind.salary}`];
                     break;
                   case 3:
-                    arr = [ `面试时间：${getDateTime(remind.meetTime)}`, `面试地点：${remind.meetAddress}`, `人才基本情况：${remind.situation}`, `离职原因：${remind.cause}`, `薪资架构：${remind.salary}`];
+                    arr = [ `跟踪时间：${getDateTime(remind.createTime)}`, `面试时间：${getDateTime(remind.meetTime)}`, `面试地点：${remind.meetAddress}`, `人才基本情况：${remind.situation}`, `离职原因：${remind.cause}`, `薪资架构：${remind.salary}`];
                     break;
                 }
                 return getRenderList(h, JSON.stringify(arr));
@@ -343,6 +342,10 @@
       }
     },
     methods: {
+      timeChange(start, end) {
+        this.remind.contactTimeStart = start;
+        this.remind.contactTimeEnd = end;
+      },
       edit() {
         this.$router.push('/customer/customer-edit?id=' + this.entity.id);
       },
@@ -392,7 +395,8 @@
           nextType: null,
           nextRemindTime: null,
           contactId: null,
-          contactTime: null,
+          contactTimeStart: null,
+          contactTimeEnd: null,
         };
       },
       addRemind() {
@@ -411,8 +415,8 @@
               this.$Message.warning('设置下次跟踪，类别和时间需填写完整');
               return false;
             }
-            if (remind.status == 6 && !remind.contactTime) {
-              this.$Message.warning('签约状态下，请选择签约时间');
+            if (remind.status == 6 && (!remind.contactTimeStart || !remind.contactTimeEnd)) {
+              this.$Message.warning('签约状态下，请选择合同时间');
               return false;
             }
             remind.createUserId = getUserId();

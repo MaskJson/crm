@@ -97,10 +97,8 @@
           </Timeline>
           <div v-else>暂无跟踪记录</div>
         </TabPane>
-        <TabPane :label="`项目经历（${projectList.length}）`">
-          <div class="bgf5 mB15 pd10">
-            <Table :data="projectList" :columns="projectColumns" border></Table>
-          </div>
+        <TabPane :label="`项目经历（${projectLen}）`">
+          <Project v-model="projectLen"/>
         </TabPane>
       </Tabs>
     </Row>
@@ -157,7 +155,7 @@
             </Option>
           </Select>
         </FormItem>
-        <FormItem label="项目：" prop="projectId" v-if="remind.status == 10" class="ivu-form-item-required">
+        <FormItem label="项目：" prop="projectId" v-if="remind.status == 10" class="ivu-form-item-required" filterable clearable>
           <Select v-model="remind.projectId" placeholder="请选择项目">
             <Option :disabled="talentProjects.indexOf(item.id) > -1" v-for="(item, index) of projects" :value="item.id" :key="'project' + index">
               {{ item.name }}{{`（${item.customerName}）`}}
@@ -195,6 +193,7 @@
   import { talentStatus } from "../../../libs/constant";
   import { getListByTableName, uploadFile } from "../../../api/common";
   import Detail from './components/detail';
+  import Project from './components/project';
   import { bindFolder } from "../../../api/folder";
   import FavoriteSetting from '../../components/favorite-setting';
   import { openByUserId } from "../../../api/project";
@@ -203,6 +202,7 @@
     name: "TalentDetail",
     components: {
       Detail,
+      Project,
       FavoriteSetting
     },
     computed: {
@@ -233,6 +233,7 @@
         entity: {
 
         },
+        projectLen: null,
         talentStatus: talentStatus,
         remindStatus: null,
         show: false,
@@ -242,7 +243,6 @@
         folderId: null,
         talentProject: [],
         remindList: [], // 跟踪记录
-        projectList: [],// 项目经历
         remind: { // 添加提醒条件
           type: null, // 本次跟踪类别
           status: null, // 人才状态
@@ -268,55 +268,6 @@
             { required: true, type: 'number', message: '请选择状态', trigger: 'change' }
           ],
         },
-        projectColumns: [
-          {
-            title: '项目id',
-            key: 'id',
-            align: 'center'
-          },
-          {
-            title: '项目名称',
-            key: 'projectName',
-            align: 'center',
-            render: (h, params) => {
-              return h('Button', {
-                props: {
-                  type: 'text',
-                  size: 'small'
-                },
-                class: {
-                  'cl-primary': true
-                },
-                on: {
-                  click: () => {
-                    this.$router.push({ path: '/project/project-detail', query: {id: params.row.projectId}});
-                  }
-                }
-              }, params.row.projectName);
-            }
-          },
-          {
-            title: '所属客户名称',
-            key: 'customerName',
-            align: 'center'
-          },
-          {
-            title: '当前状态',
-            key: 'status',
-            align: 'center',
-            render: (h, params) => {
-              return getProjectTalentStatus(h, params.row.status);
-            }
-          },
-          {
-            title: '最后跟进时间',
-            key: 'updateTime',
-            align: 'center',
-            render: (h, params) => {
-              return h('span', getDateTime(params.row.updateTime));
-            }
-          },
-        ]
       }
     },
     methods: {
@@ -480,12 +431,6 @@
           }
         })
       },
-      // 获取项目经历
-      getProjectList(id) {
-        getTalentProjects({id}).then(data => {
-          this.projectList = data || [];
-        }).catch(data => {});
-      },
       downloadFile(fileName) {
         window.open('/api/common/download?path=' + fileName);
       }
@@ -498,7 +443,6 @@
       const id = Number((this.$route.query || {}).id);
       if (id) {
         this.init(id);
-        this.getProjectList(id);
       }
     }
   }

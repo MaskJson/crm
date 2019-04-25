@@ -80,7 +80,7 @@
           </Select>
         </FormItem>
         <FormItem label="项目：" prop="projectId" v-if="remind.status == 10" class="ivu-form-item-required">
-          <Select v-model="remind.projectId" placeholder="请选择项目">
+          <Select v-model="remind.projectId" placeholder="请选择项目" filterable clearable>
             <Option :disabled="talentProjects.indexOf(item.id) > -1" v-for="(item, index) of projects" :value="item.id" :key="'project' + index">
               {{ item.name }}{{`（${item.customerName}）`}}
               <span v-show="talentProjects.indexOf(item.id) > -1">{{`（已处于该项目进展中）`}}</span>
@@ -112,7 +112,7 @@
           {{ talentName }}
         </FormItem>
         <FormItem label="推荐项目：" prop="projectId">
-          <Select v-model="projectTalent.projectId" placeholder="请选择项目">
+          <Select v-model="projectTalent.projectId" placeholder="请选择项目" filterable clearable>
             <Option :disabled="talentProjects.indexOf(item.id) > -1" v-for="(item, index) of projects" :value="item.id" :key="'project' + index">
               {{ item.name }}{{`（${item.customerName}）`}}
               <span v-show="talentProjects.indexOf(item.id) > -1">{{`（已处于该项目进展中）`}}</span>

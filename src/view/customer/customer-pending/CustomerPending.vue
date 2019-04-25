@@ -42,6 +42,9 @@
             <Option v-for="(item, index) of typeFilter" :key="'type' + index" :value="item.value">{{ item.label }}</Option>
           </Select>
         </FormItem>
+        <FormItem label="合同期：" v-if="remind.status == 5">
+          <DateUtil :start="remind.contactTimeStart" :end="remind.contactTimeEnd" @change="timeChange"></DateUtil>
+        </FormItem>
         <FormItem label="下次跟踪类别">
           <Select v-model="remind.nextType" placeholder="请选择">
             <Option :value="1">电话</Option>
@@ -179,6 +182,8 @@
           nextType: null,
           nextRemindTime: null,
           followRemindId: null
+          contactTimeStart: null,
+          contactTimeEnd: null,
         },
         remindRule: {
           type: [
@@ -194,16 +199,27 @@
     },
     computed: {
       typeFilter() {
-        if (!this.customerType) {
+        const type = this.customerType;
+        if (!type) {
           return customerTypes.slice(0, 1);
-        } else if (this.customerType == 6) {
-          return [customerTypes[6]];
+        } else if (type == 6) {
+          return [customerTypes[5]];
         } else {
-          return customerTypes.slice(1, 6);
+          if (type == 1 || type == 2) {
+            return customerTypes.slice(1, 3);
+          } else if (type == 3) {
+            return customerTypes.slice(2, 5);
+          } else if (type == 4) {
+            return customerTypes.slice(3, 5);
+          }
         }
       }
     },
     methods: {
+      timeChange(start, end) {
+        this.remind.contactTimeStart = start;
+        this.remind.contactTimeEnd = end;
+      },
       finishRemind(flag) {
         this.$Modal.confirm({
           title: '结束跟进确认',
@@ -248,6 +264,10 @@
             }
             if ((remind.nextRemindTime || remind.nextType) && (!remind.nextRemindTime || !remind.nextType)) {
               this.$Message.warning('设置下次跟踪，类别和时间需填写完整');
+              return false;
+            }
+            if (remind.status == 6 && (!remind.contactTimeStart || !remind.contactTimeEnd)) {
+              this.$Message.warning('签约状态下，请选择合同时间');
               return false;
             }
             remind.createUserId = getUserId();

@@ -60,3 +60,8 @@ export const reviewTalent = (params) => {
 export const openByUserId = (params) => {
   return getRequest('/project/openByUserId', params);
 };
+
+// 修改项目状态
+export const changeStatus = (params) => {
+  return postRequest('/project/changeStatus', params);
+};

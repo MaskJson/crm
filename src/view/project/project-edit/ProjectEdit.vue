@@ -4,6 +4,17 @@
       <h2 class="mb-10">项目基本信息</h2>
       <Row>
         <Col span="8">
+          <FormItem v-if="entity.id && entity.createUerId == getUserId()" label="项目状态">
+            <Select v-model="entity.status" placeholder="请选择项目状态">
+              <Option :value="2">暂停</Option>
+              <Option :value="3">失败</Option>
+              <Option :value="4">成功</Option>
+            </Select>
+          </FormItem>
+        </Col>
+      </Row>
+      <Row>
+        <Col span="8">
           <FormItem label="客户" prop="customerId">
             <Select filterable v-model="entity.customerId" @on-change="customerChange">
               <Option v-for="(item, index) of customerList" :key="'customer' + index" :value="item.id">{{ item.name }}</Option>
@@ -296,6 +307,7 @@
           actuality: null, // 客户在该领域的情况
           teamId: null, // 关联团队id
           partId: null, // 兼职人id
+          status: 1,
         },
         entityRule: {
           name: [
@@ -342,6 +354,7 @@
       }
     },
     methods: {
+      getUserId: getUserId,
       // 项目客户及部门相关
       customerChange(id) {
         this.departments = [];

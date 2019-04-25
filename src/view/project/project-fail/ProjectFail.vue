@@ -170,7 +170,7 @@
           industry: industry.trim(),
           follow: follow == 0 ? null : follow == 1,
           userId: getUserId(),
-          status: 1,
+          status: 2,
         }
       }
     },

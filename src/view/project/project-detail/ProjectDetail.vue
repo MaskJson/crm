@@ -6,6 +6,7 @@
       </Col>
       <Col span="16" class="t-right">
         <Button type="primary" v-if="entity.createUserId == userId" :disabled="!entity.id" @click="edit">编辑</Button>
+        <Button type="primary" v-if="entity.createUserId == userId" :disabled="!entity.id" @click="toggleBind('status')">切换项目状态</Button>
         <Button type="primary" class="ml-10" icon="md-star" v-if="entity.createUserId == userId" :disabled="!entity.id" @click="toggleFollow">{{entity.follow ? '取消关注' : '关注项目'}}</Button>
         <Button type="primary" class="ml-10" :disabled="!entity.id" @click="toggleBind('talent')">关联项目候选人</Button>
         <Button type="primary" class="ml-10" :disabled="!entity.id" v-if="entity.createUserId == userId" @click="toggleBind('bind')">加入到收藏夹</Button>
@@ -24,7 +25,17 @@
         </TabPane>
       </Tabs>
     </Row>
-
+    <ModalUtil ref="status" title="修改项目状态" :loading="show" @reset="projectStatus = null" @on-ok="changeStatus">
+      <Form :label="100">
+        <FormItem class="ivu-form-item-required" label="项目状态">
+          <Select v-model="projectStatus">
+            <Option :value="2">暂停</Option>
+            <Option :value="3">失败</Option>
+            <Option :value="4">成功</Option>
+          </Select>
+        </FormItem>
+      </Form>
+    </ModalUtil>
     <!-- 加入收藏夹 -->
     <ModalUtil ref="bind" title="加入收藏夹" @reset="folderId = null" @on-ok="bindFolder" :loading="show">
       <Form :label-width="100">
@@ -120,7 +131,7 @@
   import { getUserId, getUserInfoByKey, toggleShow } from "../../../libs/tools";
   import { bindFolder } from "../../../api/folder";
   import { getListByTableName } from "../../../api/common";
-  import { toggleFollow, allProjectTalent, addProjectTalent, getReportData, addReport } from "../../../api/project";
+  import { toggleFollow, allProjectTalent, addProjectTalent, getReportData, addReport, changeStatus } from "../../../api/project";
   import FavoriteSetting from '../../components/favorite-setting';
 
   export default {
@@ -138,6 +149,7 @@
     data() {
       return {
         show: false,
+        projectStatus: null, // 项目状态
         showFavoriteSetting: false,
         roleId: getUserInfoByKey('roleId'),
         userId: getUserId(),
@@ -164,6 +176,18 @@
     methods: {
       edit() {
         this.$router.push('/project/project-edit?id=' + this.entity.id);
+      },
+      changeStatus() {
+        if (!!this.projectStatus) {
+          this.show = true;
+          changeStatus({id: this.entity.id, status: this.projectStatus}).then(data => {
+            this.show = false;
+            this.entity.status = this.projectStatus;
+            toggleShow(this, 'status', false);
+          }).catch(data => {this.show = false})
+        } else {
+          this.$Message.error('请选择项目状态');
+        }
       },
       setFolders(list) {
         this.folderList = list;

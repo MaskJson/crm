@@ -13,7 +13,7 @@
       </SearchItem>
     </div>
     <ManagerView class="talent-manager" ref="manager" :del="false" :save="null" :columns="columns" :searchData="searchData" @on-success="successHandler" @on-error="errorHandler">
-      <Button type="primary" @click="finishRemind(1)">批量结束跟踪</Button>
+      <!--<Button type="primary" @click="finishRemind(1)">批量结束跟踪</Button>-->
     </ManagerView>
     <!--  添加跟踪记录 -->
     <ModalUtil ref="remind" title="添加跟踪记录" @reset="resetRemind" @on-ok="addRemind" :loading="show">
@@ -91,10 +91,10 @@
       return {
         show: false,
         talentStatus: talentStatus,
-        searchData: {
-          userId: null,
-          type: null
-        },
+        // searchData: {
+        //   userId: null,
+        //   type: null
+        // },
         columns: [
           {
             type: 'selection',
@@ -209,18 +209,18 @@
                     }
                   }
                 }, '跟进'),
-                h('Button', {
-                  props: {
-                    type: 'warning',
-                    size: 'small'
-                  },
-                  on: {
-                    click: () => {
-                      this.finishId = params.row.id;
-                      this.finishRemind(2);
-                    }
-                  }
-                }, '结束跟进')
+                // h('Button', {
+                //   props: {
+                //     type: 'warning',
+                //     size: 'small'
+                //   },
+                //   on: {
+                //     click: () => {
+                //       this.finishId = params.row.id;
+                //       this.finishRemind(2);
+                //     }
+                //   }
+                // }, '结束跟进')
               ]);
             }
           }

@@ -337,7 +337,7 @@
           <Option v-for="(item, index) of talentStatus" :key="'status' + index" :value="item.value">{{ item.label }}</Option>
         </Select>
       </FormItem>
-      <FormItem label="关联项目" v-if="entity.status == 10 && !projectId">
+      <FormItem label="关联项目" v-if="entity.status == 10 && !projectId" filterable clearable>
         <Select v-model="entity.projectId" placeholder="请选择项目">
           <Option v-for="(item, index) of projects" :value="item.id" :key="'project' + index">
             {{ item.name }}{{`（${item.customerName}）`}}
