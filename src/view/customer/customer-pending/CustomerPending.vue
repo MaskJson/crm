@@ -181,7 +181,7 @@
           meetNotice: null,
           nextType: null,
           nextRemindTime: null,
-          followRemindId: null
+          followRemindId: null,
           contactTimeStart: null,
           contactTimeEnd: null,
         },

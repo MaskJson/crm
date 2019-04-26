@@ -27,19 +27,27 @@
       <div class="center pd-40" v-else>暂无相关人才</div>
     </div>
     <SpinUtil :show="show"/>
+    <TalentRemind ref="remind" :talentProjects="talentProjects" :talentType="talentType" :talentId="talentId" :offerCount="offerCount" @on-ok="okHandler"/>
   </Card>
 </template>
 
 <script>
   import { talentMap, folderTalent, statusTalent } from "../../../api/count";
-  import { getUserId, getStatusRender, getRenderList, getDateTime } from "../../../libs/tools";
-
+  import { getUserId, getStatusRender, getRenderList, getDateTime, toggleShow } from "../../../libs/tools";
+  import TalentRemind from './../../components/TalentRemind';
   export default {
     name: "TalentMap",
+    components: {
+      TalentRemind
+    },
     data() {
       return {
         show: false,
         status: '0',
+        offerCount: 0,
+        talentProjects: [],
+        talentType: null,
+        talentId: null,
         list: [], // 所有相关人才
         statusList: [], // 经历过各个状态的
         folderList: [], // 收藏的人才,
@@ -118,6 +126,29 @@
                 return h('span', getDateTime(remind.createTime));
               }
             }
+          },
+          {
+            title: '操作',
+            align: 'center',
+            render: (h, params) => {
+              const {projects, progress, followUserId, talentId, talentType, offerCount} = params.row;
+              return h('Button', {
+                props: {
+                  type: 'primary',
+                  size: 'small',
+                  disabled: progress>0 && (!!followUserId && followUserId != getUserId())
+                },
+                on: {
+                  click: () => {
+                    this.talentProjects = projects;
+                    this.talentId = talentId;
+                    this.talentType = talentType;
+                    this.offerCount = offerCount;
+                    toggleShow(this, 'remind');
+                  }
+                }
+              }, '常规跟踪')
+            }
           }
         ],
         projectColumns: [
@@ -185,6 +216,16 @@
       }
     },
     methods: {
+      okHandler() {
+        switch (this.status) {
+          case '0': this.getTalentMap();break;
+          case '2': this.getFolderTalentMap();break;
+          case '1':
+          case '3':
+          case '4':
+          case '7': this.getProjectTalentMap();break;
+        }
+      },
       getTalentMap() {
         this.show = true;
         talentMap({ userId: getUserId() }).then(data => {

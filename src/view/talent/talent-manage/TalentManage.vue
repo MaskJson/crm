@@ -75,7 +75,7 @@
         <FormItem label="人才状态：" prop="status">
           <Select v-model="remind.status">
             <Option :disabled="item.value == 10 && !!offerCount" v-for="(item, index) of talentStatus" :key="'status' + index" :value="item.value">
-              {{ item.label }}<span v-show="!!offerCount">{{`（该人才已在其他项目入职）`}}</span>
+              {{ item.label }}<span v-show="!!offerCount">{{`（已关联该项目）`}}</span>
             </Option>
           </Select>
         </FormItem>
@@ -83,7 +83,7 @@
           <Select v-model="remind.projectId" placeholder="请选择项目" filterable clearable>
             <Option :disabled="talentProjects.indexOf(item.id) > -1" v-for="(item, index) of projects" :value="item.id" :key="'project' + index">
               {{ item.name }}{{`（${item.customerName}）`}}
-              <span v-show="talentProjects.indexOf(item.id) > -1">{{`（已处于该项目进展中）`}}</span>
+              <span v-show="talentProjects.indexOf(item.id) > -1">{{`（已关联该项目）`}}</span>
             </Option>
           </Select>
         </FormItem>
@@ -98,11 +98,6 @@
         <FormItem label="下次联系时间" prop="remindTime" >
           <DatePicker type="datetime" placeholder="日期" v-model="remind.nextRemindTime"></DatePicker>
         </FormItem>
-        <!--<FormItem label="提醒对象" prop="adviserId">-->
-        <!--<Select v-model="remind.adviserId" placeholder="请选择">-->
-        <!--<Option v-for="(user, index) of teamUserList" :value="user.id" :key="'user'+index">{{user.name}}</Option>-->
-        <!--</Select>-->
-        <!--</FormItem>-->
       </Form>
     </ModalUtil>
     <!--  推荐到项目  -->

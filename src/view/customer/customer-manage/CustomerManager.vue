@@ -5,7 +5,7 @@
 <script>
   import CustomerManage from './../CustomerManage';
   export default {
-    name: 'CustomerManage',
+    name: 'CustomerManager',
     components: {
       CustomerManage
     },

@@ -158,6 +158,7 @@
     <Drawer :width="360" title="客户收藏夹管理" :closable="false" v-model="showFavoriteSetting">
       <favorite-setting ref="favorite" @on-change="setFolders" :type="1"/>
     </Drawer>
+    <TalentRemind ref="remind" :talentProjects="talentProjects" :talentType="talentType" :talentId="talentId" :offerCount="offerCount" @on-ok="okHandler"/>
     <SpinUtil :show="show"/>
   </Card>
 </template>
@@ -171,13 +172,15 @@
   import Project from './components/project';
   import FavoriteSetting from '../../components/favorite-setting';
   import { uploadFile } from "../../../api/common";
+  import TalentRemind from './../../components/TalentRemind';
 
   export default {
     name: "CustomerDetail",
     components: {
       Contact,
       Project,
-      FavoriteSetting
+      FavoriteSetting,
+      TalentRemind
     },
     filters: {
       cityFilter(v) {
@@ -202,7 +205,6 @@
       },
       typesFilter() {
         const type = this.entity.type;
-        console.log(type)
         if (!type) {
           return customerTypes.slice(0, 1);
         } else if (type == 6) {
@@ -227,6 +229,11 @@
     },
     data() {
       return {
+        remindIndex: null,
+        offerCount: 0,
+        talentProjects: [],
+        talentType: null,
+        talentId: null,
         customerTypes: customerTypes,
         show: false,
         showFavoriteSetting: false,
@@ -335,6 +342,30 @@
               const remind = params.row.remind || {};
               return h('span', remind.createUser);
             }
+          },
+          {
+            title: '操作',
+            align: 'center',
+            render: (h, params) => {
+              const {projects, progress, followUserId, talentId, talentType, offerCount} = params.row;
+              return h('Button', {
+                props: {
+                  type: 'primary',
+                  size: 'small',
+                  disabled: progress>0 && (!!followUserId && followUserId != getUserId())
+                },
+                on: {
+                  click: () => {
+                    this.remindIndex = params.row._index;
+                    this.offerCount = offerCount;
+                    this.talentProjects = projects;
+                    this.talentId = talentId;
+                    this.talentType = talentType;
+                    toggleShow(this, 'remind');
+                  }
+                }
+              }, '常规跟踪')
+            }
           }
         ],
         contactLen: 0,
@@ -342,6 +373,20 @@
       }
     },
     methods: {
+      okHandler(talentId, status, projectId) {
+        // const len = this.talents.length;
+        // for (let i=0;i<len;i++) {
+        //   if (this.talents[i].talentId == talentId) {
+        //     const o = Object.assign(this.talents[i], {status: status});
+        //     if (!!projectId) {
+        //       o.projects.push(projectId);
+        //     }
+        //     this.talents.splice(i, 1, o);
+        //     break;
+        //   }
+        // }
+        this.getCustomerTalent(this.entity.id);
+      },
       timeChange(start, end) {
         this.remind.contactTimeStart = start;
         this.remind.contactTimeEnd = end;
@@ -505,11 +550,14 @@
         get({id}).then(data => {
           this.show = false;
           this.entity = getCustomerInfoUtil(data);
-          getCustomerTalent({ id: this.entity.id }).then(data => {
-            this.filterTalentGroup(data || []);
-          }).catch(data => {});
+          this.getCustomerTalent(id);
         }).catch(data => { this.show = false; });
         this.getRemindList(id);
+      },
+      getCustomerTalent(id) {
+        getCustomerTalent({ id: this.entity.id }).then(data => {
+          this.filterTalentGroup(data || []);
+        }).catch(data => {});
       },
       getRemindList(id) {
         remindList({id}).then(data => {

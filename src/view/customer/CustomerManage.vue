@@ -92,11 +92,11 @@
 </template>
 
 <script>
-  import { jsonArray, getCity, globalSearch, getUserId, getCustomerType, getUserInfoByKey, toggleShow } from "../../../libs/tools";
-  import { list, toggleFollow, toggleBindFollowUser, addRemind, getCustomerContact } from "../../../api/customer";
-  import cityList from '../../../libs/cityList';
-  import FavoriteSetting from '../../components/favorite-setting';
-  import { customerTypes } from "../../../libs/constant";
+  import { jsonArray, getCity, globalSearch, getUserId, getCustomerType, getUserInfoByKey, toggleShow } from "../../libs/tools";
+  import { list, toggleFollow, toggleBindFollowUser, addRemind, getCustomerContact } from "../../api/customer";
+  import cityList from '../../libs/cityList';
+  import FavoriteSetting from '../components/favorite-setting';
+  import { customerTypes } from "../../libs/constant";
 
   export default {
     name: "CustomerManage",
