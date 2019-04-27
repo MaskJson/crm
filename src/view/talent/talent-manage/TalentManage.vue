@@ -524,10 +524,12 @@
             this.show = true;
             addRemind(params).then(data => {
               this.show = false;
-              toggleShow(this, 'remind', false);
+              const ref = this.$refs['manager'];
+              ref.list[this.remindIndex].status = params.status;
               if (!!params.projectId) {
-                this.$refs['manager'].list[this.remindIndex].projects.push(params.projectId);
+                ref.list[this.remindIndex].projects.push(params.projectId);
               }
+              toggleShow(this, 'remind', false);
             }).catch(data => { this.show = false; })
           }
         })

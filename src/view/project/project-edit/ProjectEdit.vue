@@ -211,24 +211,31 @@
       </Row>
       <h2 class="mb-10">项目推荐</h2>
       <Row>
-        <Col span="12">
-          <FormItem label="主顾问：">
+        <Col span="8">
+          <FormItem label="主顾问：" prop="adviseId">
             <Select placeholder="请选择主顾问" v-model="entity.adviseId">
+              <Option v-for="(item, index) of advisers" :disabled="item.id == entity.partId" :key="'adviser' + index" :value="item.id">{{ item.nickName }}</Option>
+            </Select>
+          </FormItem>
+        </Col>
+        <Col span="8">
+          <FormItem label="顾问：">
+            <Select placeholder="请选择主顾问" v-model="entity.advisers" multiple>
               <Option v-for="(item, index) of advisers" :key="'adviser' + index" :value="item.id">{{ item.nickName }}</Option>
             </Select>
           </FormItem>
         </Col>
-        <Col span="12">
+        <Col span="8">
           <FormItem label="特定兼职：">
             <Select placeholder="请选择特定兼职" v-model="entity.partId" filterable clearable>
-              <Option v-for="(item, index) of pts" :key="'pt' + index" :value="item.id">{{ item.name }}</Option>
+              <Option v-for="(item, index) of advisers" :disabled="item.id == entity.adviseId" :key="'pt' + index" :value="item.id">{{ item.nickName }}</Option>
             </Select>
           </FormItem>
         </Col>
       </Row>
     </Form>
     <div class="center mt-10">
-      <Button type="primary" class="w120" @click="submit">提交</Button>
+      <Button type="primary" class="w120" @click="submit" :disabled="!members.length">提交</Button>
     </div>
     <SpinUtil :show="show"/>
   </Card>
@@ -272,6 +279,7 @@
         entity: {
           customerId: null, // 关联客户
           adviseId: null, // 主顾问
+          advisers: [], // 顾问
           // department: null, // 部门
           name: null, // 名称
           matches: [], // 匹配条件
@@ -316,6 +324,9 @@
           customerId: [
             { required: true, type: 'number', message: '请选择客户', trigger: 'change' }
           ],
+          adviseId: [
+            { required: true, type: 'number', message: '请选择主顾问', trigger: 'change' }
+          ],
           amount: [
             { required: true, type: 'number', message: '请填写招聘人数', trigger: 'change' }
           ],
@@ -344,13 +355,8 @@
     },
     computed: {
       advisers() {
-        const type = this.entity.openType;
-        if (type != 2) {
-          return this.users;
-        } else {
-          const ids = this.members.map(item => item.userId);
-          return this.users.filter(item => ids.indexOf(item.id) > -1 || item.id == getUserId());
-        }
+        const ids = this.members.map(item => item.userId);
+        return this.users.filter(item => ids.indexOf(item.id) > -1 || item.id == getUserId());
       }
     },
     methods: {
@@ -401,10 +407,10 @@
             //   this.$Message.error('开放属性为团队开放，请选择项目总监');
             //   return;
             // }
-            if (entity.openType == 3 && !entity.teamId) {
-              this.$Message.error('开放属性为特定兼职开放，请选择兼职人员');
-              return;
-            }
+            // if (entity.openType == 3 && !entity.teamId) {
+            //   this.$Message.error('开放属性为特定兼职开放，请选择兼职人员');
+            //   return;
+            // }
             entity.city = JSON.stringify(entity.city);
             entity.matches = JSON.stringify(entity.matches);
             entity.industry = JSON.stringify(entity.industry);
@@ -424,17 +430,20 @@
       }
     },
     created() {
+      // 获取团队成员
+      getMembers({id: getUserId()}).then(data => {
+        this.members = data || [];
+        if (this.members.length == 0) {
+          this.$Message.error('您还未拥有团队成员，请联系管理创建团队');
+        }
+      }).catch(data => {});
       findProjectCustomers({}).then(data => {
         this.customerList = data || [];
       }).catch(data => {});
       getListByTableName({ type: 4 }).then(data => {
         this.pts = data || [];
       }).catch(data => {});
-      // 获取团队成员
-      getMembers({id: getUserId()}).then(data => {
-        this.members = data || [];
-      }).catch(data => {});
-      // 获取所有系统用户
+      // // 获取所有系统用户
       getAllUsers({}).then(data => {
         this.users = data || [];
       }).catch(data => {});
@@ -462,6 +471,11 @@
           }, 100);
         }
       });
+    },
+    watch: {
+      'entity.partId'(id) {
+
+      }
     }
   }
 </script>

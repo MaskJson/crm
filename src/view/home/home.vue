@@ -96,6 +96,10 @@
         </div>
       </Col>
     </Row>
+    <Row>
+      <h2>项目进展</h2>
+      <TalentProgress :flag="true"/>
+    </Row>
     <SpinUtil :show="show"/>
   </Card>
 </template>
@@ -103,9 +107,13 @@
 <script>
   import {getUserId, getUserInfoByKey} from "../../libs/tools";
   import { homeCount } from "../../api/count";
+  import TalentProgress from './../project/project-detail/components/TalentProcess';
 
   export default {
     name: "home",
+    components: {
+      TalentProgress
+    },
     data() {
       return {
         show: false,

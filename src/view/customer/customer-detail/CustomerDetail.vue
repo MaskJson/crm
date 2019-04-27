@@ -158,7 +158,7 @@
     <Drawer :width="360" title="客户收藏夹管理" :closable="false" v-model="showFavoriteSetting">
       <favorite-setting ref="favorite" @on-change="setFolders" :type="1"/>
     </Drawer>
-    <TalentRemind ref="remind" :talentProjects="talentProjects" :talentType="talentType" :talentId="talentId" :offerCount="offerCount" @on-ok="okHandler"/>
+    <TalentRemind ref="talentRemind" :talentProjects="talentProjects" :talentType="talentType" :talentId="talentId" :offerCount="offerCount" @on-ok="okHandler"/>
     <SpinUtil :show="show"/>
   </Card>
 </template>
@@ -361,7 +361,7 @@
                     this.talentProjects = projects;
                     this.talentId = talentId;
                     this.talentType = talentType;
-                    toggleShow(this, 'remind');
+                    toggleShow(this, 'talentRemind');
                   }
                 }
               }, '常规跟踪')

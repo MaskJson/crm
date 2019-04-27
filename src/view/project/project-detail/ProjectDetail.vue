@@ -6,7 +6,7 @@
       </Col>
       <Col span="16" class="t-right">
         <Button type="primary" v-if="entity.createUserId == userId" :disabled="!entity.id" @click="edit">编辑</Button>
-        <Button type="primary" v-if="entity.createUserId == userId" :disabled="!entity.id" @click="toggleBind('status')">切换项目状态</Button>
+        <Button type="primary" class="ml-10" v-if="entity.createUserId == userId" :disabled="!entity.id" @click="toggleBind('status')">切换项目状态</Button>
         <Button type="primary" class="ml-10" icon="md-star" v-if="entity.createUserId == userId" :disabled="!entity.id" @click="toggleFollow">{{entity.follow ? '取消关注' : '关注项目'}}</Button>
         <Button type="primary" class="ml-10" :disabled="!entity.id" @click="toggleBind('talent')">关联项目候选人</Button>
         <Button type="primary" class="ml-10" :disabled="!entity.id" v-if="entity.createUserId == userId" @click="toggleBind('bind')">加入到收藏夹</Button>

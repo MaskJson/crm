@@ -422,11 +422,12 @@
             this.show = true;
             addRemind(params).then(data => {
               this.show = false;
-              toggleShow(this, 'remind', false);
               this.getAllRemind(this.entity.id);
+              this.entity.status = params.status;
               if (!!params.projectId) {
                 this.talentProjects.push(params.projectId);
               }
+              toggleShow(this, 'remind', false);
             }).catch(data => { this.show = false; })
           }
         })

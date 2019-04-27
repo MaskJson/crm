@@ -410,7 +410,7 @@
   import IndustrySelect from '@/view/components/industry-select/industry-select.vue';
   import AptnessSelect from '@/view/components/industry-select/aptness-select.vue';
   import cityList from '../../../libs/cityList';
-  import { getTalentInfoUtil, getUserId } from "../../../libs/tools";
+  import { getTalentInfoUtil, getUserId, getUserInfoByKey } from "../../../libs/tools";
   import { industryList, aptnessList, language, talentSource, talentStatus, educationList, countries } from "../../../libs/constant";
   import { allCustomer, allDepartment } from "../../../api/customer";
   import { getListByTableName } from "../../../api/common";
@@ -485,6 +485,7 @@
           sourceFrom: null,
           remark: null,
           createUerId: null,
+          roleId: getUserInfoByKey('roleId'),
           experienceList: [
             {
               company: '', // 公司名称

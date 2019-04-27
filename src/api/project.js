@@ -65,3 +65,8 @@ export const openByUserId = (params) => {
 export const changeStatus = (params) => {
   return postRequest('/project/changeStatus', params);
 };
+
+// 进展撤销
+export const reBack = (params) => {
+  return postRequest('/project/talent/reBack', params);
+};

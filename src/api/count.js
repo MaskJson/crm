@@ -41,7 +41,7 @@ export const getReports = (params) => {
 
 // 总监查看未处理的推荐
 export const getRecommends = (params) => {
-  return getRequest('/count/customer-recommend/pending', params);
+  return getRequest('/count/recommend/pending', params);
 };
 
 // 首页统计

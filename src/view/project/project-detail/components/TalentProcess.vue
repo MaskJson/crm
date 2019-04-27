@@ -26,11 +26,11 @@
 <script>
   import { projectTalentStatus, projectProgress } from "../../../../libs/constant";
   import { getCity, getDateTime, getStatusRender, toggleShow, getUserId, getUserInfoByKey } from "../../../../libs/tools";
-  import { getProjectTalentByStatus, addProjectTalentRemind } from "../../../../api/project";
+  import { getProjectTalentByStatus, addProjectTalentRemind, reBack } from "../../../../api/project";
 
   export default {
     name: 'talent-progress',
-    props: ['userList'],
+    props: ['userList', 'flag'],
     data () {
       // 获取操作选项
       function renderAction(h, projectTalentId, type) {
@@ -42,7 +42,9 @@
               projectTalentId,
               status: Number(status),
               remark: '',
-              type: actionType
+              type: actionType,
+              prevStatus: Number(this.status),
+              prevType: type
             };
             toggleShow(this, 'remind', true);
           };
@@ -55,6 +57,7 @@
             }
           }, text));
         };
+        getAction('补充跟踪', this.status, 99);
         switch (this.status) {
           case '0':
             type != 100 ? getAction('推荐给客户', '0', 100) : action.push(h('span', {class: {'cl-error': true}}, '等待项目总监审核'));
@@ -98,6 +101,18 @@
               'cl-primary': this.status=='8'&&type==200
             }
           }, this.status=='7'?'已通过保证期':type == 200 ? '已在其他项目入职':'已淘汰'))
+        }
+        if (this.status != '0' && type != 200) {
+          action.push(h('Button', {
+            props: {
+              type: 'text'
+            },
+            on: {
+              click: () => {
+                this.reBack(projectTalentId, this.status);
+              }
+            }
+          }, '撤销'))
         }
         return action;
       }
@@ -147,7 +162,7 @@
             align: 'center',
           },
           {
-            title: '人才',
+            title: '人才状态',
             key: 'status',
             align: 'center',
             render: (h, params) => {
@@ -184,6 +199,19 @@
 
     },
     methods: {
+      // 撤销回退到上一个状态
+      reBack(projectTalentId, status) {
+        this.$Modal.confirm({
+          title: '操作确认',
+          content: '是否撤销，撤销后将根据进展记录回退到上一个状态！',
+          onOk: () => {
+            this.show = true;
+            reBack({projectTalentId, status}).then(data => {
+              this.getProjectTalent();
+            }).catch(data => this.show = false);
+          }
+        })
+      },
       // 添加跟踪记录
       addRemind() {
         this.show = true;
@@ -192,6 +220,7 @@
           createUserId: getUserId(),
           roleId: this.roleId
         }).then(data => {
+          this.show = false;
           toggleShow(this, 'remind', false);
           this.getProjectTalent();
         }).catch(data => {this.show = false;})
@@ -210,7 +239,20 @@
       }
     },
     created () {
-      this.id = Number(this.$route.query.id);
+      if (!this.flag) {
+        this.id = Number(this.$route.query.id);
+      } else {
+        this.column.unshift({
+            title: '公司名称',
+            key: 'customerName',
+            align: 'center'
+          },
+          {
+            title: '项目名称',
+            key: 'projectName',
+            align: 'center',
+          });
+      }
       this.getProjectTalent();
       this.roleId = getUserInfoByKey('roleId');
     },

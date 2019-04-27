@@ -167,8 +167,8 @@
             this.show = true;
             addRemind(params).then(data => {
               this.show = false;
-              toggleShow(this, 'remind', false);
               this.$emit('on-ok', this.talentId, params.status, params.projectId);
+              toggleShow(this, 'remind', false);
               // if (!!params.projectId) {
               //   this.$refs['manager'].list[this.remindIndex].projects.push(params.projectId);
               // }

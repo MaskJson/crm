@@ -62,6 +62,7 @@ export const projectPass = [
 
 // 项目人才跟踪状态
 export const projectProgress = [
+  {id: 99, name: '补充跟踪'},
   {id:100, name: '推荐给客户', status: '0'},
   {id:2, name: '通知人才面试', status: ['1','2']},
   {id:3, name: '确认面试', status: '1'},
@@ -81,8 +82,8 @@ export const projectProgress = [
 
 // 项目人才进展状态
 export const projectTalentStatus = [
-  {value: '0', label: '候选'},
-  {value: '1', label: '推荐'},
+  {value: '0', label: '加入项目'},
+  {value: '1', label: '推荐给客户'},
   {value: '2', label: '通知人才面试'},
   {value: '3', label: '客户面试'},
   {value: '4', label: '签订offer'},
