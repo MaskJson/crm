@@ -14,7 +14,6 @@ export const getAllUserData = (params) => {
   return getRequest('/user/getAll', params)
 };
 
-
 /********************************系统api**********************************/
 // 获取登录用户权限菜单
 export const getMenuList = (userId) => {
@@ -87,6 +86,16 @@ export const deletePermission = (ids, params) => {
 // 获取所有系统用户
 export const getAllUsers = (params) => {
   return getRequest('/sys/user/allUsers', params);
+};
+
+// 用户自己修改密码
+export const changePassword1 = (params) => {
+  return postRequest('/sys/user/changePassword1', params);
+};
+
+// 管理员修改密码
+export const changePassword2 = (params) => {
+  return postRequest('/sys/user/changePassword2', params);
 };
 
 

@@ -157,26 +157,26 @@
                       }
                     }
                   }, '编辑团队'),
-                  h('Button', {
-                    props: {
-                      size: 'small',
-                      type: 'primary'
-                    },
-                    on: {
-                      click: () => {
-                        this.$Modal.confirm({
-                          title: '交接确认',
-                          content: '确认要交接吗？交接后此用户所有相关操作将转移给交接人，该用户将被删除！',
-                          onOk: () => {
-                            this.leaveUserName = params.row.nickName;
-                            this.connect.teamId = params.row.id;
-                            this.connect.userId = params.row.userId;
-                            toggleShow(this, 'connect');
-                          }
-                        });
-                      }
-                    }
-                  }, '团队交接'),
+                  // h('Button', {
+                  //   props: {
+                  //     size: 'small',
+                  //     type: 'primary'
+                  //   },
+                  //   on: {
+                  //     click: () => {
+                  //       this.$Modal.confirm({
+                  //         title: '交接确认',
+                  //         content: '确认要交接吗？交接后此用户所有相关操作将转移给交接人，该用户将被禁用！',
+                  //         onOk: () => {
+                  //           this.leaveUserName = params.row.nickName;
+                  //           this.connect.teamId = params.row.id;
+                  //           this.connect.userId = params.row.userId;
+                  //           toggleShow(this, 'connect');
+                  //         }
+                  //       });
+                  //     }
+                  //   }
+                  // }, '团队交接'),
                 ])
               } else {
                 return h('Button', {

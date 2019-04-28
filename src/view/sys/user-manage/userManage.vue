@@ -72,7 +72,7 @@
           <!--</Select>-->
         <!--</FormItem>-->
         <FormItem label="角色分配" prop="roleId">
-          <Select v-model="userForm.roleId">
+          <Select v-model="userForm.roleId" :disabled="!!userForm.id">
             <Option v-for="item in roleList" :value="item.id" :key="'role-' + item.id" :label="item.roleName">
               <!-- <div style="display:flex;flex-direction:column"> -->
               <span style="margin-right:10px;">{{ item.roleName }}</span>
@@ -103,6 +103,19 @@
         </FormItem>
       </Form>
     </ModalUtil>
+    <ModalUtil ref="password" title="修改密码" @on-ok="changePassword">
+      <Form ref="changePassword" :label-width="100" :model="password" :rules="passwordRule">
+        <FormItem label="用户：">
+          <span>{{changePasswordNickName}}</span>
+        </FormItem>
+        <FormItem label="密码：">
+          <Input placeholder="请输入密码" v-model="password.password1"/>
+        </FormItem>
+        <FormItem label="密码确认：">
+          <Input placeholder="请再次确认密码" v-model="password.password2"/>
+        </FormItem>
+      </Form>
+    </ModalUtil>
   </div>
 </template>
 
@@ -117,7 +130,8 @@
     getAllUserData,
     getUserListData,
     initDepartment,
-    loadDepartment
+    loadDepartment,
+    changePassword2
   } from '@/api/index'
   import { toggleShow } from "../../../libs/tools";
   import circleLoading from '../../my-components/circle-loading.vue'
@@ -329,6 +343,23 @@
                   },
                   !!params.row.status ? '禁用' : '启用'
                 ),
+                h('Button', {
+                  props: {
+                    size: 'small',
+                    type: 'primary'
+                  },
+                  on: {
+                    click: () => {
+                      this.changePasswordNickName = params.row.nickName;
+                      this.password = {
+                        userId: params.row.id,
+                        password1: '',
+                        password2: ''
+                      };
+                      toggleShow(this, 'password');
+                    }
+                  }
+                })
                 // h(
                 //   'Button',
                 //   {
@@ -345,32 +376,31 @@
                 //   '删除'
                 // )
               ]
-              const roleId = params.row.roleId;
-              if (roleId != 1 && roleId != 3) {
-                children.push(
-                  h('Button', {
-                    props: {
-                      size: 'small',
-                      type: 'warning'
-                    },
-                    on: {
-                      click: () => {
-                        this.$Modal.confirm({
-                          title: '交接确认',
-                          content: '确认要交接吗？交接后此用户所有相关操作将转移给交接人，该用户将被删除！',
-                          onOk: () => {
-                            this.leaveUserName = params.row.nickName;
-                            this.connect = {
-                              userId: params.row.id,
-                            };
-                            toggleShow(this, 'connect');
-                          }
-                        });
-                      }
-                    }
-                  }, '离职交接')
-                )
-              }
+              // const roleId = params.row.roleId;
+              // if (roleId != 1 && roleId != 3) {
+              //   children.push(
+              //     h('Button', {
+              //       props: {
+              //         size: 'small',
+              //         type: 'warning'
+              //       },
+              //       on: {
+              //         click: () => {
+              //           this.$Modal.confirm({
+              //             title: '交接确认',
+              //             content: '确认要交接吗？交接后此用户所有相关操作将转移给交接人，该用户将被禁用！',
+              //             onOk: () => {
+              //               this.leaveUserName = params.row.nickName;
+              //               this.connect.userId = params.row.id;
+              //               this.connectRoleId = roleId;
+              //               toggleShow(this, 'connect');
+              //             }
+              //           });
+              //         }
+              //       }
+              //     }, '离职交接')
+              //   )
+              // }
               return h('div', children)
             }
           }
@@ -382,6 +412,19 @@
         connect: {
           userId: null,
           connectUserId: null
+        },
+        changePasswordNickName: '',
+        password: {
+          password1: '',
+          password2: '',
+        },
+        passwordRule: {
+          password1: [
+            { required: true, message: '请输入新密码', trigger: 'blur' }
+          ],
+          password2: [
+            { required: true, message: '请确认新密码', trigger: 'blur' }
+          ]
         },
         users: [],
         connectRoleId: null
@@ -396,6 +439,23 @@
       }
     },
     methods: {
+      changePassword() {
+        this.$refs['changePassword'].validate(valid => {
+          if (valid) {
+            const password = this.password;
+            if (password.password1 != password.password2) {
+              this.$Message.error('密码不一致，请重新出入');
+              return;
+            }
+            changePassword2({
+              userId: password.userId,
+              password: md5(password.password1).toUpperCase()
+            }).then(data => {
+              this.show = false;
+            }).catch(data => {this.show = false})
+          }
+        });
+      },
       connectHandler() {
         if (!this.connect.connectUserId) {
           this.$Message.error('请选择交接人');
@@ -636,15 +696,15 @@
         this.remove(this.selectList.map(item => item.id));
       },
       allUser() {
-        getTeamManagerUsers({}).then(data => {
-          this.users = data || [];
-        }).catch(data => {})
-      }
+        // getTeamManagerUsers({}).then(data => {
+        //   this.users = data || [];
+        // }).catch(data => {})
+      },
     },
     mounted () {
       this.init();
       this.getAllRoleList();
-      this.allUser();
+      // this.allUser();
     }
   }
 </script>

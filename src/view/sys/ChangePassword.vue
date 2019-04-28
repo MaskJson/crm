@@ -18,7 +18,7 @@
 </template>
 
 <script>
-  import {changePassword} from "../../api";
+  import {changePassword1} from "../../api";
   import {getUserId} from "../../libs/tools";
 
   export default {
@@ -55,19 +55,18 @@
                 newPassword: this.model.password
               }
               this.loading = true;
-              changePassword(params).then(res => {
+              changePassword1({
+                userId: password.userId,
+                oldPassword: md5(params.oldPassword).toUpperCase(),
+                newPassword: md5(params.newPassword).toUpperCase(),
+              }).then(data => {
                 this.loading = false;
-                if (res.code == 200) {
-                  this.$Message.success('修改成功');
-                  // 退出登录
-                  this.$store.commit("logout", this);
-                  this.$store.commit("clearOpenedSubmenu");
-                  // 强制刷新页面 重新加载router
-                  location.reload();
-                }
-              }).catch(res => {
-                this.loading = false;
-              })
+                // 退出登录
+                this.$store.commit("logout", this);
+                this.$store.commit("clearOpenedSubmenu");
+                // 强制刷新页面 重新加载router
+                location.reload();
+              }).catch(data => {this.loading = false})
             } else {
               this.$Message.warning('确认密码不一致');
             }
