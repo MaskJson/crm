@@ -6,8 +6,8 @@
       </Col>
       <Col span="16" class="t-right">
         <Button type="primary" v-if="entity.followUserId == userId || !entity.followUserId" :disabled="!entity.id" @click="edit">编辑</Button>
-        <Button type="primary" v-if="entity.followUserId == userId || !entity.followUserId" :disabled="!entity.id" class="ml-10" @click="toggleBindFollowUser">{{entity.followUserId ? '取消列名' : '列名'}}</Button>
-        <Button type="primary" v-if="entity.followUserId == userId || !entity.followUserId" class="ml-10" icon="md-star" :disabled="!entity.id" @click="toggleFollow">{{entity.follow ? '取消关注' : '关注客户'}}</Button>
+        <Button type="primary" v-if="(entity.followUserId == userId || !entity.followUserId) && entity.type != 6" :disabled="!entity.id" class="ml-10" @click="toggleBindFollowUser">{{entity.followUserId ? '取消列名' : '列名'}}</Button>
+        <!--<Button type="primary" v-if="entity.followUserId == userId || !entity.followUserId" class="ml-10" icon="md-star" :disabled="!entity.id" @click="toggleFollow">{{entity.follow ? '取消关注' : '关注客户'}}</Button>-->
         <Button type="primary" v-if="entity.followUserId == userId || !entity.followUserId" class="ml-10" :disabled="!entity.id" @click="toggleBind('remind')">添加跟踪摘要</Button>
         <Button type="primary" v-if="entity.followUserId == userId || !entity.followUserId" class="ml-10" :disabled="!entity.id" @click="toggleBind('bind')">加入到收藏夹</Button>
         <Button type="primary" @click="showFavoriteSetting = true" class="ml-10">客户收藏夹管理</Button>

@@ -5,7 +5,7 @@
         <Card>
           <Row>
             <Form ref="searchForm" :model="searchForm" inline :label-width="70" class="search-form">
-              <Form-item label="用户名称" prop="username">
+              <Form-item label="用户名" prop="username">
                 <Input type="text" v-model="searchForm.username" clearable placeholder="请输入用户名" style="width: 200px"/>
               </Form-item>
 
@@ -59,7 +59,7 @@
         <FormItem label="用户名" prop="username">
           <Input v-model="userForm.username" autocomplete="off"/>
         </FormItem>
-        <FormItem label="昵称" prop="nickName">
+        <FormItem label="姓名" prop="nickName">
           <Input v-model="userForm.nickName" autocomplete="off"/>
         </FormItem>
         <FormItem label="密码" prop="password" v-if="modalType===0" :error="errorPass">
@@ -103,15 +103,15 @@
         </FormItem>
       </Form>
     </ModalUtil>
-    <ModalUtil ref="password" title="修改密码" @on-ok="changePassword">
+    <ModalUtil ref="password" title="修改密码" @on-ok="changePassword" :loading="show">
       <Form ref="changePassword" :label-width="100" :model="password" :rules="passwordRule">
         <FormItem label="用户：">
           <span>{{changePasswordNickName}}</span>
         </FormItem>
-        <FormItem label="密码：">
+        <FormItem label="密码：" prop="password1">
           <Input placeholder="请输入密码" v-model="password.password1"/>
         </FormItem>
-        <FormItem label="密码确认：">
+        <FormItem label="密码确认：" prop="password2">
           <Input placeholder="请再次确认密码" v-model="password.password2"/>
         </FormItem>
       </Form>
@@ -225,7 +225,7 @@
             sortable: true,
           },
           {
-            title: '昵称',
+            title: '姓名',
             key: 'nickName',
           },
           {
@@ -359,7 +359,7 @@
                       toggleShow(this, 'password');
                     }
                   }
-                })
+                }, '修改密码')
                 // h(
                 //   'Button',
                 //   {
@@ -420,10 +420,10 @@
         },
         passwordRule: {
           password1: [
-            { required: true, message: '请输入新密码', trigger: 'blur' }
+            { required: true, type: 'string', message: '请输入新密码', trigger: 'blur' }
           ],
           password2: [
-            { required: true, message: '请确认新密码', trigger: 'blur' }
+            { required: true, type: 'string', message: '请确认新密码', trigger: 'blur' }
           ]
         },
         users: [],
@@ -447,11 +447,13 @@
               this.$Message.error('密码不一致，请重新出入');
               return;
             }
+            this.show = true;
             changePassword2({
               userId: password.userId,
               password: md5(password.password1).toUpperCase()
             }).then(data => {
               this.show = false;
+              toggleShow(this, 'password', false);
             }).catch(data => {this.show = false})
           }
         });

@@ -5,20 +5,22 @@
         <span class="cl-primary">{{item.projectName}}(ID：{{item.projectId}})</span>
         <span class="ml-5 mr-5">of</span>
         <span class="cl-primary">{{item.customerName}}</span>
-        <div class="inline-block action relative ml-10" style="height: 32px;">
+        <div class="inline-block action relative ml-10" style="height: 32px;" v-if="item.createUserId == userId">
           <Button size="small" icon="ios-apps">操作</Button>
           <div class="hide btns w120 border radius4 bgfff">
             <Button
               type="text"
               class="block"
-              v-for="action of renderAction(item.id, item.status, item.type)"
+              v-for="(action, index) of renderAction(item.id, item.status, item.type)"
+              :key="'btn' + index"
               @click="setActionData(item.id, action.status, action.type, item.status, item.type, index)"
             >{{action.text}}</Button>
             <Button type="text" @click="reBack(item.id, item.status, index)">撤销</Button>
           </div>
         </div>
+        <Button class="ml-5" @click="item.show = !item.show">{{item.show ? '隐藏' : '显示'}}</Button>
       </div>
-      <div class="pd-10">
+      <div class="pd-10" v-show="item.show">
         <div v-for="remind of item.reminds" class="mb-15">
           <div class="inline-block w160 pt-5">
             {{getDateTime(remind.createTime)}}
@@ -61,6 +63,7 @@
     data() {
       return {
         show: false,
+        userId: getUserId(),
         projectTalentRemindStatus: projectProgress,
         projectList: [],// 项目经历
         actionData: {

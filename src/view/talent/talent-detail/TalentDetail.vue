@@ -7,7 +7,7 @@
       <Col span="16" class="t-right">
         <Button type="primary" class="mr-10" @click="edit" v-if="entity.id && (!entity.followUserId || entity.followUserId == userId)">编辑</Button>
         <Button type="primary" icon="md-star" :disabled="!entity.id || (entity.followUserId && entity.followUserId != userId)" @click="toggleFollow">{{entity.follow ? '取消关注' : '关注客户'}}</Button>
-        <Button type="primary" class="ml-10" v-if="!entity.projectCount" :disabled="!entity.id || entity.projectCount || (entity.followUserId && entity.followUserId != userId)" @click="toggleBind('remind')">添加跟踪摘要</Button>
+        <Button type="primary" class="ml-10" v-if="!entity.projectCount" :disabled="!entity.id || !entity.progress || (entity.followUserId && entity.followUserId != userId)" @click="toggleBind('remind')">添加跟踪摘要</Button>
         <Button type="primary" class="ml-10" :disabled="!entity.id || (entity.followUserId && entity.followUserId != userId)" @click="toggleBind('bind')">加入到收藏夹</Button>
         <Button type="primary" class="ml-10" v-if="!entity.followUserId" @click="toggleType(true)">设为专属</Button>
         <Button type="primary" class="ml-10" v-if="entity.followUserId == userId" @click="toggleType(false)">取消专属</Button>

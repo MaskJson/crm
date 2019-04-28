@@ -18,14 +18,14 @@
       <SearchItem>
         <Cascader placeholder="请选择城市" v-model="searchData.city" :data="cityList" class="w200"></Cascader>
       </SearchItem>
-      <SearchItem>
-        关注状态：
-        <RadioGroup v-model="searchData.follow">
-          <Radio :label="0">全部</Radio>
-          <Radio :label="1">已关注</Radio>
-          <Radio :label="2">未关注</Radio>
-        </RadioGroup>
-      </SearchItem>
+      <!--<SearchItem>-->
+        <!--关注状态：-->
+        <!--<RadioGroup v-model="searchData.follow">-->
+          <!--<Radio :label="0">全部</Radio>-->
+          <!--<Radio :label="1">已关注</Radio>-->
+          <!--<Radio :label="2">未关注</Radio>-->
+        <!--</RadioGroup>-->
+      <!--</SearchItem>-->
       <SearchItem>
         <Button type="primary" @click="search">查询</Button>
       </SearchItem>
@@ -262,25 +262,26 @@
                       }
                     }
                   }, '编辑'),
-                  h('Button', {
-                    class: {
-                      'mr-5': true
-                    },
-                    props: {
-                      type: 'warning',
-                      size: 'small'
-                    },
-                    on: {
-                      click: () => {
-                        this.$refs['manager'].emitManagerHandler('toggle', {
-                          params: {
-                            id: params.row.id,
-                            follow: !params.row.follow
-                          }
-                        });
-                      }
-                    }
-                  }, params.row.follow ? '取消关注' : '关注'))
+                  // h('Button', {
+                  //   class: {
+                  //     'mr-5': true
+                  //   },
+                  //   props: {
+                  //     type: 'warning',
+                  //     size: 'small'
+                  //   },
+                  //   on: {
+                  //     click: () => {
+                  //       this.$refs['manager'].emitManagerHandler('toggle', {
+                  //         params: {
+                  //           id: params.row.id,
+                  //           follow: !params.row.follow
+                  //         }
+                  //       });
+                  //     }
+                  //   }
+                  // }, params.row.follow ? '取消关注' : '关注')
+                )
               }
               if (!followUserId) {
                 btn.push(
@@ -303,7 +304,7 @@
                   }, '列名')
                 )
               }
-              if (!!followUserId && followUserId == userId) {
+              if (!!followUserId && followUserId == userId && params.row.type != 6) {
                 btn.push(
                   h('Button', {
                     props: {
@@ -411,7 +412,7 @@
               this.$Message.warning('设置下次跟踪，类别和时间需填写完整');
               return false;
             }
-            if (remind.status == 6 && (!remind.contactTimeStart || !remind.contactTimeEnd)) {
+            if (remind.status == 5 && (!remind.contactTimeStart || !remind.contactTimeEnd)) {
               this.$Message.warning('签约状态下，请选择合同时间');
               return false;
             }

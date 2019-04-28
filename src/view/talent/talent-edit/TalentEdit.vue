@@ -164,6 +164,7 @@
       <FormItem label="手机号：" prop="phone">
         <Input v-model="entity.phone" @on-blur="checkPhone(entity.phone)"/>
         <p class="ml5 cl-error" v-if="phoneError">手机号格式错误</p>
+        <p class="ml5 cl-error" v-if="checkPhoneStatus">手机号已存在</p>
       </FormItem>
       <FormItem label="邮箱：" prop="email">
         <Input v-model="entity.email"/>
@@ -395,7 +396,7 @@
       <!--</FormItem>-->
     </Form>
     <div class="center mt-10">
-      <Button type="primary" class="w120" :disabled="checkPhoneStatus || phoneError || (!!entity.followUserId && entity.followUserId != userId)" @click="checkSubmit">提交</Button>
+      <Button type="primary" class="w120" :disabled=" phoneError || (!!entity.followUserId && entity.followUserId != userId)" @click="checkSubmit">提交</Button>
     </div>
     <Modal title="View Image" v-model="visible" :width="600">
       <div class="center">
@@ -432,6 +433,7 @@
         userId: null,
         projectId: null, // 添加项目人才
         phoneError: false,
+        phoneHad: false,
         show: false,
         status: null,
         checkPhoneStatus: false, // 手机号是否重复

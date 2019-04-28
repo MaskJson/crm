@@ -20,6 +20,7 @@
 <script>
   import {changePassword1} from "../../api";
   import {getUserId} from "../../libs/tools";
+  import md5 from 'js-md5'
 
   export default {
     name: "ChangePassword",
@@ -33,13 +34,13 @@
         },
         rules: {
           old: [
-            { required: true, message: '请输入原密码', trigger: 'blur' }
+            { required: true, type: 'string', message: '请输入原密码', trigger: 'blur' }
           ],
           password: [
-            { required: true, message: '请输入新密码', trigger: 'blur' }
+            { required: true, type: 'string', message: '请输入新密码', trigger: 'blur' }
           ],
           password2: [
-            { required: true, message: '请确认新密码', trigger: 'blur' }
+            { required: true, type: 'string', message: '请确认新密码', trigger: 'blur' }
           ]
         }
       }
@@ -50,16 +51,12 @@
           if (valid) {
             if (this.model.password === this.model.password2) {
               const params = {
-                id: getUserId(),
-                oldPassword: this.model.old,
-                newPassword: this.model.password
-              }
+                userId: getUserId(),
+                oldPassword: (md5(this.model.old)).toUpperCase(),
+                newPassword: (md5(this.model.password)).toUpperCase(),
+              };
               this.loading = true;
-              changePassword1({
-                userId: password.userId,
-                oldPassword: md5(params.oldPassword).toUpperCase(),
-                newPassword: md5(params.newPassword).toUpperCase(),
-              }).then(data => {
+              changePassword1(params).then(data => {
                 this.loading = false;
                 // 退出登录
                 this.$store.commit("logout", this);

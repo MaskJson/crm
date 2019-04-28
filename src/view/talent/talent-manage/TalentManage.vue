@@ -350,7 +350,7 @@
                   }, '取消专属')
                 )
               }
-              if (!followUserId || followUserId == this.userId || !params.row.projects || !params.row.projects.length) {
+              if ((!followUserId || followUserId == this.userId) && !params.row.progress) {
                 btn.push(
                   h('Button', {
                     props: {
@@ -568,6 +568,7 @@
       openByUserId({ userId: getUserId() }).then(data => {
         this.projects = data || [];
       }).catch(data => {});
+
       // getListByTableName({ type: 3 }).then(data => {
       //   this.projects = data || [];
       // }).catch(data => {});

@@ -70,7 +70,7 @@
           </FormItem>
         </Col>
         <Col span="12">
-          <FormItem label="项目开放属性">
+          <FormItem label="项目开放属性" prop="openType">
             <RadioGroup v-model="entity.openType">
               <Radio :label="1">不开放（一周后自动开放）</Radio>
               <Radio :label="2">团队成员全部开放</Radio>
@@ -323,6 +323,9 @@
           ],
           customerId: [
             { required: true, type: 'number', message: '请选择客户', trigger: 'change' }
+          ],
+          openType: [
+            { required: true, type: 'number', message: '请选开放方式', trigger: 'change' }
           ],
           adviseId: [
             { required: true, type: 'number', message: '请选择主顾问', trigger: 'change' }
