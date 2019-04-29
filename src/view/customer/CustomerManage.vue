@@ -2,21 +2,21 @@
   <Card>
     <div>
       <SearchItem>
-        <InputNumber placeholder="客户id" class="w200" :min="1" :parser="value = value => (value ? Math.floor(value) : value).toString()" v-model="searchData.id"/>
+        <InputNumber clearable placeholder="客户id" class="w200" :min="1" :parser="value = value => (value ? Math.floor(value) : value).toString()" v-model="searchData.id"/>
       </SearchItem>
       <SearchItem>
-        <Input placeholder="客户名称" class="w200" v-model="searchData.name"/>
+        <Input placeholder="客户名称" class="w200" v-model="searchData.name" clearable/>
       </SearchItem>
       <SearchItem>
-        <Input placeholder="行业" class="w200" v-model="searchData.industry"/>
+        <Input placeholder="行业" class="w200" v-model="searchData.industry" clearable/>
       </SearchItem>
       <SearchItem>
-        <Select placeholder="收藏夹" class="w200" v-model="searchData.folderId">
+        <Select placeholder="收藏夹" class="w200" v-model="searchData.folderId" clearable>
           <Option v-for="(item, index) of folders" :value="item.id" :key="index">{{`${item.name}(${item.remark})`}}</Option>
         </Select>
       </SearchItem>
       <SearchItem>
-        <Cascader placeholder="请选择城市" v-model="searchData.city" :data="cityList" class="w200"></Cascader>
+        <Cascader clearable placeholder="请选择城市" v-model="searchData.city" :data="cityList" class="w200"></Cascader>
       </SearchItem>
       <!--<SearchItem>-->
         <!--关注状态：-->

@@ -2,25 +2,25 @@
   <Card>
     <div>
       <SearchItem>
-        <Select placeholder="收藏夹" class="w200" v-model="searchData.folderId">
+        <Select placeholder="收藏夹" class="w200" v-model="searchData.folderId" clearable>
           <Option v-for="(item, index) of folders" :value="item.id" :key="index">{{`${item.name}(${item.remark})`}}</Option>
         </Select>
       </SearchItem>
       <SearchItem>
-        <Select placeholder="客户" filterable v-model="searchData.customerId">
+        <Select placeholder="客户" filterable v-model="searchData.customerId" clearable>
           <Option v-for="(item, index) of customerList" :key="'customer' + index" :value="item.id">{{ item.name }}</Option>
         </Select>
       </SearchItem>
       <SearchItem>
-        <Select placeholder="项目总监" class="w200" v-model="searchData.teamId">
+        <Select placeholder="项目总监" class="w200" v-model="searchData.teamId" clearable>
           <Option v-for="(item, index) of teamList" :value="item.id" :key="'team' + index">{{ item.name }}</Option>
         </Select>
       </SearchItem>
       <SearchItem>
-        <Cascader placeholder="城市" v-model="searchData.city" :data="cityList" class="w200"></Cascader>
+        <Cascader clearable placeholder="城市" v-model="searchData.city" :data="cityList" class="w200"></Cascader>
       </SearchItem>
       <SearchItem>
-        <Input placeholder="行业" class="w200" v-model="searchData.name"/>
+        <Input placeholder="行业" class="w200" v-model="searchData.name" clearable/>
       </SearchItem>
       <SearchItem>
         关注状态：

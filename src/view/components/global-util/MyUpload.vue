@@ -10,7 +10,7 @@
       </template>
     </div>
     <Upload
-      v-show="multiple || uploaded"
+      v-show="multiple || !uploaded"
       ref="upload"
       :show-upload-list="false"
       :default-file-list="showList"

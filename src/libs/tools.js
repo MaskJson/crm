@@ -236,7 +236,7 @@ export const getDateTime = (date) => {
     return year+month+day+ ' '+hour+minute+second;
   }
   return null;
-}
+};
 
 /**
  *  renderLink

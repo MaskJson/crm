@@ -2,25 +2,28 @@
   <Card>
     <div>
       <SearchItem>
-        <Cascader placeholder="城市" v-model="searchData.city" :data="cityList" class="w200"></Cascader>
+        <Cascader clearable placeholder="城市" v-model="searchData.city" :data="cityList" class="w200"></Cascader>
       </SearchItem>
       <SearchItem>
-        <Input placeholder="姓名" class="w200" v-model="searchData.name"/>
+        <Input placeholder="姓名" class="w200" v-model="searchData.name" clearable/>
       </SearchItem>
       <SearchItem>
-        <Input placeholder="行业" class="w200" v-model="searchData.industry"/>
+        <Input placeholder="行业" class="w200" v-model="searchData.industry" clearable/>
       </SearchItem>
       <SearchItem>
-        <Input placeholder="职能" class="w200" v-model="searchData.aptness"/>
+        <Input placeholder="职能" class="w200" v-model="searchData.aptness" clearable/>
       </SearchItem>
       <SearchItem>
-        <Select placeholder="收藏夹" class="w200" v-model="searchData.folderId">
+        <Select placeholder="收藏夹" class="w200" v-model="searchData.folderId" clearable>
           <Option v-for="(item, index) of folders" :value="item.id" :key="index">{{`${item.name}(${item.remark})`}}</Option>
         </Select>
       </SearchItem>
       <SearchItem>
+        <Input placeholder="公司名称" v-model="searchData.customerName" clearable/>
+      </SearchItem>
+      <SearchItem>
         关注状态：
-        <RadioGroup v-model="searchData.follow">
+        <RadioGroup v-model="searchData.follow" clearable>
           <Radio :label="0">全部</Radio>
           <Radio :label="1">已关注</Radio>
           <Radio :label="2">未关注</Radio>
@@ -139,12 +142,13 @@
     },
     computed: {
       searchParams() {
-        const { name, industry, aptness, folderId, city, follow } = this.searchData;
+        const { name, industry, aptness, folderId, city, follow, customerName } = this.searchData;
         return {
           aptness,
           name,
           industry,
           folderId,
+          customerName,
           city: city.length ? JSON.stringify(city) : null,
           follow: follow == 0 ? null : follow == 1
         }
@@ -167,7 +171,8 @@
           folderId: null,
           industry: null,
           city: [],
-          follow: 0
+          follow: 0,
+          customerName: null
         },
         columns: [
           {
@@ -484,7 +489,8 @@
           folderId: null,
           industry: null,
           city: [],
-          follow: 0
+          follow: 0,
+          customerName: null
         }
       },
       search() {
