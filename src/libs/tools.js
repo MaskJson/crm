@@ -237,7 +237,19 @@ export const getDateTime = (date) => {
   }
   return null;
 };
-
+export const getDateTime2 = (date) => {
+  if (date) {
+    date = new Date(date);
+    let [year, month, day, hour, minute, second] = [date.getFullYear(), date.getMonth() + 1, date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()];
+    if (year == NaN) {
+      return null;
+    }
+    month = month < 10 ? '-0' + month : '-' + month
+    day = day < 10 ? '-0' + day : '-' + day;
+    return year+month+day;
+  }
+  return null;
+};
 /**
  *  renderLink
  */
@@ -365,6 +377,7 @@ export const getStatusRender = (h, data) => {
     case 8: text = '新入职，暂时不看机会'; break
     case 9: text = '推荐给客户总监'; break
     case 10: text = '推荐给客户'; break
+    case 11: text = '项目候选人';break;
   }
   return h ? h('span', text) : text;
 }

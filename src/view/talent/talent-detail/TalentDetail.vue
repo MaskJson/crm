@@ -46,7 +46,7 @@
           <div class="pd100 center" v-if="!entity.resume2">
             <div class="center" v-if="!entity.followUserId || entity.followUserId == userId">
               <Upload
-                v-if="!entity.resume"
+                v-if="!entity.resume2"
                 action="/api/common/upload"
                 :on-success="resumeSuccess2"
                 :on-error="resumeError"

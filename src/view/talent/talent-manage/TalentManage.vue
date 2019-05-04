@@ -387,6 +387,7 @@
                   },
                   on: {
                     click: () => {
+                      this.projectTalentIndex = params.row._index;
                       this.talentProjects = params.row.projects || [];
                       this.projectTalent.talentId = params.row.id;
                       this.talentName = params.row.name;
@@ -442,6 +443,7 @@
             { required: true, type: 'string', message: '请填写推荐理由', trigger: 'blur' }
           ],
         },
+        projectTalentIndex: null,
         projects: [], // 所有对当前用户开放的项目
         talentProjects: [], // 当前人才已关联的项目
         talentType: null,
@@ -545,6 +547,8 @@
           if (valid) {
             this.show = true;
             addProjectTalent(this.projectTalent).then(data => {
+              const obj = this.$refs['manager'].list[this.projectTalentIndex];
+              obj.progress = (obj.progress || 0) + 1;
               this.show = false;
               toggleShow(this, 'project', false);
             }).catch(data => {this.show = false});

@@ -34,6 +34,14 @@
                   <span v-if="entity.type && entity.type!=6"> (拓展中)</span>
                   <span v-if="entity.type">--{{entity.followUser}}</span>
                 </p>
+                <p class="line mb-10" v-if="entity.type == 5 || entity.type == 6">
+                  <span class="label">合同期：</span>
+                  <span>
+                    {{getDateTime(entity.contactTimeStart)}}
+                    <span class="mlr5"></span>
+                    {{getDateTime(entity.contactTimeEnd)}}
+                  </span>
+                </p>
                 <p class="line mb-10"><span class="label">添加时间：</span><span>{{getDateTime(entity.createTime)}}</span></p>
               </Col>
             </Row>
@@ -47,6 +55,12 @@
             <TimelineItem v-for="(item, index) of remindFilter" :key="'remind' + index">
               <p class="fs16">{{item.type | typeFilter}}</p>
               <p class="mt-5">跟踪状态：{{item.status | customerTypeFilter}}</p>
+              <p class="mt-5">
+                签约时间：
+                {{getDateTime(entity.contactTimeStart)}}
+                <span class="mlr5"></span>
+                {{getDateTime(entity.contactTimeEnd)}}
+              </p>
               <p class="mt-5"><span class="mR10">创建者：{{item.createUser}}</span><span class="ml-20">创建时间：{{getDateTime(item.createTime)}}</span></p>
               <p class="bgf2 mt-5">内容：{{item.type == 2 ? item.meetNotice : item.remark}}</p>
             </TimelineItem>
@@ -373,6 +387,7 @@
       }
     },
     methods: {
+      getDateTime: getDateTime,
       okHandler(talentId, status, projectId) {
         // const len = this.talents.length;
         // for (let i=0;i<len;i++) {
@@ -469,7 +484,7 @@
             this.show = true;
             addRemind(remind).then(data => {
               this.show = false;
-              this.entity.type = remind.status == 5 && remind.contactTime || remind.status == 6 ? 6 : remind.status;
+              this.entity.type = remind.status == 5 || remind.status == 6 ? 6 : remind.status;
               toggleShow(this, 'remind');
               this.getRemindList(this.entity.id);
             }).catch(data => {this.show = false;})

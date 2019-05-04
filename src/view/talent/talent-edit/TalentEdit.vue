@@ -29,7 +29,7 @@
         <Col span="8">
           <FormItem label="附件：">
             <Upload
-              v-if="!entity.resume"
+              v-if="!entity.resume2"
               action="/api/common/upload"
               :on-success="resumeSuccess2"
               :on-error="resumeError"
