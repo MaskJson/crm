@@ -133,7 +133,7 @@
             roleId == 3 && getAction('人才确认面试','3', 6);
             break;
           case '3':
-            // getAction('面试待定','3', 7);
+            roleId == 3 && getAction('面试待定','3', 7);
             roleId == 3 && getAction('复试','3', 8);
             roleId == 3 && getAction('offer谈判','3', 9);
             roleId == 3 && getAction('签订offer','4', 10);
