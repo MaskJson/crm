@@ -6,13 +6,55 @@
     </Tabs>
     <Table :data="list" :columns="column" border></Table>
 
-    <ModalUtil ref="remind" title="新增项目人才跟踪记录" :loading="show" :width="600" @on-ok="addRemind">
+    <ModalUtil ref="remind" :title="(projectTalentRemindStatus[projectTalentRemindStatus.findIndex(item => item.id == actionData.type)] || {}).name" :loading="show" :width="600" @on-ok="addRemind">
       <Form ref="form" :model="actionData" :label-width="110">
-        <FormItem label="本次跟踪状态" prop="remindType">
+        <FormItem label="本次跟踪状态" prop="remindType" class="hide">
           <Select v-model="actionData.type" :disabled="true">
             <Option v-for="(type, index) of projectTalentRemindStatus" :value="type.id" :key="'remindType'+index">{{type.name}}</Option>
           </Select>
         </FormItem>
+        <FormItem label="候选人">
+          <span>{{actionData.talentName}}</span>
+        </FormItem>
+        <div v-if="[2,4,8].indexOf(actionData.type) > -1">
+          <FormItem label="面试时间" class="ivu-form-item-required">
+            <DatePicker v-model="actionData.interviewTime"/>
+          </FormItem>
+          <FormItem label="提醒对象">
+            <Input v-model="nickName" readonly/>
+          </FormItem>
+          <FormItem label="面试官">
+            <Input v-model="actionData.interviewTone"/>
+          </FormItem>
+          <FormItem label="终试">
+            <Checkbox v-model="actionData.isLast" />是
+          </FormItem>
+        </div>
+        <div v-if="actionData.type == 10">
+          <FormItem label="岗位">
+            <Input v-model="actionData.position"/>
+          </FormItem>
+          <FormItem label="年薪￥" class="ivu-form-item-required">
+            <InputNumber v-model="actionData.yearSalary"/>
+          </FormItem>
+          <FormItem label="收费金额￥">
+            <InputNumber v-model="actionData.charge"/>
+          </FormItem>
+          <FormItem label="确认日期" class="ivu-form-item-required">
+            <DatePicker v-model="actionData.sureTime"/>
+          </FormItem>
+          <FormItem label="预计上班日期" class="ivu-form-item-required">
+            <DatePirkcer v-model="actionData.workTime"/>
+          </FormItem>
+        </div>
+        <div v-if="actionData.type == 12">
+          <FormItem label="入职时间" class="ivu-form-item-required">
+            <DatePicker v-model="actionData.entryTime"/>
+          </FormItem>
+          <FormItem label="试用期时间" class="ivu-form-item-required">
+            <DatePicker v-model="actionData.probationTime"/>
+          </FormItem>
+        </div>
         <FormItem label="备注">
           <Input type="textarea" :rows="3" v-model="actionData.remark"/>
         </FormItem>
@@ -33,8 +75,9 @@
     props: ['userList', 'flag'],
     data () {
       // 获取操作选项
-      function renderAction(h, projectTalentId, type) {
+      function renderAction(h, projectTalentId, type, name, createUserId) {
         let action = [];
+        const roleId = this.roleId;
         // 添加选项
         const getAction = (text, status, actionType) => {
           const handler = () => {
@@ -44,9 +87,26 @@
               remark: '',
               type: actionType,
               prevStatus: Number(this.status),
-              prevType: type
+              prevType: type,
+              talentName: name,
+              // 特定状态字段
+              interviewTime: null,
+              remindType: null,
+              interviewTone: null,
+              isLast: false,
+              position: '',
+              yearSalary: null,
+              charge: null,
+              sureTime: null,
+              workTime: null,
+              entryTime: null,
+              probationTime: null
             };
-            toggleShow(this, 'remind', true);
+            if (actionType == 6) {
+              this.addRemind();
+            } else {
+              toggleShow(this, 'remind', true);
+            }
           };
           action.push(h('Button', {
             props: {
@@ -60,33 +120,33 @@
         getAction('补充跟踪', this.status, 99);
         switch (this.status) {
           case '0':
-            type != 100 ? getAction('推荐给客户', '0', 100) : action.push(h('span', {class: {'cl-error': true}}, '等待项目总监审核'));
+            type != 100 ? (roleId == 3 ? getAction('推荐给客户', '0', 100) : '') : action.push(h('span', {class: {'cl-error': true}}, '等待项目总监审核'));
             break;
           case '1':
-            getAction('通知人才面试','1', 2);
+            roleId == 3 && getAction('通知人才面试','1', 2);
             getAction('确认面试','2', 3);
             break;
           case '2':
-            getAction('通知人才面试','2', 2);
-            getAction('面试改期','2', 4);
-            getAction('放弃面试','8', 5);
-            getAction('人才确认面试','3', 6);
+            roleId == 3 && getAction('通知人才面试','2', 2);
+            roleId == 3 && getAction('面试改期','2', 4);
+            // roleId == 3 && getAction('放弃面试','8', 5);
+            roleId == 3 && getAction('人才确认面试','3', 6);
             break;
           case '3':
-            getAction('面试待定','3', 7);
-            getAction('复试','3', 8);
-            getAction('offer谈判','3', 9);
-            getAction('签订offer确定入职','4', 10);
+            // getAction('面试待定','3', 7);
+            roleId == 3 && getAction('复试','3', 8);
+            roleId == 3 && getAction('offer谈判','3', 9);
+            roleId == 3 && getAction('签订offer','4', 10);
             break;
           case '4':
-            getAction('辞职中','4', 11);
-            getAction('确认入职','5', 12);
+            // getAction('辞职中','4', 11);
+            getUserId()==createUserId && getAction('确认入职','6', 12);
             break;
-          case '5':
-            getAction('进入保证期','6', 13);
-            break;
+          // case '5':
+          //   getAction('进入保证期','6', 13);
+          //   break;
           case '6':
-            getAction('通过保证期','7', 14);
+            getUserId()==createUserId && getAction('通过保证期','7', 14);
             break;
           default:break;
         }
@@ -119,7 +179,8 @@
       return {
         projectTalentStatus: projectTalentStatus,
         projectTalentRemindStatus: projectProgress,
-        roleId: null,
+        nickName: getUserInfoByKey('nickName'),
+        roleId: getUserInfoByKey('roleId'),
         show: false,
         id: null,
         status: '0',
@@ -134,40 +195,9 @@
             align: 'center'
           },
           {
-            title: '职位',
-            key: 'position',
-            align: 'center',
-          },
-          {
-            title: '城市',
-            key: 'city',
-            align: 'center',
-            render: (h, params) => {
-              return getCity(h, params.row.city);
-            }
-          },
-          {
-            title: '年薪（万元）',
-            key: 'salary',
-            align: 'center'
-          },
-          {
             title: '手机号',
             key: 'phone',
             align: 'center',
-          },
-          {
-            title: '标签',
-            key: 'tag',
-            align: 'center',
-          },
-          {
-            title: '人才状态',
-            key: 'status',
-            align: 'center',
-            render: (h, params) => {
-              return getStatusRender(h, params.row.status);
-            }
           },
           {
             title: '最后联系',
@@ -183,7 +213,7 @@
             align: 'center',
             width: 200,
             render: (h, params) => {
-              return renderAction.call(this, h, params.row.id, params.row.type);
+              return renderAction.call(this, h, params.row.id, params.row.type, params.row.name, params.row.createUserId);
             }
           }
         ],
@@ -192,6 +222,19 @@
           status: null,
           type: null,
           remark: null,
+          talentName: '',
+          // 特定状态字段
+          interviewTime: null,
+          remindType: null,
+          interviewTone: null,
+          isLast: false,
+          position: '',
+          yearSalary: null,
+          charge: null,
+          sureTime: null,
+          workTime: null,
+          entryTime: null,
+          probationTime: null
         }
       }
     },
@@ -214,6 +257,24 @@
       },
       // 添加跟踪记录
       addRemind() {
+        // 特定状态验证
+        const {type, interviewTime, yearSalary, sureTime, workTime, entryTime, probationTime} = this.actionData
+        if ([2,4,8].indexOf(type) > -1) {
+          if (!interviewTime) {
+            this.$Message.error('请填写面试时间');
+            return;
+          }
+        } else if (type == 10) {
+          if (!yearSalary || !sureTime || !workTime) {
+            this.$Message.error('请填写年薪、确认时间和预计上班时间');
+            return;
+          }
+        } else if (type == 12) {
+          if (!entryTime || !probationTime) {
+            this.$Message.error('请填写入职时间和保证期');
+            return;
+          }
+        }
         this.show = true;
         addProjectTalentRemind({
           ...this.actionData,
@@ -254,7 +315,6 @@
           });
       }
       this.getProjectTalent();
-      this.roleId = getUserInfoByKey('roleId');
     },
     watch: {
       status() {

@@ -56,18 +56,18 @@
         </Col>
       </Row>
     </div>
-    <div class="info-item border mb-10">
-      <div class="pd-10 bgf2 borderB">项目成员</div>
-      <div class="pd-10">
-        <div v-if="teamMember && teamMember.length>0">
-          <p v-for="item of teamMember">
-            <span class="w200">顾问ID：{{item.plId}}</span>
-            <span class="w200">顾问名称：{{item.plName}}</span>
-          </p>
-        </div>
-        <div v-else>没有成员数据</div>
-      </div>
-    </div>
+    <!--<div class="info-item border mb-10">-->
+      <!--<div class="pd-10 bgf2 borderB">项目成员</div>-->
+      <!--<div class="pd-10">-->
+        <!--<div v-if="teamMember && teamMember.length>0">-->
+          <!--<p v-for="item of teamMember">-->
+            <!--<span class="w200">顾问ID：{{item.plId}}</span>-->
+            <!--<span class="w200">顾问名称：{{item.plName}}</span>-->
+          <!--</p>-->
+        <!--</div>-->
+        <!--<div v-else>没有成员数据</div>-->
+      <!--</div>-->
+    <!--</div>-->
     <div class="info-item border mb-10">
       <div class="pd-10 bgf2 borderB">职位基本情况</div>
       <Row class="pd-10">
