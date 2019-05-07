@@ -78,6 +78,7 @@ export const projectProgress = [
   {id:13, name: '进入保证期', status: '5'},
   {id:14, name: '通过保证期', status: '6'},
   {id:15, name: '淘汰', status: '7'},
+  {id: 16, name: '面试反馈'}
 ];
 
 // 项目人才进展状态
@@ -86,8 +87,8 @@ export const projectTalentStatus = [
   {value: '1', label: '推荐给客户'},
   {value: '2', label: '通知人才面试'},
   {value: '3', label: '客户面试'},
-  {value: '4', label: '签订offer'},
-  // {value: '5', label: '确认入职'},
+  {value: '4', label: 'offer待定'},
+  {value: '5', label: 'offer签订待入职'},
   {value: '6', label: '保证期间人才'},
   {value: '7', label: '通过保证期'},
   {value: '8', label: '已淘汰'}

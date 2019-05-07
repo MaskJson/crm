@@ -55,6 +55,19 @@
             <DatePicker v-model="actionData.probationTime"/>
           </FormItem>
         </div>
+        <div v-if="actionData.type == 16">
+          <FormItem label="人选反馈">
+            <Input v-model="actionData.talentRemark"/>
+          </FormItem>
+          <FormItem label="客户反馈">
+            <Input v-model="actionData.customerRemark"/>
+          </FormItem>
+        </div>
+        <div v-if="actionData.type == 99">
+          <FormItem label="推荐理由">
+            <Input v-model="actionData.recommendation"/>
+          </FormItem>
+        </div>
         <FormItem label="备注">
           <Input type="textarea" :rows="3" v-model="actionData.remark"/>
         </FormItem>
@@ -67,7 +80,7 @@
 
 <script>
   import { projectTalentStatus, projectProgress } from "../../../../libs/constant";
-  import { getCity, getDateTime, getStatusRender, toggleShow, getUserId, getUserInfoByKey } from "../../../../libs/tools";
+  import { getCity, getDateTime, getStatusRender, toggleShow, getUserId, getUserInfoByKey, getRenderList } from "../../../../libs/tools";
   import { getProjectTalentByStatus, addProjectTalentRemind, reBack } from "../../../../api/project";
 
   export default {
@@ -124,27 +137,31 @@
             break;
           case '1':
             roleId == 3 && getAction('通知人才面试','1', 2);
-            getAction('确认面试','2', 3);
+            roleId == 3 && getAction('确认面试','2', 3);
             break;
           case '2':
-            roleId == 3 && getAction('通知人才面试','2', 2);
+            // roleId == 3 && getAction('通知人才面试','2', 2);
             roleId == 3 && getAction('面试改期','2', 4);
-            // roleId == 3 && getAction('放弃面试','8', 5);
+            roleId == 3 && getAction('放弃面试','8', 5);
             roleId == 3 && getAction('人才确认面试','3', 6);
             break;
           case '3':
+            // roleId == 3 && type !=7  && getAction('面试反馈','3', 16);
+            // roleId == 3 && type !=16 && getAction('面试待定','3', 7);
+            roleId == 3 && getAction('面试反馈','3', 16);
             roleId == 3 && getAction('面试待定','3', 7);
             roleId == 3 && getAction('复试','3', 8);
             roleId == 3 && getAction('offer谈判','3', 9);
-            roleId == 3 && getAction('签订offer','4', 10);
+            // roleId == 3 && getAction('签订offer','4', 10);
             break;
           case '4':
             // getAction('辞职中','4', 11);
+            roleId == 3 && getAction('签订offer','5', 10);
+            break;
+          case '5':
+            // getAction('进入保证期','6', 13);
             getUserId()==createUserId && getAction('确认入职','6', 12);
             break;
-          // case '5':
-          //   getAction('进入保证期','6', 13);
-          //   break;
           case '6':
             getUserId()==createUserId && getAction('通过保证期','7', 14);
             break;
@@ -188,23 +205,20 @@
         pageSize: 10,
         total: 0,
         list: [],
-        column: [
+        nameColumn: [
           {
             title: '姓名',
             key: 'name',
             align: 'center'
-          },
+          }
+        ],
+        actionColumn: [
           {
-            title: '手机号',
-            key: 'phone',
-            align: 'center',
-          },
-          {
-            title: '最后联系',
-            key: 'updateTime',
+            title: '沟通记录',
             align: 'center',
             render: (h, params) => {
-              return h('span', getDateTime(params.row.updateTime));
+              const remind = this.getLastRemind(params.row.remind || []) || {};
+              return h('span', `${remind.remark}-${getDateTime(remind.createTime)}`);
             }
           },
           {
@@ -234,14 +248,114 @@
           sureTime: null,
           workTime: null,
           entryTime: null,
-          probationTime: null
+          probationTime: null,
+          talentRemark: null,
+          customerRemark: null,
+          recommendation: null
         }
       }
     },
     computed: {
+      // 候选、推荐
+      recommendColumns() {
+        return [
+          ...this.nameColumn,
+          {
+            title: '推荐时间',
+            align: 'center',
+            render: (h, params) => {
+              return h('span', getDateTime(params.row.updateTime));
+            }
+          },
+          {
+            title: '推荐理由',
+            align: 'center',
+            key: 'recommendation'
+          },
+          ...this.actionColumn
+        ]
+      },
+      interviewColumns() {
+        return [
+          ...this.nameColumn,
+          {
+            title: '面试时间',
+            align: 'center',
+            render: (h, params) => {
+              const remind = this.getLastInterview(params.row.remind || []) || {};
+              return h('span', getDateTime(remind.interviewTime));
+            }
+          },
+          {
+            title: '人选反馈-客户反馈',
+            align: 'center',
+            render: (h, params) => {
+              const remind = this.getLastFK(params.row.remind || []);
+              if (remind) {
+                return getRenderList([
+                  `人选：${remind.talentRemark}`,
+                  `客户：${remind.customerRemark}`,
+                ]);
+              }
+            }
+          },
+          ...this.actionColumn
+        ]
+      },
+      offerColumns() {
+        return [
+          ...this.nameColumn,
 
+          ...this.actionColumn
+        ]
+      }
     },
     methods: {
+      // 获取当前状态的最后一次跟踪
+      getLastRemind(arr) {
+        const len = arr.length;
+        for (let i=0; i<len; i++) {
+          if (arr[i].status == this.status) {
+            return arr[i];
+          }
+        }
+      },
+      // 获取最后一次面试跟踪记录
+      getLastInterview(arr) {
+        const len = arr.length;
+        for (let i=0; i<len; i++) {
+          if ([2,4,8].indexOf(arr[i].type > -1)) {
+            return arr[i];
+          }
+        }
+      },
+      // 获取最后一次面试反馈
+      getLastFK(arr) {
+        const len = arr.length;
+        for (let i=0; i<len; i++) {
+          if (arr[i].type == 16) {
+            return arr[i];
+          }
+        }
+      },
+      // 获取最后一次签订的合同
+      getLastOffer(arr) {
+        const len = arr.length;
+        for (let i=0; i<len; i++) {
+          if (arr[i].type == 10) {
+            return arr[i];
+          }
+        }
+      },
+      // 获取最后一次入职
+      getLastSure(arr) {
+        const len = arr.length;
+        for (let i=0; i<len; i++) {
+          if (arr[i].type == 12) {
+            return arr[i];
+          }
+        }
+      },
       // 撤销回退到上一个状态
       reBack(projectTalentId, status) {
         this.$Modal.confirm({
@@ -258,7 +372,7 @@
       // 添加跟踪记录
       addRemind() {
         // 特定状态验证
-        const {type, interviewTime, yearSalary, sureTime, workTime, entryTime, probationTime} = this.actionData
+        const {type, interviewTime, yearSalary, sureTime, workTime, entryTime, probationTime, talentRemark, customerRemark, recommendation} = this.actionData;
         if ([2,4,8].indexOf(type) > -1) {
           if (!interviewTime) {
             this.$Message.error('请填写面试时间');
@@ -272,6 +386,16 @@
         } else if (type == 12) {
           if (!entryTime || !probationTime) {
             this.$Message.error('请填写入职时间和保证期');
+            return;
+          }
+        } else if (type == 16) {
+          if (!talentRemark || !customerRemark) {
+            this.$Message.error('请填写反馈信息');
+            return;
+          }
+        } else if (type == 99) {
+          if (!recommendation) {
+            this.$Message.error('请填写推荐理由');
             return;
           }
         }
@@ -303,16 +427,13 @@
       if (!this.flag) {
         this.id = Number(this.$route.query.id);
       } else {
-        this.column.unshift({
-            title: '公司名称',
-            key: 'customerName',
-            align: 'center'
-          },
-          {
-            title: '项目名称',
-            key: 'projectName',
-            align: 'center',
-          });
+        this.nameColumn.push({
+          title: '项目-公司',
+          align: 'center',
+          render: (h, params) => {
+            return h('span', `${params.row.projectName}-${params.row.customerName}`);
+          }
+        });
       }
       this.getProjectTalent();
     },
