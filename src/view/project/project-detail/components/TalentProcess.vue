@@ -4,7 +4,7 @@
     <Tabs v-model="status">
       <TabPane v-for="(tab, index) of projectTalentStatus" :key="'tab'+index" :label="tab.label" :name="tab.value"></TabPane>
     </Tabs>
-    <Table :data="list" :columns="column" border></Table>
+    <Table :data="list" :columns="columns" border></Table>
 
     <ModalUtil ref="remind" :title="(projectTalentRemindStatus[projectTalentRemindStatus.findIndex(item => item.id == actionData.type)] || {}).name" :loading="show" :width="600" @on-ok="addRemind">
       <Form ref="form" :model="actionData" :label-width="110">
