@@ -68,6 +68,11 @@
             <Input v-model="actionData.recommendation"/>
           </FormItem>
         </div>
+        <div v-if="actionData.status == 8">
+          <FormItem label="淘汰理由">
+            <Input v-model="actionData.killRemark"/>
+          </FormItem>
+        </div>
         <FormItem label="备注">
           <Input type="textarea" :rows="3" v-model="actionData.remark"/>
         </FormItem>
@@ -80,7 +85,7 @@
 
 <script>
   import { projectTalentStatus, projectProgress } from "../../../../libs/constant";
-  import { getCity, getDateTime, getStatusRender, toggleShow, getUserId, getUserInfoByKey, getRenderList } from "../../../../libs/tools";
+  import { getCity, getDateTime, getDateTime2, getStatusRender, toggleShow, getUserId, getUserInfoByKey, getRenderList } from "../../../../libs/tools";
   import { getProjectTalentByStatus, addProjectTalentRemind, reBack } from "../../../../api/project";
 
   export default {
@@ -251,7 +256,8 @@
           probationTime: null,
           talentRemark: null,
           customerRemark: null,
-          recommendation: null
+          recommendation: null,
+          killRemark: null,
         }
       }
     },
@@ -305,9 +311,128 @@
       offerColumns() {
         return [
           ...this.nameColumn,
-
+          {
+            title: '签订offer时间',
+            align: 'center',
+            render: (h, params) => {
+              const remind = this.getLastOffer(params.row.remind || []) || {};
+              return h('span', getDateTime2(remind.sureTime));
+            }
+          },
+          {
+            title: '岗位',
+            align: 'center',
+            render: (h, params) => {
+              const remind = this.getLastOffer(params.row.remind || []) || {};
+              return h('span', remind.position);
+            }
+          },
+          {
+            title: '年薪',
+            align: 'center',
+            render: (h, params) => {
+              const remind = this.getLastOffer(params.row.remind || []) || {};
+              return h('span', remind.yearSalary);
+            }
+          },
+          {
+            title: '入职时间',
+            align: 'center',
+            render: (h, params) => {
+              const remind = this.getLastOffer(params.row.remind || []) || {};
+              return h('span', getDateTime2(remind.workTime));
+            }
+          },
           ...this.actionColumn
         ]
+      },
+      workingColumns() {
+        return [
+          ...this.nameColumn,
+          {
+            title: '岗位',
+            align: 'center',
+            render: (h, params) => {
+              const remind = this.getLastOffer(params.row.remind || []) || {};
+              return h('span', remind.position);
+            }
+          },
+          {
+            title: '年薪',
+            align: 'center',
+            render: (h, params) => {
+              const remind = this.getLastOffer(params.row.remind || []) || {};
+              return h('span', remind.yearSalary);
+            }
+          },
+          {
+            title: '入职时间',
+            align: 'center',
+            render: (h, params) => {
+              const remind = this.getLastSure(params.row.remind || []) || {};
+              return h('span', getDateTime2(remind.entryTime));
+            }
+          },
+          {
+            title: '保证期',
+            align: 'center',
+            render: (h, params) => {
+              const remind = this.getLastSure(params.row.remind || []) || {};
+              return h('span', getDateTime2(remind.probationTime));
+            }
+          },
+          ...this.actionColumn
+        ]
+      },
+      successColumns() {
+        return [
+          ...this.nameColumn,
+          {
+            title: '推荐时间',
+            align: 'center',
+            render: (h, params) => {
+              return h('span', getDateTime(params.row.updateTime));
+            }
+          },
+          {
+            title: '入职时间',
+            align: 'center',
+            render: (h, params) => {
+              const remind = this.getLastSure(params.row.remind || []) || {};
+              return h('span', getDateTime2(remind.entryTime));
+            }
+          },
+          {
+            title: '岗位',
+            align: 'center',
+            render: (h, params) => {
+              const remind = this.getLastOffer(params.row.remind || []) || {};
+              return h('span', remind.position);
+            }
+          },
+          {
+            title: '年薪',
+            align: 'center',
+            render: (h, params) => {
+              const remind = this.getLastOffer(params.row.remind || []) || {};
+              return h('span', remind.yearSalary);
+            }
+          },
+          ...this.actionColumn
+        ]
+      },
+      columns() {
+        switch (this.status) {
+          case '0':
+          case '1': return this.recommendColumns;
+          case '2':
+          case '3':
+          case '4': return this.interviewColumns;
+          case '5': return this.offerColumns;
+          case '6': return this.workingColumns;
+          case '7': return this.successColumns;
+          case '8': return [...this.nameColumn, ...this.actionColumn];
+        }
       }
     },
     methods: {
@@ -372,7 +497,7 @@
       // 添加跟踪记录
       addRemind() {
         // 特定状态验证
-        const {type, interviewTime, yearSalary, sureTime, workTime, entryTime, probationTime, talentRemark, customerRemark, recommendation} = this.actionData;
+        const {type, status, interviewTime, yearSalary, sureTime, workTime, entryTime, probationTime, talentRemark, customerRemark, recommendation, killRemark} = this.actionData;
         if ([2,4,8].indexOf(type) > -1) {
           if (!interviewTime) {
             this.$Message.error('请填写面试时间');
@@ -396,6 +521,11 @@
         } else if (type == 99) {
           if (!recommendation) {
             this.$Message.error('请填写推荐理由');
+            return;
+          }
+        } else if (status == 8) {
+          if (!killRemark) {
+            this.$Message.error('请填写淘汰理由');
             return;
           }
         }
