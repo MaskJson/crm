@@ -421,6 +421,17 @@
           ...this.actionColumn
         ]
       },
+      killColumns() {
+        return [
+          ...this.nameColumn,
+          {
+            title: '淘汰理由',
+            align: 'center',
+            key: 'killRemark'
+          },
+          ...this.actionColumn
+        ]
+      },
       columns() {
         switch (this.status) {
           case '0':
@@ -431,7 +442,7 @@
           case '5': return this.offerColumns;
           case '6': return this.workingColumns;
           case '7': return this.successColumns;
-          case '8': return [...this.nameColumn, ...this.actionColumn];
+          case '8': return this.killColumns;
         }
       }
     },
