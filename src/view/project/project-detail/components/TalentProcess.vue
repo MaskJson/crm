@@ -85,12 +85,12 @@
 
 <script>
   import { projectTalentStatus, projectProgress } from "../../../../libs/constant";
-  import { getCity, getDateTime, getDateTime2, getStatusRender, toggleShow, getUserId, getUserInfoByKey, getRenderList } from "../../../../libs/tools";
+  import { getCity, getDateTime, getDateTime2, getStatusRender, toggleShow, getUserId, getUserInfoByKey, getRenderList, getProjectTalentStatus } from "../../../../libs/tools";
   import { getProjectTalentByStatus, addProjectTalentRemind, reBack } from "../../../../api/project";
 
   export default {
     name: 'talent-progress',
-    props: ['userList', 'flag'],
+    props: ['userList', 'flag', 'performance', 'projectTalents'],
     data () {
       // 获取操作选项
       function renderAction(h, projectTalentId, type, name, createUserId) {
@@ -213,8 +213,28 @@
         nameColumn: [
           {
             title: '姓名',
-            key: 'name',
-            align: 'center'
+            key: 'talentName',
+            align: 'center',
+            render: (h, params) => {
+              const name = params.row.name || params.row.talentName;
+              return h('div', {
+              }, [
+                h('Button', {
+                  props: {
+                    type: 'text',
+                    size: 'small'
+                  },
+                  class: {
+                    'cl-primary': true,
+                  },
+                  on: {
+                    click: () => {
+                      this.$router.push('/talent/talent-detail?id=' + params.row.talentId);
+                    }
+                  }
+                }, name)
+              ]);
+            }
           }
         ],
         actionColumn: [
@@ -222,8 +242,8 @@
             title: '沟通记录',
             align: 'center',
             render: (h, params) => {
-              const remind = this.getLastRemind(params.row.remind || []) || {};
-              return h('span', `${remind.remark}-${getDateTime(remind.createTime)}`);
+              const remind = this.getLastRemind(params.row.reminds || []) || {};
+              return h('span', `${remind.remark || ''}-${getDateTime(remind.createTime) || ''}`);
             }
           },
           {
@@ -288,7 +308,7 @@
             title: '面试时间',
             align: 'center',
             render: (h, params) => {
-              const remind = this.getLastInterview(params.row.remind || []) || {};
+              const remind = this.getLastInterview(params.row.reminds || []) || {};
               return h('span', getDateTime(remind.interviewTime));
             }
           },
@@ -296,7 +316,7 @@
             title: '人选反馈-客户反馈',
             align: 'center',
             render: (h, params) => {
-              const remind = this.getLastFK(params.row.remind || []);
+              const remind = this.getLastFK(params.row.reminds || []);
               if (remind) {
                 return getRenderList([
                   `人选：${remind.talentRemark}`,
@@ -315,7 +335,7 @@
             title: '签订offer时间',
             align: 'center',
             render: (h, params) => {
-              const remind = this.getLastOffer(params.row.remind || []) || {};
+              const remind = this.getLastOffer(params.row.reminds || []) || {};
               return h('span', getDateTime2(remind.sureTime));
             }
           },
@@ -323,7 +343,7 @@
             title: '岗位',
             align: 'center',
             render: (h, params) => {
-              const remind = this.getLastOffer(params.row.remind || []) || {};
+              const remind = this.getLastOffer(params.row.reminds || []) || {};
               return h('span', remind.position);
             }
           },
@@ -331,7 +351,7 @@
             title: '年薪',
             align: 'center',
             render: (h, params) => {
-              const remind = this.getLastOffer(params.row.remind || []) || {};
+              const remind = this.getLastOffer(params.row.reminds || []) || {};
               return h('span', remind.yearSalary);
             }
           },
@@ -339,7 +359,7 @@
             title: '入职时间',
             align: 'center',
             render: (h, params) => {
-              const remind = this.getLastOffer(params.row.remind || []) || {};
+              const remind = this.getLastOffer(params.row.reminds || []) || {};
               return h('span', getDateTime2(remind.workTime));
             }
           },
@@ -353,7 +373,7 @@
             title: '岗位',
             align: 'center',
             render: (h, params) => {
-              const remind = this.getLastOffer(params.row.remind || []) || {};
+              const remind = this.getLastOffer(params.row.reminds || []) || {};
               return h('span', remind.position);
             }
           },
@@ -361,7 +381,7 @@
             title: '年薪',
             align: 'center',
             render: (h, params) => {
-              const remind = this.getLastOffer(params.row.remind || []) || {};
+              const remind = this.getLastOffer(params.row.reminds || []) || {};
               return h('span', remind.yearSalary);
             }
           },
@@ -369,7 +389,7 @@
             title: '入职时间',
             align: 'center',
             render: (h, params) => {
-              const remind = this.getLastSure(params.row.remind || []) || {};
+              const remind = this.getLastSure(params.row.reminds || []) || {};
               return h('span', getDateTime2(remind.entryTime));
             }
           },
@@ -377,7 +397,7 @@
             title: '保证期',
             align: 'center',
             render: (h, params) => {
-              const remind = this.getLastSure(params.row.remind || []) || {};
+              const remind = this.getLastSure(params.row.reminds || []) || {};
               return h('span', getDateTime2(remind.probationTime));
             }
           },
@@ -398,7 +418,7 @@
             title: '入职时间',
             align: 'center',
             render: (h, params) => {
-              const remind = this.getLastSure(params.row.remind || []) || {};
+              const remind = this.getLastSure(params.row.reminds || []) || {};
               return h('span', getDateTime2(remind.entryTime));
             }
           },
@@ -406,7 +426,7 @@
             title: '岗位',
             align: 'center',
             render: (h, params) => {
-              const remind = this.getLastOffer(params.row.remind || []) || {};
+              const remind = this.getLastOffer(params.row.reminds || []) || {};
               return h('span', remind.position);
             }
           },
@@ -414,7 +434,7 @@
             title: '年薪',
             align: 'center',
             render: (h, params) => {
-              const remind = this.getLastOffer(params.row.remind || []) || {};
+              const remind = this.getLastOffer(params.row.reminds || []) || {};
               return h('span', remind.yearSalary);
             }
           },
@@ -568,6 +588,17 @@
       if (!this.flag) {
         this.id = Number(this.$route.query.id);
       } else {
+        if (this.performance) {
+          this.actionColumn.splice(1, 1);
+          this.actionColumn.push({
+            title: '现状',
+            align: 'center',
+            render: (h, params) => {
+              return getProjectTalentStatus(h, params.row.status);
+            }
+          });
+          this.projectTalentStatus = this.projectTalentStatus.slice(1, 8);
+        }
         this.nameColumn.push({
           title: '项目-公司',
           align: 'center',
@@ -576,11 +607,17 @@
           }
         });
       }
-      this.getProjectTalent();
+      if (!this.performance) {
+        this.getProjectTalent();
+      }
     },
     watch: {
       status() {
-        this.getProjectTalent();
+        if (!this.performance) {
+          this.getProjectTalent();
+        } else {
+          this.list = (this.projectTalents || []).filter(item => item.remindStatus == this.status);
+        }
       }
     }
   }

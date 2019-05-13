@@ -250,6 +250,18 @@ export const getDateTime2 = (date) => {
   }
   return null;
 };
+export const getDateMonth = (date) => {
+  if (date) {
+    date = new Date(date);
+    let [year, month, day, hour, minute, second] = [date.getFullYear(), date.getMonth() + 1, date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds()];
+    if (year == NaN) {
+      return null;
+    }
+    month = month < 10 ? '-0' + month : '-' + month
+    return year + month;
+  }
+  return null;
+};
 /**
  *  renderLink
  */
@@ -483,8 +495,7 @@ export const getQuality = (h, data) => {
 // 获取项目人才状态
 export const getProjectTalentStatus = (h, data) => {
   let text = ''
-  const index = projectTalentStatus.findIndex(item => item.value == Number(data));
+  const index = projectTalentStatus.findIndex(item => Number(item.value) == Number(data));
   text = index > -1 ? projectTalentStatus[index].label : ''
   return h ? h('span', text) : text;
 }
-

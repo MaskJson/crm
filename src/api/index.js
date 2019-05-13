@@ -98,4 +98,14 @@ export const changePassword2 = (params) => {
   return postRequest('/sys/user/changePassword2', params);
 };
 
+// 获取业绩
+export const getPerformance = (params) => {
+  return getRequest('/performance/info', params);
+};
+
+// 上司获取成员业绩
+export const getPerformanceReport = (params) => {
+  return getRequest('/performance/report', params);
+};
+
 
