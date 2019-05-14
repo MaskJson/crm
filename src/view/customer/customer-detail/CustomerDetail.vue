@@ -55,8 +55,8 @@
             <TimelineItem v-for="(item, index) of remindFilter" :key="'remind' + index">
               <p class="fs16">{{item.type | typeFilter}}</p>
               <p class="mt-5">跟踪状态：{{item.status | customerTypeFilter}}</p>
-              <p class="mt-5">
-                签约时间：
+              <p class="mt-5" v-if="item.status == 5">
+                合同期：
                 {{getDateTime(entity.contactTimeStart)}}
                 <span class="mlr5"></span>
                 {{getDateTime(entity.contactTimeEnd)}}

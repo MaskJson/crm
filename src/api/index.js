@@ -98,14 +98,32 @@ export const changePassword2 = (params) => {
   return postRequest('/sys/user/changePassword2', params);
 };
 
-// 获取业绩
-export const getPerformance = (params) => {
-  return getRequest('/performance/info', params);
+// 获取进展业绩
+export const getProjectProgressInfo = (params) => {
+  return getRequest('/performance/project/info', params);
 };
 
-// 上司获取成员业绩
-export const getPerformanceReport = (params) => {
-  return getRequest('/performance/report', params);
+// 上司获取成员进展业绩
+export const getProjectProgressInfos = (params) => {
+  return getRequest('/performance/project/infos', params);
+};
+// 获取进展业绩
+export const getTalentRemindInfo = (params) => {
+  return getRequest('/performance/talent/info', params);
+};
+
+// 上司获取成员进展业绩
+export const getTalentRemindInfos = (params) => {
+  return getRequest('/performance/talent/infos', params);
+};
+// 获取进展业绩
+export const getCustomerRemindInfo = (params) => {
+  return getRequest('/performance/customer/info', params);
+};
+
+// 上司获取成员进展业绩
+export const getCustomerRemindInfos = (params) => {
+  return getRequest('/performance/customer/infos', params);
 };
 
 

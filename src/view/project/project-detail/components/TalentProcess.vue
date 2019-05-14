@@ -85,7 +85,7 @@
 
 <script>
   import { projectTalentStatus, projectProgress } from "../../../../libs/constant";
-  import { getCity, getDateTime, getDateTime2, getStatusRender, toggleShow, getUserId, getUserInfoByKey, getRenderList, getProjectTalentStatus } from "../../../../libs/tools";
+  import { getCity, getDateTime, getDateTime2, getStatusRender, toggleShow, getUserId, getUserInfoByKey, getRenderList, getProjectTalentStatus, getProjectTalentType } from "../../../../libs/tools";
   import { getProjectTalentByStatus, addProjectTalentRemind, reBack } from "../../../../api/project";
 
   export default {
@@ -589,12 +589,13 @@
         this.id = Number(this.$route.query.id);
       } else {
         if (this.performance) {
+          this.status = '1';
           this.actionColumn.splice(1, 1);
           this.actionColumn.push({
             title: '现状',
             align: 'center',
             render: (h, params) => {
-              return getProjectTalentStatus(h, params.row.status);
+              return h('span', getProjectTalentStatus(false, params.row.status) + '-' +getProjectTalentType(false, params.row.type));
             }
           });
           this.projectTalentStatus = this.projectTalentStatus.slice(1, 8);
@@ -616,7 +617,11 @@
         if (!this.performance) {
           this.getProjectTalent();
         } else {
-          this.list = (this.projectTalents || []).filter(item => item.remindStatus == this.status);
+          if (this.status == '1') {
+            this.list = (this.projectTalents || []).filter(item => item.type == 100);
+          } else {
+            this.list = (this.projectTalents || []).filter(item => item.remindStatus == this.status);
+          }
         }
       }
     }
