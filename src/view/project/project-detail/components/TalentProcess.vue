@@ -595,7 +595,7 @@
             title: '现状',
             align: 'center',
             render: (h, params) => {
-              return h('span', getProjectTalentStatus(false, params.row.status) + '-' +getProjectTalentType(false, params.row.type));
+              return h('span', getProjectTalentStatus(false, params.row.status) + '——' +getProjectTalentType(false, params.row.type));
             }
           });
           this.projectTalentStatus = this.projectTalentStatus.slice(1, 8);

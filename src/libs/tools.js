@@ -504,6 +504,6 @@ export const getProjectTalentStatus = (h, data) => {
 export const getProjectTalentType = (h, data) => {
   let text = ''
   const index = projectProgress.findIndex(item => Number(item.id) == Number(data));
-  text = index > -1 ? projectTalentStatus[index].name : ''
+  text = index > -1 ? projectProgress[index].name : ''
   return h ? h('span', text) : text;
 }

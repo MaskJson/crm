@@ -1,76 +1,122 @@
 <template>
   <Card>
     <div>
-      <Tabs>
+      <Tabs style="min-height: 400px">
         <TabPane label="单日绩效">
-          <Tabs>
+          <DatePicker v-model="dayTime" placeholder="请选择日期" clearable/>
+          <Button type="primary" class="ml-10" @click="getData(1, dayTime)">查询</Button>
+          <Tabs class="mt-10">
             <TabPane label="进展跟踪">
-              <DatePicker v-model="dayTime" placeholder="请选择日期" clearable/>
-              <Button type="primary" class="ml-10" @click="getProjectProgressInfo(1, dayTime)">查询</Button>
+              <!--<DatePicker v-model="dayTime" placeholder="请选择日期" clearable/>-->
+              <!--<Button type="primary" class="ml-10" @click="getProjectProgressInfo(1, dayTime)">查询</Button>-->
               <TalentProgress flag="yes" performance="yes" :project-talents="dayList"/>
             </TabPane>
             <TabPane label="人才常规跟踪">
-              <DatePicker v-model="weekTime" placeholder="请选择日期" clearable/>
-              <Button type="primary" class="ml-10" @click="getTalentRemindInfo(1, dayTimeTalent)">查询</Button>
+              <!--<DatePicker v-model="dayTimeTalent" placeholder="请选择日期" clearable/>-->
+              <!--<Button type="primary" class="ml-10" @click="getTalentRemindInfo(1, dayTimeTalent)">查询</Button>-->
+              <TalentRemind :list="dayListTalent"/>
             </TabPane>
             <TabPane label="客户常规跟踪">
-              <DatePicker v-model="monthTime" placeholder="请选择月份" clearable type="month"/>
-              <Button type="primary" class="ml-10" @click="getCustomerRemindInfo(1, dayTimeCustomer)">查询</Button>
+              <!--<DatePicker v-model="monthTimeCustomer" placeholder="请选择日期" clearable type="month"/>-->
+              <!--<Button type="primary" class="ml-10" @click="getCustomerRemindInfo(1, dayTimeCustomer)">查询</Button>-->
+              <CustomerRemind :list="dayListCustomer"/>
             </TabPane>
           </Tabs>
+          <div class="mt-10">
+            <Input type="textarea" :rows="3" v-model="dayReport.content" readonly placeholder="当前选中日期日报"/>
+          </div>
         </TabPane>
         <TabPane label="周绩效">
-          <Tabs>
+          <DatePicker v-model="weekTime" placeholder="请选择日期" clearable/>
+          <Button type="primary" class="ml-10" @click="getData(2, weekTime)">查询</Button>
+          <Tabs class="mt-10">
             <TabPane label="进展跟踪">
-              <DatePicker v-model="weekTime" placeholder="请选择日期" clearable/>
-              <Button type="primary" class="ml-10" @click="getProjectProgressInfo(2, weekTime)">查询</Button>
+              <!--<DatePicker v-model="weekTime" placeholder="请选择日期" clearable/>-->
+              <!--<Button type="primary" class="ml-10" @click="getProjectProgressInfo(2, weekTime)">查询</Button>-->
               <TalentProgress flag="yes" performance="yes" :project-talents="weekList"/>
             </TabPane>
             <TabPane label="人才常规跟踪">
-              <DatePicker v-model="dayTime" placeholder="请选择日期" clearable/>
-              <Button type="primary" class="ml-10" @click="getTalentRemindInfo(2, weekTimeTalent)">查询</Button>
+              <!--<DatePicker v-model="weekTimeTalent" placeholder="请选择日期" clearable/>-->
+              <!--<Button type="primary" class="ml-10" @click="getTalentRemindInfo(2, weekTimeTalent)">查询</Button>-->
+              <TalentRemind :list="weekListTalent"/>
             </TabPane>
             <TabPane label="客户常规跟踪">
-              <DatePicker v-model="dayTime" placeholder="请选择日期" clearable/>
-              <Button type="primary" class="ml-10" @click="getCustomerRemindInfo(2, weekTimeCustomer)">查询</Button>
+              <!--<DatePicker v-model="weekTimeCustomer" placeholder="请选择日期" clearable/>-->
+              <!--<Button type="primary" class="ml-10" @click="getCustomerRemindInfo(2, weekTimeCustomer)">查询</Button>-->
+              <CustomerRemind :list="weekListCustomer"/>
             </TabPane>
           </Tabs>
+          <div class="mt-10">
+            <Input type="textarea" :rows="3" v-model="weekReport.content" readonly placeholder="当前选中日期周报"/>
+          </div>
         </TabPane>
         <TabPane label="月绩效">
+          <DatePicker v-model="monthTime" type="month" placeholder="请选择月份" clearable/>
+          <Button type="primary" class="ml-10" @click="getData(3, monthTime)">查询</Button>
           <Tabs>
             <TabPane label="进展跟踪">
-              <DatePicker v-model="weekTime" placeholder="请选择日期" clearable/>
-              <Button type="primary" class="ml-10" @click="getProjectProgressInfo(3, monthTime)">查询</Button>
+              <!--<DatePicker v-model="monthTime" type="month" placeholder="请选择日期" clearable/>-->
+              <!--<Button type="primary" class="ml-10" @click="getProjectProgressInfo(3, monthTime)">查询</Button>-->
               <TalentProgress flag="yes" performance="yes" :project-talents="monthList"/>
             </TabPane>
             <TabPane label="人才常规跟踪">
-              <DatePicker v-model="dayTime" placeholder="请选择日期" clearable/>
-              <Button type="primary" class="ml-10" @click="getTalentRemindInfo(3, monthTimeTalent)">查询</Button>
+              <!--<DatePicker v-model="monthTimeTalent" type="month" placeholder="请选择日期" clearable/>-->
+              <!--<Button type="primary" class="ml-10" @click="getTalentRemindInfo(3, monthTimeTalent)">查询</Button>-->
+              <TalentRemind :list="monthListTalent"/>
             </TabPane>
             <TabPane label="客户常规跟踪">
-              <DatePicker v-model="dayTime" placeholder="请选择日期" clearable/>
-              <Button type="primary" class="ml-10" @click="getCustomerRemindInfo(3, monthTimeCustomer)">查询</Button>
+              <!--<DatePicker v-model="monthTimeCustomer" type="month" placeholder="请选择日期" clearable/>-->
+              <!--<Button type="primary" class="ml-10" @click="getCustomerRemindInfo(3, monthTimeCustomer)">查询</Button>-->
+              <CustomerRemind :list="monthListCustomer"/>
             </TabPane>
           </Tabs>
+          <div class="mt-10">
+            <Input type="textarea" :rows="3" v-model="monthReport.content" readonly placeholder="当前选中日期月报"/>
+          </div>
+        </TabPane>
+        <TabPane label="报告填写">
+          <Row>
+            <Col span="8" class="pd-5">
+              <p>日报</p>
+              <Input type="textarea" :rows="3" v-model="d" placeholder="请填写日报" :readonly="!!dr && dr.length > 0"/>
+              <Button class="mt-10" type="primary" v-if="dr != null && dr.length == 0" @click="saveReport(1, d)">提交日报</Button>
+            </Col>
+            <Col span="8" class="pd-5">
+              <p>周报</p>
+              <Input type="textarea" :rows="3" v-model="w" placeholder="请填写周报" :readonly="!!wr && wr.length > 0"/>
+              <Button class="mt-10" type="primary" v-if="wr != null && wr.length == 0" @click="saveReport(2, w)">提交周报</Button>
+            </Col>
+            <Col span="8" class="pd-5">
+              <p>月报</p>
+              <Input type="textarea" :rows="3" v-model="m" placeholder="请填写月报" :readonly="!!mr && mr.length > 0"/>
+              <Button class="mt-10" type="primary" v-if="mr != null && mr.length == 0" @click="saveReport(3, m)">提交月报</Button>
+            </Col>
+          </Row>
         </TabPane>
       </Tabs>
       <SpinUtil :show="show"/>
     </div>
+    <SpinUtil :show="show"/>
   </Card>
 </template>
 
 <script>
   import TalentProgress from './../../project/project-detail/components/TalentProcess';
-  import {getDateMonth, getDateTime2, getUserId, getDateTime, getRenderList, getCustomerType} from "../../../libs/tools";
-  import {getProjectProgressInfo, getTalentRemindInfo, getCustomerRemindInfo} from "../../../api";
+  import TalentRemind from './../TalentRemind';
+  import CustomerRemind from './../CustomerRemind';
+  import {getDateMonth, getDateTime2, getUserId,} from "../../../libs/tools";
+  import {getProjectProgressInfo, getTalentRemindInfo, getCustomerRemindInfo, getReportInfo, saveReport} from "../../../api";
 
   export default {
     name: "SinglePerformance",
     components: {
-      TalentProgress
+      TalentProgress,
+      TalentRemind,
+      CustomerRemind
     },
     data() {
       return {
+        show: false,
         dayTime: null,
         weekTime: null,
         monthTime: null,
@@ -78,144 +124,87 @@
         weekList: [],
         monthList: [],
         // 人才常规跟踪
-        dayTimeTalent: null,
-        weekTimeTalent: null,
-        monthTimeTalent: null,
+        // dayTimeTalent: null,
+        // weekTimeTalent: null,
+        // monthTimeTalent: null,
         dayListTalent: [],
         weekListTalent: [],
         monthListTalent: [],
         // 客户常规跟踪
-        dayTimeCustomer: null,
-        weekTimeCustomer: null,
-        monthTimeCustomer: null,
+        // dayTimeCustomer: null,
+        // weekTimeCustomer: null,
+        // monthTimeCustomer: null,
         dayListCustomer: [],
         weekListCustomer: [],
         monthListCustomer: [],
         userId: getUserId(),
         show: false,
-        talentColumns: [
-          {
-            title: '人选',
-            key: 'talentName',
-            align: 'center',
-            render: (h, params) => {
-              const name = params.row.name || params.row.talentName;
-              return h('div', {
-              }, [
-                h('Button', {
-                  props: {
-                    type: 'text',
-                    size: 'small'
-                  },
-                  class: {
-                    'cl-primary': true,
-                  },
-                  on: {
-                    click: () => {
-                      this.$router.push('/talent/talent-detail?id=' + params.row.talentId);
-                    }
-                  }
-                }, name)
-              ]);
-            }
-          },
-          {
-            title: '岗位',
-            align: 'center',
-            render: (h, params) => {
-              return h('span', (params.row.info || {}).position)
-            }
-          },
-          {
-            title: '公司',
-            align: 'center',
-            render: (h, params) => {
-              return h('span', (params.row.info || {}).customerName)
-            }
-          },
-          {
-            title: '沟通方式',
-            align: 'center',
-            key: ''
-          },
-          {
-            title: '沟通记录',
-            align: 'center',
-            render: (h, params) => {
-              const remind = params.row;
-              if (remind && remind.type){
-                let arr = [];
-                switch (remind.type) {
-                  case 1:
-                    arr = [ `跟踪记录：${remind.remark}`];
-                    break;
-                  case 2:
-                    arr = [ `人才基本情况：${remind.situation}`, `离职原因：${remind.cause}`, `薪资架构：${remind.salary}`];
-                    break;
-                  case 3:
-                    arr = [ `面试时间：${getDateTime(remind.meetTime)}`, `面试地点：${remind.meetAddress}`, `人才基本情况：${remind.situation}`, `离职原因：${remind.cause}`, `薪资架构：${remind.salary}`];
-                    break;
-                }
-                return getRenderList(h, JSON.stringify(arr));
-              } else {
-                return h('span', '');
-              }
-            }
-          },
-          {
-            title: '时间',
-            align: 'center',
-            render: (h, params) => {
-              return h('span', getDateTime(params.row.createTime))
-            }
-          },
-        ],
-        customerColumns: [
-        {
-          title: '公司',
-          align: 'center',
-          key: 'customerName'
+        dayReport: {
+          userId: getUserId(),
+          content: null,
         },
-        {
-          title: '联系人',
-          align: 'center',
-          key: 'contactName'
+        weekReport: {
+          id: null,
+          userId: getUserId(),
+          content: null,
         },
-        {
-          title: '沟通方式',
-          align: 'center',
-          render: (h, params) => {
-            const v = params.row.type;
-            return h('span', v == 1 ? '电话沟通' : v == 3 ? '客户上门' : '拜访客户')
-          }
+        monthReport: {
+          userId: getUserId(),
+          content: null,
         },
-        {
-          title: '沟通记录',
-          align: 'center',
-          render: (h, params) => {
-            const arr = [];
-            arr.push(`跟踪状态：${getCustomerType(false, params.row.status) || '列名未联系'}`);
-            if (params.row.type == 1 || params.row.type == 3) {
-              arr.push(`沟通内容：${params.row.remark}`)
-            } else {
-              arr.push(`拜访时间：${getDateTime(params.row.meetTime)}`, `拜访地点：${getDateTime(params.row.meetAddress)}`, `拜访记录：${getDateTime(params.row.meetNotice)}`)
-            }
-            if (params.row.status == 5) {
-              arr.push(`合同期：${getDateTime2(params.row.contactTimeStart)}-${getDateTime2(params.row.contactTimeEnd)}`)
-            }
-          }
-        },
-        {
-          title: '时间',
-          align: 'center',
-          render: (h, params) => {
-            return h('span', getDateTime(params.row.createTime));
-          }
-        },
-      ]
+        // 当前报告
+        dr: null,
+        wr: null,
+        mr: null,
+        d: '',
+        w: '',
+        m: ''
       }
     },
     methods: {
+      saveReport(type, content) {
+        if (content.trim().length == 0) {
+          this.$Message.error('请填写报告内容');
+          return false;
+        }
+        this.show = true;
+        const params = {
+          createUserId: this.userId,
+          type,
+          content
+        };
+        saveReport(params).then(data => {
+          switch (type) {
+            case 1:this.dr.push(params);break;
+            case 2:this.wr.push(params);break;
+            case 3:this.mr.push(params);break;
+          }
+          this.show = false;
+        }).catch(data => {
+          this.show = false;
+        })
+      },
+      getData(flag, time, b) {
+        this.getReport(flag, time, b);
+        this.getProjectProgressInfo(flag, time);
+        this.getTalentRemindInfo(flag, time);
+        this.getCustomerRemindInfo(flag, time);
+      },
+      getReport(flag, time, b) {
+        getReportInfo({
+          userId: this.userId,
+          flag,
+          time: flag != 3 ? getDateTime2(time) : (getDateMonth(time) || '').replace('-', '')
+        }).then(data => {
+          const v = data || [];
+          const report = v.length > 0 ? v[0] : {userId: getUserId(), content: ''};
+          switch (flag) {
+            case 1:this.dayReport = report;if(b) {this.dr = v;this.d = report.content;}break;
+            case 2:this.weekReport = report;if(b) {this.wr = v;this.w = report.content;}break;
+            case 3:this.monthReport = report;if(b) {this.mr = v;this.m = report.content;}break;
+          }
+        })
+      },
       getProjectProgressInfo(flag, time) {
         getProjectProgressInfo({
           userId: this.userId,
@@ -260,9 +249,9 @@
       }
     },
     created() {
-      this.getProjectProgressInfo(1, this.dayTime);
-      this.getProjectProgressInfo(2, this.weekTime);
-      this.getProjectProgressInfo(3, this.monthTime);
+      this.getData(1, this.dayTime, true);
+      this.getData(2, this.weekTime, true);
+      this.getData(3, this.monthTime, true);
     }
   }
 </script>

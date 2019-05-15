@@ -97,7 +97,11 @@ export const changePassword1 = (params) => {
 export const changePassword2 = (params) => {
   return postRequest('/sys/user/changePassword2', params);
 };
-
+/**
+ * 绩效管理
+ * @param params
+ * @returns {*}
+ */
 // 获取进展业绩
 export const getProjectProgressInfo = (params) => {
   return getRequest('/performance/project/info', params);
@@ -124,6 +128,21 @@ export const getCustomerRemindInfo = (params) => {
 // 上司获取成员进展业绩
 export const getCustomerRemindInfos = (params) => {
   return getRequest('/performance/customer/infos', params);
+};
+
+// 获取报告
+export const getReportInfo = (params) => {
+  return getRequest('/performance/report/info', params);
+};
+
+// 上司获取成员报告
+export const getReportInfos = (params) => {
+  return getRequest('/performance/report/infos', params);
+};
+
+// 提交报告
+export const saveReport = (params) => {
+  return postJson('/performance/report/save', params);
 };
 
 
