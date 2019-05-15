@@ -604,7 +604,29 @@
           title: '项目-公司',
           align: 'center',
           render: (h, params) => {
-            return h('span', `${params.row.projectName}-${params.row.customerName}`);
+            return h('div', [
+              h('Button', {
+                props: {
+                  type: 'text',
+                  size: 'small'
+                },
+                class: {
+                  'cl-primary': true,
+                },
+                on: {
+                  click: () => {
+                    this.$router.push('/project/project-detail?id=' + params.row.projectId);
+                  }
+                }
+              }, params.row.projectName),
+              h('span', '-'),
+              h('Button', {
+                props: {
+                  type: 'text',
+                  size: 'small'
+                },
+              }, params.row.customerName)
+            ]);
           }
         });
       }

@@ -4,7 +4,7 @@
       <Col span="8">
         <h2>{{entity.name}}</h2>
       </Col>
-      <Col span="16" class="t-right">
+      <Col span="16" class="t-right" v-if="showAction">
         <Button type="primary" v-if="entity.createUserId == userId" :disabled="!entity.id" @click="edit">编辑</Button>
         <Button type="primary" class="ml-10" v-if="entity.createUserId == userId" :disabled="!entity.id" @click="toggleBind('status')">切换项目状态</Button>
         <Button type="primary" class="ml-10" icon="md-star" v-if="entity.createUserId == userId" :disabled="!entity.id" @click="toggleFollow">{{entity.follow ? '取消关注' : '关注项目'}}</Button>
@@ -130,6 +130,7 @@
   import TalentProcess from './components/TalentProcess';
   import { getUserId, getUserInfoByKey, toggleShow } from "../../../libs/tools";
   import { bindFolder } from "../../../api/folder";
+  import {getMembers} from "../../../api/team";
   import { getListByTableName } from "../../../api/common";
   import { toggleFollow, allProjectTalent, addProjectTalent, getReportData, addReport, changeStatus } from "../../../api/project";
   import FavoriteSetting from '../../components/favorite-setting';
@@ -145,9 +146,13 @@
       folderListFilter() {
         return this.folderList.filter(item => item.status);
       },
+      showAction() {
+        return this.members.findIndex(item => item.id == this.userId) || this.userId == this.entity.createUerId;
+      }
     },
     data() {
       return {
+        members: [],
         show: false,
         projectStatus: null, // 项目状态
         showFavoriteSetting: false,
@@ -195,6 +200,13 @@
       setEntity(entity) {
         this.show = false;
         this.entity = entity;
+        this.getMembers(entity.teamId);
+      },
+      // 获取团队成员
+      getMembers(id) {
+        getMembers({id}).then(data => {
+          this.members = data || [];
+        }).catch(data => {})
       },
       toggleBind(key, flag) {
         toggleShow(this, key, flag);
@@ -328,7 +340,6 @@
       }
     },
     created() {
-      console.log(this.userId)
       this.getAllProjectTalent();
     }
   }
