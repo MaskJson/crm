@@ -556,7 +556,6 @@
         })
       },
       errorHandler(type, data, params) {
-        console.log(type, data, params)
         if (type == 'toggleType') {
           if (data == 'info') {
             this.$router.push({ path: '/talent/talent-edit', query: {id: params.id, zhuanshu: '110'}})

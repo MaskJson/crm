@@ -24,7 +24,6 @@
         }
       },
       goto(item) {
-        console.log(item)
         if (item.name == 'home') {
           this.$router.push('/home');
         }

@@ -98,7 +98,7 @@
     </Row>
     <Row>
       <h2>项目进展</h2>
-      <TalentProgress flag="yes" performance="yes" home="yes" :project-talents="list"/>
+      <TalentProgress flag="yes" home="yes" :project-talents="list"/>
     </Row>
     <SpinUtil :show="show"/>
   </Card>

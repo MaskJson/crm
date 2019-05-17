@@ -64,7 +64,6 @@ const USER_MAP = {
 }
 
 export const login = req => {
-  console.log(req.url)
   req = JSON.parse(req.body)
   return {
     success: true,
@@ -77,7 +76,6 @@ export const login = req => {
 }
 
 export const getUserInfo = req => {
-  console.log(req.url)
   return USER_MAP['super_admin']
 }
 
