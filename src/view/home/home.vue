@@ -18,7 +18,7 @@
           </p>
         </div>
       </Col>
-      <Col span="4" class="pd-10" v-if="roleId == 3">
+      <Col span="4" class="pd-10" v-if="roleId != 8">
         <div class="radius4 border pd-10">
           <h3 class="cursor" @click="goto('/customer/customer-pending')">客户常规跟踪待办项</h3>
           <p class="mt-10">
@@ -35,7 +35,7 @@
           </p>
         </div>
       </Col>
-      <Col span="4" class="pd-10" v-if="[2,3,6].indexOf(roleId) > -1">
+      <Col span="4" class="pd-10" v-if="roleId != 1">
         <div class="radius4 border pd-10">
           <h3 class="cursor" @click="goto2('/project/progress-pending', '1')">项目启动阶段</h3>
           <p class="mt-10">
@@ -98,7 +98,7 @@
     </Row>
     <Row>
       <h2>项目进展</h2>
-      <TalentProgress :flag="true"/>
+      <TalentProgress flag="yes" performance="yes" home="yes" :project-talents="list"/>
     </Row>
     <SpinUtil :show="show"/>
   </Card>

@@ -64,7 +64,7 @@
 <script>
   import { save, get } from "../../../api/customer";
   import { industryList } from "../../../libs/constant";
-  import { getUserId } from "../../../libs/tools";
+  import { getUserId, getUserInfoByKey } from "../../../libs/tools";
   import { getCustomerInfoUtil } from "../../../libs/tools";
   import cityList from '../../../libs/cityList';
   import IndustrySelect from '@/view/components/industry-select/industry-select.vue';
@@ -97,6 +97,7 @@
           welfare: null, // 福利
           description: null, // 简介
           contractUrl: null, // 合同
+          roleId: getUserInfoByKey('roleId')
         },
         rules: {
           name: [

@@ -1,11 +1,28 @@
 <!-- 人才进展情况 -->
 <template>
   <div class="talent-progress">
-    <Tabs v-model="status">
-      <TabPane v-for="(tab, index) of projectTalentStatus" :key="'tab'+index" :label="tab.label" :name="tab.value"></TabPane>
-    </Tabs>
-    <Table :data="list" :columns="columns" border></Table>
-
+    <div v-if="!home">
+      <Tabs v-model="status">
+        <TabPane v-for="(tab, index) of projectTalentStatus" :key="'tab'+index" :label="tab.label" :name="tab.value"></TabPane>
+      </Tabs>
+      <Table :data="list" :columns="columns" border></Table>
+    </div>
+    <div v-else>
+      <div class="mb-10">
+        <h3>推荐阶段</h3>
+        <Table :data="getList(1)" :columns="getColumns(1)" border></Table>
+        <h3>面试阶段</h3>
+        <Table :data="getList(2)" :columns="getColumns(2)" border></Table>
+        <h3>offer谈判阶段</h3>
+        <Table :data="getList(4)" :columns="getColumns(4)" border></Table>
+        <h3>offer签订待入职</h3>
+        <Table :data="getList(5)" :columns="getColumns(5)" border></Table>
+        <h3>保证期人才</h3>
+        <Table :data="getList(6)" :columns="getColumns(6)" border></Table>
+        <h3>成功人才</h3>
+        <Table :data="getList(7)" :columns="getColumns(7)" border></Table>
+      </div>
+    </div>
     <ModalUtil ref="remind" :title="(projectTalentRemindStatus[projectTalentRemindStatus.findIndex(item => item.id == actionData.type)] || {}).name" :loading="show" :width="600" @on-ok="addRemind">
       <Form ref="form" :model="actionData" :label-width="110">
         <FormItem label="本次跟踪状态" prop="remindType" class="hide">
@@ -90,7 +107,7 @@
 
   export default {
     name: 'talent-progress',
-    props: ['userList', 'flag', 'performance', 'projectTalents'],
+    props: ['userList', 'flag', 'performance', 'projectTalents', 'home'],
     data () {
       // 获取操作选项
       function renderAction(h, projectTalentId, type, name, createUserId) {
@@ -467,6 +484,28 @@
       }
     },
     methods: {
+      getList(status) {
+        if (status == 1) {
+          return (this.projectTalents || []).filter(item => item.status == 0 || item.status == 1);
+        } else if (status == 2) {
+          return (this.projectTalents || []).filter(item => item.status == 2 || item.status == 3);
+        } else {
+          return (this.projectTalents || []).filter(item => item.remindStatus == this.status);
+        }
+      },
+      getColumns(status) {
+        switch (status) {
+          case 0:
+          case 1: return this.recommendColumns;
+          case 2:
+          case 3:
+          case 4: return this.interviewColumns;
+          case 5: return this.offerColumns;
+          case 6: return this.workingColumns;
+          case 7: return this.successColumns;
+          case 8: return this.killColumns;
+        }
+      },
       // 获取当前状态的最后一次跟踪
       getLastRemind(arr) {
         const len = arr.length;
@@ -640,7 +679,7 @@
           this.getProjectTalent();
         } else {
           if (this.status == '1') {
-            this.list = (this.projectTalents || []).filter(item => item.type == 100);
+            this.list = (this.projectTalents || []).filter(item => item.status == 0 || item.status == 1);
           } else {
             this.list = (this.projectTalents || []).filter(item => item.remindStatus == this.status);
           }

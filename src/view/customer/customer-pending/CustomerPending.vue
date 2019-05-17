@@ -129,7 +129,7 @@
             key: 'type',
             render: (h, params) => {
               const type = params.row.customerType;
-              return h('span',type == 0 ? '普通公司' : type == 6 ? '客户' : '拓展中' + `(${getCustomerType(h, type)})`);
+              return h('span',type == 0 ? '普通公司' : type == 6 ? '客户' : '拓展中' + `(${getCustomerType(false, type)})`);
             }
           },
           {

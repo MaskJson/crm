@@ -40,10 +40,10 @@
               if (params.row.type == 1 || params.row.type == 3) {
                 arr.push(`沟通内容：${params.row.remark}`)
               } else {
-                arr.push(`拜访时间：${getDateTime(params.row.meetTime)}`, `拜访地点：${getDateTime(params.row.meetAddress)}`, `拜访记录：${getDateTime(params.row.meetNotice)}`)
+                arr.push(`拜访时间：${getDateTime(params.row.meetTime)}`, `拜访地点：${params.row.meetAddress}`, `拜访记录：${params.row.meetNotice}`)
               }
               if (params.row.status == 5) {
-                arr.push(`合同期：${getDateTime2(params.row.contactTimeStart)}-${getDateTime2(params.row.contactTimeEnd)}`)
+                arr.push(`合同期：${getDateTime2(params.row.contactTimeStart) || ''}-${getDateTime2(params.row.contactTimeEnd) || ''}`)
               }
               return getRenderList(h, JSON.stringify(arr));
             }

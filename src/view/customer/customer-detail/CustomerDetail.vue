@@ -475,7 +475,7 @@
               this.$Message.warning('设置下次跟踪，类别和时间需填写完整');
               return false;
             }
-            if (remind.status == 6 && (!remind.contactTimeStart || !remind.contactTimeEnd)) {
+            if (remind.status == 5 && (!remind.contactTimeStart || !remind.contactTimeEnd)) {
               this.$Message.warning('签约状态下，请选择合同时间');
               return false;
             }
