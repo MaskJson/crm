@@ -147,7 +147,7 @@
         return this.folderList.filter(item => item.status);
       },
       showAction() {
-        return this.members.findIndex(item => item.id == this.userId) || this.userId == this.entity.createUerId;
+        return (this.members.findIndex(item => item.userId == this.userId) > -1) || this.userId == this.entity.createUserId;
       }
     },
     data() {
@@ -200,7 +200,7 @@
       setEntity(entity) {
         this.show = false;
         this.entity = entity;
-        this.getMembers(entity.teamId);
+        this.getMembers(entity.createUserId);
       },
       // 获取团队成员
       getMembers(id) {

@@ -71,7 +71,7 @@
           <Collapse v-model="name">
             <Panel v-for="(group, index) of talentGroupByDepartment" :key="'panel' + index" :name="(index + 1).toString()">
               {{group.department}}
-              <Table slot="content" :columns="columns" :data="group.talents || []"></Table>
+              <Table class="talent-manager " slot="content" :columns="columns" :data="group.talents || []"></Table>
             </Panel>
           </Collapse>
         </TabPane>

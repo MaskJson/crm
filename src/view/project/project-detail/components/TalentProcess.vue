@@ -73,20 +73,20 @@
           </FormItem>
         </div>
         <div v-if="actionData.type == 16">
-          <FormItem label="人选反馈">
+          <FormItem label="人选反馈" class="ivu-form-item-required">
             <Input v-model="actionData.talentRemark"/>
           </FormItem>
-          <FormItem label="客户反馈">
+          <FormItem label="客户反馈" class="ivu-form-item-required">
             <Input v-model="actionData.customerRemark"/>
           </FormItem>
         </div>
-        <div v-if="actionData.type == 99">
-          <FormItem label="推荐理由">
+        <div v-if="actionData.type == 100">
+          <FormItem label="推荐理由" class="ivu-form-item-required">
             <Input v-model="actionData.recommendation"/>
           </FormItem>
         </div>
         <div v-if="actionData.status == 8">
-          <FormItem label="淘汰理由">
+          <FormItem label="淘汰理由" class="ivu-form-item-required">
             <Input v-model="actionData.killRemark"/>
           </FormItem>
         </div>
@@ -110,7 +110,7 @@
     props: ['userList', 'flag', 'performance', 'projectTalents', 'home'],
     data () {
       // 获取操作选项
-      function renderAction(h, projectTalentId, type, name, createUserId) {
+      function renderAction(h, projectTalentId, type, name, createUserId, status) {
         let action = [];
         const roleId = this.roleId;
         // 添加选项
@@ -121,7 +121,7 @@
               status: Number(status),
               remark: '',
               type: actionType,
-              prevStatus: Number(this.status),
+              prevStatus: Number(status),
               prevType: type,
               talentName: name,
               // 特定状态字段
@@ -152,8 +152,8 @@
             }
           }, text));
         };
-        getAction('补充跟踪', this.status, 99);
-        switch (this.status) {
+        getAction('补充跟踪', status, 99);
+        switch (status) {
           case '0':
             type != 100 ? (roleId == 3 ? getAction('推荐给客户', '0', 100) : '') : action.push(h('span', {class: {'cl-error': true}}, '等待项目总监审核'));
             break;
@@ -189,26 +189,26 @@
             break;
           default:break;
         }
-        if (['1','3','4','5','6'].indexOf(this.status)>-1) {
+        if (['1','3','4','5','6'].indexOf(status)>-1) {
           getAction('淘汰', '8', 15);
         }
-        if (this.status=='7' || this.status=='8') {
+        if (status=='7' || status=='8') {
           action.push(h('span',{
             class: {
-              'cl-success': this.status=='7',
-              'cl-error': this.status=='8'&&type!=200,
-              'cl-primary': this.status=='8'&&type==200
+              'cl-success': status=='7',
+              'cl-error': status=='8'&&type!=200,
+              'cl-primary': status=='8'&&type==200
             }
-          }, this.status=='7'?'已通过保证期':type == 200 ? '已在其他项目入职':'已淘汰'))
+          }, status=='7'?'已通过保证期':type == 200 ? '已在其他项目入职':'已淘汰'))
         }
-        if (this.status != '0' && type != 200) {
+        if (status != '0' && type != 200) {
           action.push(h('Button', {
             props: {
               type: 'text'
             },
             on: {
               click: () => {
-                this.reBack(projectTalentId, this.status);
+                this.reBack(projectTalentId, status);
               }
             }
           }, '撤销'))
@@ -269,7 +269,7 @@
             align: 'center',
             width: 200,
             render: (h, params) => {
-              return renderAction.call(this, h, params.row.id, params.row.type, params.row.name, params.row.createUserId);
+              return renderAction.call(this, h, params.row.id, params.row.type, params.row.name, params.row.createUserId, params.row.status);
             }
           }
         ],
@@ -486,11 +486,11 @@
     methods: {
       getList(status) {
         if (status == 1) {
-          return (this.list || []).filter(item => item.status == 0 || item.status == 1);
+          return (this.projectTalents || []).filter(item => item.status == 0 || item.status == 1);
         } else if (status == 2) {
-          return (this.list || []).filter(item => item.status == 2 || item.status == 3);
+          return (this.projectTalents || []).filter(item => item.status == 2 || item.status == 3);
         } else {
-          return (this.list || []).filter(item => item.remindStatus == this.status);
+          return (this.projectTalents || []).filter(item => item.remindStatus == this.status);
         }
       },
       getColumns(status) {
@@ -510,7 +510,7 @@
       getLastRemind(arr) {
         const len = arr.length;
         for (let i=0; i<len; i++) {
-          if (arr[i].status == this.status) {
+          if (arr[i].status == this.status || this.status == 1 && arr[i].type == 100) {
             return arr[i];
           }
         }
@@ -669,15 +669,15 @@
           }
         });
       }
-      if (!this.performance) {
+      if (!this.flag) {
         this.getProjectTalent();
       }
     },
     watch: {
       status() {
-        if (!this.performance) {
+        if (!this.flag) {
           this.getProjectTalent();
-        } else {
+        } else if (this.performance) {
           if (this.status == '1') {
             this.list = (this.projectTalents || []).filter(item => item.status == 0 || item.status == 1);
           } else {

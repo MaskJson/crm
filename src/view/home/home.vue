@@ -107,6 +107,7 @@
 <script>
   import {getUserId, getUserInfoByKey} from "../../libs/tools";
   import { homeCount } from "../../api/count";
+  import {getProjectTalentByStatus} from "../../api/project";
   import TalentProgress from './../project/project-detail/components/TalentProcess';
 
   export default {
@@ -121,7 +122,8 @@
         roleId: getUserInfoByKey('roleId'),
         count: {
 
-        }
+        },
+        list: []
       }
     },
     methods: {
@@ -130,6 +132,15 @@
       },
       goto2(path, type, status) {
         this.$router.push({path, query: {type, status}});
+      },
+      getProjectTalent() {
+        this.show = true;
+        getProjectTalentByStatus({
+          userId: this.userId,
+        }).then(data => {
+          this.show = false;
+          this.list = data || [];
+        }).catch(data => {this.show = false;})
       }
     },
     created() {
@@ -137,7 +148,8 @@
       homeCount({ userId: this.userId, roleId: this.roleId }).then(data => {
         this.show = false;
         this.count = data || {};
-      }).catch(data => {this.show = false;})
+      }).catch(data => {this.show = false;});
+      this.getProjectTalent();
     }
   }
 </script>
