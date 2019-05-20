@@ -124,7 +124,8 @@
           city: JSON.stringify(city),
           follow: follow == 0 ? null : follow == 1,
           type: this.searchType,
-          userId: this.userId
+          userId: this.userId,
+          roleId: getUserInfoByKey('roleId')
         }
       },
       typeFilter() {
@@ -427,6 +428,17 @@
           }
         });
       },
+    },
+    created() {
+      this.columns.splice(5, 0, {
+        // title: !this.type ? '负责人' : this.type == 6 ? '签约人' : '列名人',
+        title: '顾问',
+        align: 'center',
+        render: (h, params) => {
+          const user = params.row.user || {};
+          return h('span', user.nickName);
+        }
+      })
     },
     provide() {
       return {

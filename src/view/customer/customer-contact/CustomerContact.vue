@@ -1,5 +1,5 @@
 <template>
-  <CustomerManage :userId="userId" :type="2"/>
+  <CustomerManage :userId="userId" :searchType="2"/>
 </template>
 
 <script>
