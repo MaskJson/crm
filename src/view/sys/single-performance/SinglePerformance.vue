@@ -76,17 +76,17 @@
         </TabPane>
         <TabPane label="报告填写">
           <Row>
-            <Col span="8" class="pd-5">
+            <Col span="8" class="pd-5" v-if="roleId == 4 || roleId == 5">
               <p>日报</p>
               <Input type="textarea" :rows="3" v-model="d" placeholder="请填写日报" :readonly="!!dr && dr.length > 0"/>
               <Button class="mt-10" type="primary" v-if="dr != null && dr.length == 0" @click="saveReport(1, d)">提交日报</Button>
             </Col>
-            <Col span="8" class="pd-5">
+            <Col span="8" class="pd-5" v-if="roleId != 4 && roleId != 5">
               <p>周报</p>
               <Input type="textarea" :rows="3" v-model="w" placeholder="请填写周报" :readonly="!!wr && wr.length > 0"/>
               <Button class="mt-10" type="primary" v-if="wr != null && wr.length == 0" @click="saveReport(2, w)">提交周报</Button>
             </Col>
-            <Col span="8" class="pd-5">
+            <Col span="8" class="pd-5" v-if="roleId != 4 && roleId != 5">
               <p>月报</p>
               <Input type="textarea" :rows="3" v-model="m" placeholder="请填写月报" :readonly="!!mr && mr.length > 0"/>
               <Button class="mt-10" type="primary" v-if="mr != null && mr.length == 0" @click="saveReport(3, m)">提交月报</Button>
@@ -104,7 +104,7 @@
   import TalentProgress from './../../project/project-detail/components/TalentProcess';
   import TalentRemind from './../TalentRemind';
   import CustomerRemind from './../CustomerRemind';
-  import {getDateMonth, getDateTime2, getUserId,} from "../../../libs/tools";
+  import {getDateMonth, getDateTime2, getUserId, getUserInfoByKey} from "../../../libs/tools";
   import {getProjectProgressInfo, getTalentRemindInfo, getCustomerRemindInfo, getReportInfo, saveReport} from "../../../api";
 
   export default {
@@ -116,6 +116,7 @@
     },
     data() {
       return {
+        roleId: getUserInfoByKey('roleId'),
         show: false,
         dayTime: null,
         weekTime: null,

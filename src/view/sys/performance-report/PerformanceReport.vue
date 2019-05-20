@@ -228,9 +228,9 @@
         }).then(data => {
           const v = this.filterReports(data);
           switch (flag) {
-            case 1:this.dayListReport = v;break;
-            case 2:this.weekListReport = v;break;
-            case 3:this.monthListReport = v;break;
+            case 1:this.dayListReport = v.filter(item => item.roleId == 4 || item.roleId == 5);break;
+            case 2:this.weekListReport = v.filter(item => item.roleId != 4 && item.roleId != 5);break;
+            case 3:this.monthListReport = v.filter(item => item.roleId != 4 && item.roleId != 5);break;
           }
         })
       },

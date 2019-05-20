@@ -9,18 +9,30 @@
     </div>
     <div v-else>
       <div class="mb-10">
-        <h3>推荐阶段</h3>
-        <Table :data="getList(1)" :columns="getColumns(1)" border></Table>
-        <h3>面试阶段</h3>
-        <Table :data="getList(2)" :columns="getColumns(2)" border></Table>
-        <h3>offer谈判阶段</h3>
-        <Table :data="getList(4)" :columns="getColumns(4)" border></Table>
-        <h3>offer签订待入职</h3>
-        <Table :data="getList(5)" :columns="getColumns(5)" border></Table>
-        <h3>保证期人才</h3>
-        <Table :data="getList(6)" :columns="getColumns(6)" border></Table>
-        <h3>成功人才</h3>
-        <Table :data="getList(7)" :columns="getColumns(7)" border></Table>
+        <div v-if="getColumns(1).length > 0">
+          <h3>推荐阶段</h3>
+          <Table :data="getList(1)" :columns="getColumns(1)" border></Table>
+        </div>
+        <div v-if="getColumns(2).length > 0">
+          <h3>面试阶段</h3>
+          <Table :data="getList(2)" :columns="getColumns(2)" border></Table>
+        </div>
+        <div v-if="getColumns(4).length > 0">
+          <h3>offer谈判阶段</h3>
+          <Table :data="getList(4)" :columns="getColumns(4)" border></Table>
+        </div>
+        <div v-if="getColumns(5).length > 0">
+          <h3>offer签订待入职</h3>
+          <Table :data="getList(5)" :columns="getColumns(5)" border></Table>
+        </div>
+        <div v-if="getColumns(6).length > 0">
+          <h3>保证期人才</h3>
+          <Table :data="getList(6)" :columns="getColumns(6)" border></Table>
+        </div>
+        <div v-if="getColumns(7).length > 0">
+          <h3>成功人才</h3>
+          <Table :data="getList(7)" :columns="getColumns(7)" border></Table>
+        </div>
       </div>
     </div>
     <ModalUtil ref="remind" :title="(projectTalentRemindStatus[projectTalentRemindStatus.findIndex(item => item.id == actionData.type)] || {}).name" :loading="show" :width="600" @on-ok="addRemind">
