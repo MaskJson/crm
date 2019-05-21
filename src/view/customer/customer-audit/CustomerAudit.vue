@@ -34,7 +34,7 @@
           {
             title: '创建人',
             align: 'center',
-            key: 'id'
+            key: 'createUser'
           },
           {
             title: '状态',
