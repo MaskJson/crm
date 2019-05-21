@@ -82,6 +82,10 @@
       talentProjects: {
         type: Array,
         default: []
+      },
+      followRemindId: {
+        type: Number,
+        default: null
       }
     },
     data() {
@@ -164,6 +168,7 @@
             params.createUserId = getUserId();
             params.roleId = getUserInfoByKey('roleId');
             params.talentId = this.talentId;
+            params.followRemindId = this.followRemindId;
             this.show = true;
             addRemind(params).then(data => {
               this.show = false;

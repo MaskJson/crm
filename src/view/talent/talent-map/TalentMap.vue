@@ -27,12 +27,13 @@
       <div class="center pd-40" v-else>暂无相关人才</div>
     </div>
     <SpinUtil :show="show"/>
-    <TalentRemind ref="remind" :talentProjects="talentProjects" :talentType="talentType" :talentId="talentId" :offerCount="offerCount" @on-ok="okHandler"/>
+    <TalentRemind ref="remind" :talentProjects="talentProjects" :talentType="talentType" :talentId="talentId" :offerCount="offerCount" :followRemindId="followRemindId" @on-ok="okHandler"/>
   </Card>
 </template>
 
 <script>
   import { talentMap, folderTalent, statusTalent } from "../../../api/count";
+  import { toggleType } from "../../../api/talent";
   import { getUserId, getStatusRender, getRenderList, getDateTime, toggleShow } from "../../../libs/tools";
   import TalentRemind from './../../components/TalentRemind';
   export default {
@@ -43,11 +44,13 @@
     data() {
       return {
         show: false,
+        userId: getUserId(),
         status: '0',
         offerCount: 0,
         talentProjects: [],
         talentType: null,
         talentId: null,
+        followRemindId: null,
         list: [], // 所有相关人才
         statusList: [], // 经历过各个状态的
         folderList: [], // 收藏的人才,
@@ -99,19 +102,19 @@
             render: (h, params) => {
               const remind = params.row.remind;
               if (remind && remind.type){
-                let arr = [];
+                let str = '';
                 switch (remind.type) {
                   case 1:
-                    arr = [`负责人：${remind.createUser}`, `跟踪记录：${remind.remark}`];
+                    str = `${remind.remark}--${getDateTime(remind.createUser)}`;
                     break;
                   case 2:
-                    arr = [`负责人：${remind.createUser}`, `人才基本情况：${remind.situation}`, `离职原因：${remind.cause}`, `薪资架构：${remind.salary}`];
+                    str = `${remind.situation}--${remind.cause}--${remind.salary}--${getDateTime(remind.createUser)}`;
                     break;
                   case 3:
-                    arr = [`负责人：${remind.createUser}`, `面试时间：${getDateTime(remind.meetTime)}`, `面试地点：${remind.meetAddress}`, `人才基本情况：${remind.situation}`, `离职原因：${remind.cause}`, `薪资架构：${remind.salary}`];
+                    str = `${getDateTime(remind.meetTime)}--${remind.meetAddress}--${remind.situation}--${remind.cause}${remind.salary}--${getDateTime(remind.createUser)}`;
                     break;
                 }
-                return getRenderList(h, JSON.stringify(arr));
+                return h('span', str);
               } else {
                 return h('span', '');
               }
@@ -132,22 +135,82 @@
             align: 'center',
             render: (h, params) => {
               const {projects, progress, followUserId, talentId, talentType, offerCount} = params.row;
-              return h('Button', {
-                props: {
-                  type: 'primary',
-                  size: 'small',
-                  disabled: progress>0 && (!!followUserId && followUserId != getUserId())
-                },
-                on: {
-                  click: () => {
-                    this.talentProjects = projects;
-                    this.talentId = talentId;
-                    this.talentType = talentType;
-                    this.offerCount = offerCount;
-                    toggleShow(this, 'remind');
+              const btn = [];
+              btn.push(
+                h('Button', {
+                  props: {
+                    type: 'primary',
+                    size: 'small',
+                    disabled: progress>0 && (!!followUserId && followUserId != getUserId())
+                  },
+                  on: {
+                    click: () => {
+                      this.talentProjects = projects;
+                      this.talentId = talentId;
+                      this.talentType = talentType;
+                      this.offerCount = offerCount;
+                      if (!!params.row.followRemind) {
+                        this.followRemindId = params.row.followRemind.id;
+                      } else {
+                        this.followRemindId = null;
+                      }
+                      toggleShow(this, 'remind');
+                    }
                   }
-                }
-              }, '常规跟踪')
+                }, '常规跟踪')
+              );
+              if (!followUserId) {
+                btn.push(
+                  h('Button', {
+                    props: {
+                      type: 'warning',
+                      size: 'small'
+                    },
+                    on: {
+                      click: () => {
+                        this.show = true;
+                        toggleType({
+                          id: params.row.id,
+                          userId: this.userId,
+                          flag: true
+                        }).then(data => {
+                          this.show = false;
+                          params.row.followUserId = this.userId;
+                          this.toggleCallBack(params.row.id, true);
+                        }).catch(data => {
+                          this.show = false;
+                        });
+                      }
+                    }
+                  }, '设为专属')
+                )
+              }
+              if (followUserId == this.userId) {
+                btn.push(
+                  h('Button', {
+                    props: {
+                      type: 'warning',
+                      size: 'small'
+                    },
+                    on: {
+                      click: () => {
+                        toggleType({
+                          id: params.row.id,
+                          userId: this.userId,
+                          flag: false
+                        }).then(data => {
+                          this.show = false;
+                          params.row.followUserId = null;
+                          this.toggleCallBack(params.row.id, false);
+                        }).catch(data => {
+                          this.show = false;
+                        });
+                      }
+                    }
+                  }, '取消专属')
+                )
+              }
+              return h('div', btn);
             }
           }
         ],
@@ -216,6 +279,18 @@
       }
     },
     methods: {
+      toggleCallBack(id, flag) {
+        const arr = this.status == 0 ? this.list : this.status == 2 ? this.folderList : this.statusList;
+        const len = arr.length;
+        for (let i=0; i<len; i++) {
+          if (arr[i].talentId == id) {
+            const obj = {...arr[i]};
+            obj.followUserId = flag ? this.userId : null
+            arr.splice(i, 1, obj);
+            break;
+          }
+        }
+      },
       okHandler() {
         switch (this.status) {
           case '0': this.getTalentMap();break;

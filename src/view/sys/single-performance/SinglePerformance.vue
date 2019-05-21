@@ -1,99 +1,133 @@
 <template>
   <Card>
-    <div>
-      <Tabs style="min-height: 400px">
-        <TabPane label="单日绩效">
-          <DatePicker v-model="dayTime" placeholder="请选择日期" clearable/>
-          <Button type="primary" class="ml-10" @click="getData(1, dayTime)">查询</Button>
-          <Tabs class="mt-10">
-            <TabPane label="进展跟踪">
-              <!--<DatePicker v-model="dayTime" placeholder="请选择日期" clearable/>-->
-              <!--<Button type="primary" class="ml-10" @click="getProjectProgressInfo(1, dayTime)">查询</Button>-->
-              <TalentProgress flag="yes" performance="yes" :project-talents="dayList"/>
-            </TabPane>
-            <TabPane label="人才常规跟踪">
-              <!--<DatePicker v-model="dayTimeTalent" placeholder="请选择日期" clearable/>-->
-              <!--<Button type="primary" class="ml-10" @click="getTalentRemindInfo(1, dayTimeTalent)">查询</Button>-->
-              <TalentRemind :list="dayListTalent"/>
-            </TabPane>
-            <TabPane label="客户常规跟踪">
-              <!--<DatePicker v-model="monthTimeCustomer" placeholder="请选择日期" clearable type="month"/>-->
-              <!--<Button type="primary" class="ml-10" @click="getCustomerRemindInfo(1, dayTimeCustomer)">查询</Button>-->
-              <CustomerRemind :list="dayListCustomer"/>
-            </TabPane>
-          </Tabs>
-          <div class="mt-10">
-            <Input type="textarea" :rows="3" v-model="dayReport.content" readonly placeholder="当前选中日期日报"/>
-          </div>
-        </TabPane>
-        <TabPane label="周绩效">
-          <DatePicker v-model="weekTime" placeholder="请选择日期" clearable/>
-          <Button type="primary" class="ml-10" @click="getData(2, weekTime)">查询</Button>
-          <Tabs class="mt-10">
-            <TabPane label="进展跟踪">
-              <!--<DatePicker v-model="weekTime" placeholder="请选择日期" clearable/>-->
-              <!--<Button type="primary" class="ml-10" @click="getProjectProgressInfo(2, weekTime)">查询</Button>-->
-              <TalentProgress flag="yes" performance="yes" :project-talents="weekList"/>
-            </TabPane>
-            <TabPane label="人才常规跟踪">
-              <!--<DatePicker v-model="weekTimeTalent" placeholder="请选择日期" clearable/>-->
-              <!--<Button type="primary" class="ml-10" @click="getTalentRemindInfo(2, weekTimeTalent)">查询</Button>-->
-              <TalentRemind :list="weekListTalent"/>
-            </TabPane>
-            <TabPane label="客户常规跟踪">
-              <!--<DatePicker v-model="weekTimeCustomer" placeholder="请选择日期" clearable/>-->
-              <!--<Button type="primary" class="ml-10" @click="getCustomerRemindInfo(2, weekTimeCustomer)">查询</Button>-->
-              <CustomerRemind :list="weekListCustomer"/>
-            </TabPane>
-          </Tabs>
-          <div class="mt-10">
-            <Input type="textarea" :rows="3" v-model="weekReport.content" readonly placeholder="当前选中日期周报"/>
-          </div>
-        </TabPane>
-        <TabPane label="月绩效">
-          <DatePicker v-model="monthTime" type="month" placeholder="请选择月份" clearable/>
-          <Button type="primary" class="ml-10" @click="getData(3, monthTime)">查询</Button>
-          <Tabs>
-            <TabPane label="进展跟踪">
-              <!--<DatePicker v-model="monthTime" type="month" placeholder="请选择日期" clearable/>-->
-              <!--<Button type="primary" class="ml-10" @click="getProjectProgressInfo(3, monthTime)">查询</Button>-->
-              <TalentProgress flag="yes" performance="yes" :project-talents="monthList"/>
-            </TabPane>
-            <TabPane label="人才常规跟踪">
-              <!--<DatePicker v-model="monthTimeTalent" type="month" placeholder="请选择日期" clearable/>-->
-              <!--<Button type="primary" class="ml-10" @click="getTalentRemindInfo(3, monthTimeTalent)">查询</Button>-->
-              <TalentRemind :list="monthListTalent"/>
-            </TabPane>
-            <TabPane label="客户常规跟踪">
-              <!--<DatePicker v-model="monthTimeCustomer" type="month" placeholder="请选择日期" clearable/>-->
-              <!--<Button type="primary" class="ml-10" @click="getCustomerRemindInfo(3, monthTimeCustomer)">查询</Button>-->
-              <CustomerRemind :list="monthListCustomer"/>
-            </TabPane>
-          </Tabs>
-          <div class="mt-10">
-            <Input type="textarea" :rows="3" v-model="monthReport.content" readonly placeholder="当前选中日期月报"/>
-          </div>
-        </TabPane>
-        <TabPane label="报告填写">
-          <Row>
-            <Col span="8" class="pd-5" v-if="roleId == 4 || roleId == 5">
-              <p>日报</p>
-              <Input type="textarea" :rows="3" v-model="d" placeholder="请填写日报" :readonly="!!dr && dr.length > 0"/>
-              <Button class="mt-10" type="primary" v-if="dr != null && dr.length == 0" @click="saveReport(1, d)">提交日报</Button>
-            </Col>
-            <Col span="8" class="pd-5" v-if="roleId != 4 && roleId != 5">
-              <p>周报</p>
-              <Input type="textarea" :rows="3" v-model="w" placeholder="请填写周报" :readonly="!!wr && wr.length > 0"/>
-              <Button class="mt-10" type="primary" v-if="wr != null && wr.length == 0" @click="saveReport(2, w)">提交周报</Button>
-            </Col>
-            <Col span="8" class="pd-5" v-if="roleId != 4 && roleId != 5">
-              <p>月报</p>
-              <Input type="textarea" :rows="3" v-model="m" placeholder="请填写月报" :readonly="!!mr && mr.length > 0"/>
-              <Button class="mt-10" type="primary" v-if="mr != null && mr.length == 0" @click="saveReport(3, m)">提交月报</Button>
-            </Col>
-          </Row>
-        </TabPane>
-      </Tabs>
+    <div style="min-height: 400px;">
+      <h3>单日绩效</h3>
+      <DatePicker v-model="dayTime" placeholder="请选择日期" clearable/>
+      <Button type="primary" class="ml-10" @click="getData(1, dayTime)">查询</Button>
+      <div class="mt-10 mb-20">
+        <h5>进展跟踪</h5>
+        <TalentProgress flag="yes" performance="yes" :project-talents="dayList"/>
+        <h5>人才常规跟踪</h5>
+        <TalentRemind :list="dayListTalent"/>
+        <h5>客户常规跟踪</h5>
+        <CustomerRemind :list="dayListCustomer"/>
+      </div>
+
+      <h3>周绩效</h3>
+      <DatePicker v-model="weekTime" placeholder="请选择日期" clearable/>
+      <Button type="primary" class="ml-10" @click="getData(2, weekTime)">查询</Button>
+      <div class="mt-10 mb-20">
+        <h5>进展跟踪</h5>
+        <TalentProgress flag="yes" performance="yes" :project-talents="weekList"/>
+        <h5>人才常规跟踪</h5>
+        <TalentRemind :list="weekListTalent"/>
+        <h5>客户常规跟踪</h5>
+        <CustomerRemind :list="weekListCustomer"/>
+      </div>
+
+      <h3>月绩效</h3>
+      <DatePicker v-model="monthTime" type="month" placeholder="请选择月份" clearable/>
+      <Button type="primary" class="ml-10" @click="getData(3, monthTime)">查询</Button>
+      <div class="mt-10 mb-20">
+        <h5>进展跟踪</h5>
+        <TalentProgress flag="yes" performance="yes" :project-talents="monthList"/>
+        <h5>人才常规跟踪</h5>
+        <TalentRemind :list="monthListTalent"/>
+        <h5>客户常规跟踪</h5>
+        <CustomerRemind :list="monthListCustomer"/>
+      </div>
+      <Row>
+        <Col span="8" class="pd-5" v-if="roleId == 4 || roleId == 5">
+          <p>日报</p>
+          <Input type="textarea" :rows="3" v-model="d" placeholder="请填写日报" :readonly="!!dr && dr.length > 0"/>
+          <Button class="mt-10" type="primary" v-if="dr != null && dr.length == 0" @click="saveReport(1, d)">提交日报</Button>
+        </Col>
+        <Col span="8" class="pd-5" v-if="roleId != 4 && roleId != 5">
+          <p>周报</p>
+          <Input type="textarea" :rows="3" v-model="w" placeholder="请填写周报" :readonly="!!wr && wr.length > 0"/>
+          <Button class="mt-10" type="primary" v-if="wr != null && wr.length == 0" @click="saveReport(2, w)">提交周报</Button>
+        </Col>
+        <Col span="8" class="pd-5" v-if="roleId != 4 && roleId != 5">
+          <p>月报</p>
+          <Input type="textarea" :rows="3" v-model="m" placeholder="请填写月报" :readonly="!!mr && mr.length > 0"/>
+          <Button class="mt-10" type="primary" v-if="mr != null && mr.length == 0" @click="saveReport(3, m)">提交月报</Button>
+        </Col>
+      </Row>
+      <!--<Tabs style="min-height: 400px">-->
+        <!--<TabPane label="单日绩效">-->
+          <!--<DatePicker v-model="dayTime" placeholder="请选择日期" clearable/>-->
+          <!--<Button type="primary" class="ml-10" @click="getData(1, dayTime)">查询</Button>-->
+          <!--<Tabs class="mt-10">-->
+            <!--<TabPane label="进展跟踪">-->
+              <!--<TalentProgress flag="yes" performance="yes" :project-talents="dayList"/>-->
+            <!--</TabPane>-->
+            <!--<TabPane label="人才常规跟踪">-->
+              <!--<TalentRemind :list="dayListTalent"/>-->
+            <!--</TabPane>-->
+            <!--<TabPane label="客户常规跟踪">-->
+              <!--<CustomerRemind :list="dayListCustomer"/>-->
+            <!--</TabPane>-->
+          <!--</Tabs>-->
+          <!--<div class="mt-10">-->
+            <!--<Input type="textarea" :rows="3" v-model="dayReport.content" readonly placeholder="当前选中日期日报"/>-->
+          <!--</div>-->
+        <!--</TabPane>-->
+        <!--<TabPane label="周绩效">-->
+          <!--<DatePicker v-model="weekTime" placeholder="请选择日期" clearable/>-->
+          <!--<Button type="primary" class="ml-10" @click="getData(2, weekTime)">查询</Button>-->
+          <!--<Tabs class="mt-10">-->
+            <!--<TabPane label="进展跟踪">-->
+              <!--<TalentProgress flag="yes" performance="yes" :project-talents="weekList"/>-->
+            <!--</TabPane>-->
+            <!--<TabPane label="人才常规跟踪">-->
+              <!--<TalentRemind :list="weekListTalent"/>-->
+            <!--</TabPane>-->
+            <!--<TabPane label="客户常规跟踪">-->
+              <!--<CustomerRemind :list="weekListCustomer"/>-->
+            <!--</TabPane>-->
+          <!--</Tabs>-->
+          <!--<div class="mt-10">-->
+            <!--<Input type="textarea" :rows="3" v-model="weekReport.content" readonly placeholder="当前选中日期周报"/>-->
+          <!--</div>-->
+        <!--</TabPane>-->
+        <!--<TabPane label="月绩效">-->
+          <!--<DatePicker v-model="monthTime" type="month" placeholder="请选择月份" clearable/>-->
+          <!--<Button type="primary" class="ml-10" @click="getData(3, monthTime)">查询</Button>-->
+          <!--<Tabs>-->
+            <!--<TabPane label="进展跟踪">-->
+              <!--<TalentProgress flag="yes" performance="yes" :project-talents="monthList"/>-->
+            <!--</TabPane>-->
+            <!--<TabPane label="人才常规跟踪">-->
+              <!--<TalentRemind :list="monthListTalent"/>-->
+            <!--</TabPane>-->
+            <!--<TabPane label="客户常规跟踪">-->
+              <!--<CustomerRemind :list="monthListCustomer"/>-->
+            <!--</TabPane>-->
+          <!--</Tabs>-->
+          <!--<div class="mt-10">-->
+            <!--<Input type="textarea" :rows="3" v-model="monthReport.content" readonly placeholder="当前选中日期月报"/>-->
+          <!--</div>-->
+        <!--</TabPane>-->
+        <!--<TabPane label="报告填写">-->
+          <!--<Row>-->
+            <!--<Col span="8" class="pd-5" v-if="roleId == 4 || roleId == 5">-->
+              <!--<p>日报</p>-->
+              <!--<Input type="textarea" :rows="3" v-model="d" placeholder="请填写日报" :readonly="!!dr && dr.length > 0"/>-->
+              <!--<Button class="mt-10" type="primary" v-if="dr != null && dr.length == 0" @click="saveReport(1, d)">提交日报</Button>-->
+            <!--</Col>-->
+            <!--<Col span="8" class="pd-5" v-if="roleId != 4 && roleId != 5">-->
+              <!--<p>周报</p>-->
+              <!--<Input type="textarea" :rows="3" v-model="w" placeholder="请填写周报" :readonly="!!wr && wr.length > 0"/>-->
+              <!--<Button class="mt-10" type="primary" v-if="wr != null && wr.length == 0" @click="saveReport(2, w)">提交周报</Button>-->
+            <!--</Col>-->
+            <!--<Col span="8" class="pd-5" v-if="roleId != 4 && roleId != 5">-->
+              <!--<p>月报</p>-->
+              <!--<Input type="textarea" :rows="3" v-model="m" placeholder="请填写月报" :readonly="!!mr && mr.length > 0"/>-->
+              <!--<Button class="mt-10" type="primary" v-if="mr != null && mr.length == 0" @click="saveReport(3, m)">提交月报</Button>-->
+            <!--</Col>-->
+          <!--</Row>-->
+        <!--</TabPane>-->
+      <!--</Tabs>-->
       <SpinUtil :show="show"/>
     </div>
     <SpinUtil :show="show"/>

@@ -3,38 +3,39 @@
     <Row class="container">
       <Col span="4" class="pd-10" v-if="roleId != 8">
         <div class="radius4 border pd-10">
-          <h3 class="cursor" @click="goto('/talent/talent-pending')">人才常规跟踪待办项</h3>
-          <p class="mt-10">
-            <span class="inline-block">电话沟通：</span>
-            <span class="ml-10 cl-primary cursor" @click="goto('/talent/talent-pending', '1')">{{count.talentFirst}}</span>
-          </p>
-          <p class="mt-10">
-            <span class="inline-block">顾问面试（内）：</span>
-            <span class="ml-10 cl-primary cursor" @click="goto('/talent/talent-pending', '2')">{{count.talentSecond}}</span>
-          </p>
-          <p class="mt-10">
-            <span class="inline-block">顾问面试（外）：</span>
-            <span class="ml-10 cl-primary cursor" @click="goto('/talent/talent-pending', '3')">{{count.talentThird}}</span>
-          </p>
+          <h3 class="cursor" @click="goto('/talent/talent-pending')">人才常规跟踪待办项：{{count.talentFirst + count.talentSecond + count.talentThird}}</h3>
+          <h3 class="cursor mt-10" @click="goto('/customer/customer-pending')">客户常规跟踪待办项：{{count.customerFirst + count.customerSecond + count.customerThird}}</h3>
+          <!--<p class="mt-10">-->
+            <!--<span class="inline-block">电话沟通：</span>-->
+            <!--<span class="ml-10 cl-primary cursor" @click="goto('/talent/talent-pending', '1')">{{count.talentFirst}}</span>-->
+          <!--</p>-->
+          <!--<p class="mt-10">-->
+            <!--<span class="inline-block">顾问面试（内）：</span>-->
+            <!--<span class="ml-10 cl-primary cursor" @click="goto('/talent/talent-pending', '2')">{{count.talentSecond}}</span>-->
+          <!--</p>-->
+          <!--<p class="mt-10">-->
+            <!--<span class="inline-block">顾问面试（外）：</span>-->
+            <!--<span class="ml-10 cl-primary cursor" @click="goto('/talent/talent-pending', '3')">{{count.talentThird}}</span>-->
+          <!--</p>-->
         </div>
       </Col>
-      <Col span="4" class="pd-10" v-if="roleId != 8">
-        <div class="radius4 border pd-10">
-          <h3 class="cursor" @click="goto('/customer/customer-pending')">客户常规跟踪待办项</h3>
-          <p class="mt-10">
-            <span class="inline-block">电话沟通：</span>
-            <span class="ml-10 cl-primary cursor" @click="goto('/customer/customer-pending', '1')">{{count.customerFirst}}</span>
-          </p>
-          <p class="mt-10">
-            <span class="inline-block">拜访客户：</span>
-            <span class="ml-10 cl-primary cursor" @click="goto('/customer/customer-pending', '2')">{{count.customerSecond}}</span>
-          </p>
-          <p class="mt-10">
-            <span class="inline-block">客户上门：</span>
-            <span class="ml-10 cl-primary cursor" @click="goto('/customer/customer-pending', '3')">{{count.customerThird}}</span>
-          </p>
-        </div>
-      </Col>
+      <!--<Col span="4" class="pd-10" v-if="roleId != 8">-->
+        <!--<div class="radius4 border pd-10">-->
+          <!--<h3 class="cursor" @click="goto('/customer/customer-pending')">客户常规跟踪待办项</h3>-->
+          <!--<p class="mt-10">-->
+            <!--<span class="inline-block">电话沟通：</span>-->
+            <!--<span class="ml-10 cl-primary cursor" @click="goto('/customer/customer-pending', '1')">{{count.customerFirst}}</span>-->
+          <!--</p>-->
+          <!--<p class="mt-10">-->
+            <!--<span class="inline-block">拜访客户：</span>-->
+            <!--<span class="ml-10 cl-primary cursor" @click="goto('/customer/customer-pending', '2')">{{count.customerSecond}}</span>-->
+          <!--</p>-->
+          <!--<p class="mt-10">-->
+            <!--<span class="inline-block">客户上门：</span>-->
+            <!--<span class="ml-10 cl-primary cursor" @click="goto('/customer/customer-pending', '3')">{{count.customerThird}}</span>-->
+          <!--</p>-->
+        <!--</div>-->
+      <!--</Col>-->
       <Col span="4" class="pd-10" v-if="roleId != 1">
         <div class="radius4 border pd-10">
           <h3 class="cursor" @click="goto2('/project/progress-pending', '1')">项目启动阶段</h3>
@@ -121,7 +122,12 @@
         userId: getUserId(),
         roleId: getUserInfoByKey('roleId'),
         count: {
-
+          talentFirst: 0,
+          talentSecond: 0,
+          talentThird: 0,
+          customerFirst: 0,
+          customerSecond: 0,
+          customerThird: 0
         },
         list: []
       }

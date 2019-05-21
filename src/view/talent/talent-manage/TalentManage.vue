@@ -371,6 +371,9 @@
                         this.remind.talentId = params.row.id;
                         this.talentType = params.row.type;
                         this.offerCount = params.row.offerCount;
+                        if (!!params.row.followRemind) {
+                          this.remind.followRemindId = params.row.followRemind.id;
+                        }
                         toggleShow(this, 'remind');
                       }
                     }

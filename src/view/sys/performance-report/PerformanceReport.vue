@@ -1,79 +1,104 @@
 <template>
   <Card>
-    <Tabs v-model="type">
-      <TabPane label="单日报表" name="0">
-        <DatePicker v-model="dayTime" placeholder="请选择日期" clearable/>
-        <Button type="primary" class="ml-10" @click="getData(1, dayTime)">查询</Button>
-        <Tabs style="min-height: 400px;">
-          <TabPane label="进展功能">
-            <!--<DatePicker v-model="dayTime" placeholder="请选择日期" clearable/>-->
-            <!--<Button type="primary" class="ml-10" @click="getProjectProgressInfos(1, dayTime)">查询</Button>-->
-            <Progress :list="progressFilter"/>
-          </TabPane>
-          <TabPane label="人才常规跟踪">
-            <!--<DatePicker v-model="weekTime" placeholder="请选择日期" clearable/>-->
-            <!--<Button type="primary" class="ml-10" @click="getProjectProgressInfos(2, weekTime)">查询</Button>-->
-            <Talent :list="talentFilter"/>
-          </TabPane>
-          <TabPane label="客户常规跟踪">
-            <!--<DatePicker type="month" v-model="monthTime" placeholder="请选择月份" clearable/>-->
-            <!--<Button type="primary" class="ml-10" @click="getProjectProgressInfos(3, monthTime)">查询</Button>-->
-            <Customer :list="customerFilter"/>
-          </TabPane>
-          <TabPane label="报告">
-            <Report :list="reportFilter"/>
-          </TabPane>
-        </Tabs>
-      </TabPane>
-      <TabPane label="周报表" name="1">
-        <DatePicker v-model="weekTime" placeholder="请选择日期" clearable/>
-        <Button type="primary" class="ml-10" @click="getData(2, weekTime)">查询</Button>
-        <Tabs style="min-height: 400px;">
-          <TabPane label="进展功能">
-            <!--<DatePicker v-model="dayTimeTalent" placeholder="请选择日期" clearable/>-->
-            <!--<Button type="primary" class="ml-10" @click="getTalentRemindInfos(1, dayTimeTalent)">查询</Button>-->
-            <Progress :list="progressFilter"/>
-          </TabPane>
-          <TabPane label="人才常规跟踪">
-            <!--<DatePicker v-model="weekTimeTalent" placeholder="请选择日期" clearable/>-->
-            <!--<Button type="primary" class="ml-10" @click="getTalentRemindInfos(2, weekTimeTalent)">查询</Button>-->
-            <Talent :list="talentFilter"/>
-          </TabPane>
-          <TabPane label="客户常规跟踪">
-            <!--<DatePicker v-model="monthTimeTalent" placeholder="请选择日期" clearable/>-->
-            <!--<Button type="primary" class="ml-10" @click="getTalentRemindInfos(3, monthTimeTalent)">查询</Button>-->
-            <Customer :list="customerFilter"/>
-          </TabPane>
-          <TabPane label="报告">
-            <Report :list="reportFilter"/>
-          </TabPane>
-        </Tabs>
-      </TabPane>
-      <TabPane label="月报表" name="2">
-        <DatePicker v-model="monthTime" type="month" placeholder="请选择月份" clearable/>
-        <Button type="primary" class="ml-10" @click="getData(3, monthTime)">查询</Button>
-        <Tabs style="min-height: 400px;">
-          <TabPane label="进展功能">
-            <!--<DatePicker v-model="dayTimeCustomer" placeholder="请选择日期" clearable/>-->
-            <!--<Button type="primary" class="ml-10" @click="getCustomerRemindInfos(1, dayTimeCustomer)">查询</Button>-->
-            <Progress :list="progressFilter"/>
-          </TabPane>
-          <TabPane label="人才常规跟踪">
-            <!--<DatePicker v-model="dayTimeCustomer" placeholder="请选择日期" clearable/>-->
-            <!--<Button type="primary" class="ml-10" @click="getCustomerRemindInfos(1, dayTimeCustomer)">查询</Button>-->
-            <Talent :list="talentFilter"/>
-          </TabPane>
-          <TabPane label="客户常规跟踪">
-            <!--<DatePicker v-model="dayTimeCustomer" placeholder="请选择日期" clearable/>-->
-            <!--<Button type="primary" class="ml-10" @click="getCustomerRemindInfos(1, dayTimeCustomer)">查询</Button>-->
-            <Customer :list="customerFilter"/>
-          </TabPane>
-          <TabPane label="报告">
-            <Report :list="reportFilter"/>
-          </TabPane>
-        </Tabs>
-      </TabPane>
-    </Tabs>
+    <div style="min-height: 400px;">
+      <h3>单日报表</h3>
+      <DatePicker v-model="dayTime" placeholder="请选择日期" clearable/>
+      <Button type="primary" class="ml-10" @click="getData(1, dayTime)">查询</Button>
+      <div class="mt-10 mb-20">
+        <h5>进展跟踪</h5>
+        <Progress :list="getProgressFilter(0)"/>
+        <h5>人才常规跟踪</h5>
+        <Talent :list="getTalentFilter(0)"/>
+        <h5>客户常规跟踪</h5>
+        <Customer :list="getCustomerFilter(0)"/>
+        <h5>报告</h5>
+        <Report :list="getReportFilter(0)"/>
+      </div>
+
+      <h3>单日报表</h3>
+      <DatePicker v-model="weekTime" placeholder="请选择日期" clearable/>
+      <Button type="primary" class="ml-10" @click="getData(2, weekTime)">查询</Button>
+      <div class="mt-10 mb-20">
+        <h5>进展跟踪</h5>
+        <Progress :list="getProgressFilter(1)"/>
+        <h5>人才常规跟踪</h5>
+        <Talent :list="getTalentFilter(1)"/>
+        <h5>客户常规跟踪</h5>
+        <Customer :list="getCustomerFilter(1)"/>
+        <h5>报告</h5>
+        <Report :list="getReportFilter(1)"/>
+      </div>
+
+      <h3>单日报表</h3>
+      <DatePicker v-model="monthTime" placeholder="请选择月份" clearable/>
+      <Button type="primary" class="ml-10" type="month" @click="getData(3, monthTime)">查询</Button>
+      <div class="mt-10 mb-20">
+        <h5>进展跟踪</h5>
+        <Progress :list="getProgressFilter(2)"/>
+        <h5>人才常规跟踪</h5>
+        <Talent :list="getTalentFilter(2)"/>
+        <h5>客户常规跟踪</h5>
+        <Customer :list="getCustomerFilter(2)"/>
+        <h5>报告</h5>
+        <Report :list="getReportFilter(2)"/>
+      </div>
+    </div>
+    <!--<Tabs v-model="type">-->
+      <!--<TabPane label="单日报表" name="0">-->
+        <!--<DatePicker v-model="dayTime" placeholder="请选择日期" clearable/>-->
+        <!--<Button type="primary" class="ml-10" @click="getData(1, dayTime)">查询</Button>-->
+        <!--<Tabs style="min-height: 400px;">-->
+          <!--<TabPane label="进展跟踪">-->
+            <!--<Progress :list="progressFilter"/>-->
+          <!--</TabPane>-->
+          <!--<TabPane label="人才常规跟踪">-->
+            <!--<Talent :list="talentFilter"/>-->
+          <!--</TabPane>-->
+          <!--<TabPane label="客户常规跟踪">-->
+            <!--<Customer :list="customerFilter"/>-->
+          <!--</TabPane>-->
+          <!--<TabPane label="报告">-->
+            <!--<Report :list="reportFilter"/>-->
+          <!--</TabPane>-->
+        <!--</Tabs>-->
+      <!--</TabPane>-->
+      <!--<TabPane label="周报表" name="1">-->
+        <!--<DatePicker v-model="weekTime" placeholder="请选择日期" clearable/>-->
+        <!--<Button type="primary" class="ml-10" @click="getData(2, weekTime)">查询</Button>-->
+        <!--<Tabs style="min-height: 400px;">-->
+          <!--<TabPane label="进展功能">-->
+            <!--<Progress :list="progressFilter"/>-->
+          <!--</TabPane>-->
+          <!--<TabPane label="人才常规跟踪">-->
+            <!--<Talent :list="talentFilter"/>-->
+          <!--</TabPane>-->
+          <!--<TabPane label="客户常规跟踪">-->
+            <!--<Customer :list="customerFilter"/>-->
+          <!--</TabPane>-->
+          <!--<TabPane label="报告">-->
+            <!--<Report :list="reportFilter"/>-->
+          <!--</TabPane>-->
+        <!--</Tabs>-->
+      <!--</TabPane>-->
+      <!--<TabPane label="月报表" name="2">-->
+        <!--<DatePicker v-model="monthTime" type="month" placeholder="请选择月份" clearable/>-->
+        <!--<Button type="primary" class="ml-10" @click="getData(3, monthTime)">查询</Button>-->
+        <!--<Tabs style="min-height: 400px;">-->
+          <!--<TabPane label="进展功能">-->
+            <!--<Progress :list="progressFilter"/>-->
+          <!--</TabPane>-->
+          <!--<TabPane label="人才常规跟踪">-->
+            <!--<Talent :list="talentFilter"/>-->
+          <!--</TabPane>-->
+          <!--<TabPane label="客户常规跟踪">-->
+            <!--<Customer :list="customerFilter"/>-->
+          <!--</TabPane>-->
+          <!--<TabPane label="报告">-->
+            <!--<Report :list="reportFilter"/>-->
+          <!--</TabPane>-->
+        <!--</Tabs>-->
+      <!--</TabPane>-->
+    <!--</Tabs>-->
   </Card>
 </template>
 
@@ -240,6 +265,44 @@
           item.children = reports.filter(r => r.createUserId == item.createUserId);
           return item;
         })
+      },
+      // 获取各种列表数据
+      getProgressFilter(type) {
+        const arr = type == 0 ? this.dayList : type == 1 ? this.weekList : this.monthList;
+        const result = [];
+        arr.forEach(item => {
+          if (result.findIndex(rs => rs.createUserId == item.createUserId) < 0) {
+            const obj = {name: item.createUser, createUserId: item.createUserId, children: arr.filter(filter => filter.createUserId == item.createUserId)};
+            result.push(obj);
+          }
+        });
+        return result;
+      },
+      getTalentFilter(type) {
+        const arr = type == 0 ? this.dayListTalent : type == 1 ? this.weekListTalent : this.monthListTalent;
+        const result = [];
+        arr.forEach(item => {
+          if (result.findIndex(rs => rs.createUserId == item.createUserId) < 0) {
+            const obj = {name: item.createUser, createUserId: item.createUserId, children: arr.filter(filter => filter.createUserId == item.createUserId)};
+            result.push(obj);
+          }
+        });
+        return result;
+      },
+      getCustomerFilter(type) {
+        const arr = type == 0 ? this.dayListCustomer : type == 1 ? this.weekListCustomer : this.monthListCustomer;
+        const result = [];
+        arr.forEach(item => {
+          if (result.findIndex(rs => rs.createUserId == item.createUserId) < 0) {
+            const obj = {name: item.createUser, createUserId: item.createUserId, children: arr.filter(filter => filter.createUserId == item.createUserId)};
+            result.push(obj);
+          }
+        });
+        return result;
+      },
+      getReportFilter(type) {
+        const arr = type == 0 ? this.dayListReport : type == 1 ? this.weekListReport : this.monthListReport;
+        return arr;
       }
     },
     created() {

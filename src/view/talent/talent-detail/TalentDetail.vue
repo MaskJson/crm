@@ -7,7 +7,7 @@
       <Col span="16" class="t-right">
         <Button type="primary" class="mr-10" @click="edit" v-if="entity.id && (!entity.followUserId || entity.followUserId == userId)">编辑</Button>
         <Button type="primary" icon="md-star" :disabled="!entity.id || (entity.followUserId && entity.followUserId != userId)" @click="toggleFollow">{{entity.follow ? '取消关注' : '关注客户'}}</Button>
-        <Button type="primary" class="ml-10" v-if="!entity.projectCount" :disabled="!entity.id || !entity.progress || (entity.followUserId && entity.followUserId != userId)" @click="toggleBind('remind')">添加跟踪摘要</Button>
+        <Button type="primary" class="ml-10" v-if="!entity.projectCount" :disabled="!entity.id || entity.progress || (entity.followUserId && entity.followUserId != userId)" @click="toggleBind('remind')">添加跟踪摘要</Button>
         <Button type="primary" class="ml-10" :disabled="!entity.id || (entity.followUserId && entity.followUserId != userId)" @click="toggleBind('bind')">加入到收藏夹</Button>
         <Button type="primary" class="ml-10" v-if="!entity.followUserId" @click="toggleType(true)">设为专属</Button>
         <Button type="primary" class="ml-10" v-if="entity.followUserId == userId" @click="toggleType(false)">取消专属</Button>
@@ -78,20 +78,23 @@
           <Timeline v-if="remindFilter && remindFilter.length > 0" class="mt-10">
             <TimelineItem v-for="(item, index) of remindFilter" :key="'remind' + index">
               <p class="fs16">{{ item.type | typeFilter }}</p>
-              <p class="mt-5">跟踪状态：{{ item.status | talentStatusFilter }}</p>
-              <p class="mt-5"><span class="mR10">创建者：{{item.createUser}}</span><span class="ml-20">创建时间：{{getDateTime(item.createTime)}}</span></p>
+              <!--<p class="mt-5"><span class="mR10">创建者：{{item.createUser}}</span><span class="ml-20">创建时间：{{getDateTime(item.createTime)}}</span></p>-->
               <p class="mt-5">人才状态：{{item.status | talentStatusFilter}}</p>
-              <div class="bgf2 mt-5 pd-5" v-if="item.type == 1">内容：{{item.remark}}</div>
+              <div class="bgf2 mt-5 pd-5" v-if="item.type == 1">内容：{{item.remark}} <span class="ml-20">{{item.createUser}}</span><span class="ml-20">{{getDateTime(item.createTime)}}</span></div>
               <div class="bgf2 mt-5 pd-5" v-else-if="item.type == 2">
-                <p class="mt-5">候选人基本情况：{{item.situation}}</p>
-                <p class="mt-5">求职方向不离职原因：{{item.cause}}</p>
-                <p class="mt-5">薪资架构：{{item.salary}}</p>
-                <p class="mt-5">面试时间：{{getDateTime(item.meetTime)}}</p>
-                <p class="mt-5">面试地点：{{item.meetAddress}}</p>
+                <!--<p class="mt-5">候选人基本情况：{{item.situation}}</p>-->
+                <!--<p class="mt-5">求职方向不离职原因：{{item.cause}}</p>-->
+                <!--<p class="mt-5">薪资架构：{{item.salary}}</p>-->
+                <!--<p class="mt-5">面试时间：{{getDateTime(item.meetTime)}}</p>-->
+                <!--<p class="mt-5">面试地点：{{item.meetAddress}}</p>-->
+                内容：{{item.situation}}--{{item.cause}}--{{item.salary}}--{{item.meetAddress}}--{{getDateTime(item.meetTime)}}
+                <span class="ml-20">{{item.createUser}}</span><span class="ml-20">{{getDateTime(item.createTime)}}</span>
               </div>
               <div class="bgf2 mt-5 pd-5" v-else>
-                <p class="mt-5">面试时间：{{getDateTime(item.meetTime)}}</p>
-                <p class="mt-5">面试地点：{{item.meetAddress}}</p>
+                <!--<p class="mt-5">面试时间：{{getDateTime(item.meetTime)}}</p>-->
+                <!--<p class="mt-5">面试地点：{{item.meetAddress}}</p>-->
+                内容：{{item.meetAddress}}--{{getDateTime(item.meetTime)}}
+                <span class="ml-20">{{item.createUser}}</span><span class="ml-20">{{getDateTime(item.createTime)}}</span>
               </div>
             </TimelineItem>
           </Timeline>
@@ -415,6 +418,9 @@
             if (params.status == 10 && !params.projectId) {
               this.$Message.warning('请选择推荐客户关联的项目');
               return false;
+            }
+            if (!!this.entity.followRemind) {
+              params.followRemindId = this.entity.followRemind.id;
             }
             params.talentId = this.entity.id;
             params.createUserId = getUserId();

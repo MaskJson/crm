@@ -172,7 +172,7 @@
     <Drawer :width="360" title="客户收藏夹管理" :closable="false" v-model="showFavoriteSetting">
       <favorite-setting ref="favorite" @on-change="setFolders" :type="1"/>
     </Drawer>
-    <TalentRemind ref="talentRemind" :talentProjects="talentProjects" :talentType="talentType" :talentId="talentId" :offerCount="offerCount" @on-ok="okHandler"/>
+    <TalentRemind ref="talentRemind" :talentProjects="talentProjects" :talentType="talentType" :talentId="talentId" :offerCount="offerCount" :followRemindId="followRemindId" @on-ok="okHandler"/>
     <SpinUtil :show="show"/>
   </Card>
 </template>
@@ -248,6 +248,7 @@
         talentProjects: [],
         talentType: null,
         talentId: null,
+        followRemindId: null,
         customerTypes: customerTypes,
         show: false,
         showFavoriteSetting: false,
@@ -331,19 +332,19 @@
             render: (h, params) => {
               const remind = params.row.remind || {};
               if (remind && remind.type){
-                let arr = [];
+                let str = '';
                 switch (remind.type) {
                   case 1:
-                    arr = [ `跟踪时间：${getDateTime(remind.createTime)}`,`跟踪记录：${remind.remark}`];
+                    str = `${remind.remark}--${getDateTime(remind.createTime)}`;
                     break;
                   case 2:
-                    arr = [ `跟踪时间：${getDateTime(remind.createTime)}`, `人才基本情况：${remind.situation}`, `离职原因：${remind.cause}`, `薪资架构：${remind.salary}`];
+                    str = `${remind.situation}--${remind.cause}--${remind.salary}--${getDateTime(remind.createTime)}`;
                     break;
                   case 3:
-                    arr = [ `跟踪时间：${getDateTime(remind.createTime)}`, `面试时间：${getDateTime(remind.meetTime)}`, `面试地点：${remind.meetAddress}`, `人才基本情况：${remind.situation}`, `离职原因：${remind.cause}`, `薪资架构：${remind.salary}`];
+                    str = `${getDateTime(remind.meetTime)}--${remind.meetAddress}--${remind.situation}--${remind.cause}${remind.salary}--${getDateTime(remind.createTime)}`;
                     break;
                 }
-                return getRenderList(h, JSON.stringify(arr));
+                return h('span', str);
               } else {
                 return h('span', '');
               }
@@ -375,6 +376,11 @@
                     this.talentProjects = projects;
                     this.talentId = talentId;
                     this.talentType = talentType;
+                    if (!!params.row.followRemind) {
+                      this.followRemindId = params.row.followRemind.id;
+                    } else {
+                      this.followRemindId = null;
+                    }
                     toggleShow(this, 'talentRemind');
                   }
                 }
