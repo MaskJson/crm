@@ -169,7 +169,7 @@
           }, text));
         };
         getAction('补充跟踪', status, 99);
-        switch (status) {
+        switch (status.toString()) {
           case '0':
             type != 100 ? (roleId == 3 ? getAction('推荐给客户', '0', 100) : '') : action.push(h('span', {class: {'cl-error': true}}, '等待项目总监审核'));
             break;
