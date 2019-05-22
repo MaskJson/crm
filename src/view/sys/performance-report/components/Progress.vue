@@ -4,7 +4,7 @@
       <Panel v-for="(item, index) of list" :key="'progress1'+index">
         <span>{{item.name}}-{{item.children.length}}</span>
         <div slot="content">
-          <TalentProgress flag="yes" performance="yes" :project-talents="item.children"/>
+          <TalentProgress flag="yes" performance="yes" hone="yes" :project-talents="item.children"/>
         </div>
       </Panel>
     </Collapse>

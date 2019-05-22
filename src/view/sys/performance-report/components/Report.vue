@@ -16,7 +16,7 @@
           {
             title: '用户昵称',
             align: 'center',
-            key: 'name',
+            key: 'nickName',
             width: 120
           },
           {

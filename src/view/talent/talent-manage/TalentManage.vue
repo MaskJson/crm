@@ -110,7 +110,7 @@
           {{ talentName }}
         </FormItem>
         <FormItem label="推荐项目：" prop="projectId">
-          <Select v-model="projectTalent.projectId" placeholder="请选择项目" filterable clearable>
+          <Select v-model="projectTalent.projectId" placeholder="请选择项目" clearable>
             <Option :disabled="talentProjects.indexOf(item.id) > -1" v-for="(item, index) of projects" :value="item.id" :key="'project' + index">
               {{ item.name }}{{`（${item.customerName}）`}}
               <span v-show="talentProjects.indexOf(item.id) > -1">{{`（已处于该项目进展中）`}}</span>
@@ -380,25 +380,27 @@
                   }, '常规跟踪')
                 )
               }
-              btn.push(
-                h('Button',{
-                  props: {
-                    size: 'small'
-                  },
-                  class: {
-                    'ml-5': true
-                  },
-                  on: {
-                    click: () => {
-                      this.projectTalentIndex = params.row._index;
-                      this.talentProjects = params.row.projects || [];
-                      this.projectTalent.talentId = params.row.id;
-                      this.talentName = params.row.name;
-                      toggleShow(this, 'project');
+              if ((!followUserId || followUserId == this.userId) && !params.row.offerCount) {
+                btn.push(
+                  h('Button',{
+                    props: {
+                      size: 'small'
+                    },
+                    class: {
+                      'ml-5': true
+                    },
+                    on: {
+                      click: () => {
+                        this.projectTalentIndex = params.row._index;
+                        this.talentProjects = params.row.projects || [];
+                        this.projectTalent.talentId = params.row.id;
+                        this.talentName = params.row.name;
+                        toggleShow(this, 'project');
+                      }
                     }
-                  }
-                }, '推荐')
-              );
+                  }, '推荐')
+                );
+              }
               return h('div', btn);
             }
           }
@@ -552,6 +554,7 @@
             addProjectTalent(this.projectTalent).then(data => {
               const obj = this.$refs['manager'].list[this.projectTalentIndex];
               obj.progress = (obj.progress || 0) + 1;
+              obj.projects.push(this.projectTalent.projectId);
               this.show = false;
               toggleShow(this, 'project', false);
             }).catch(data => {this.show = false});

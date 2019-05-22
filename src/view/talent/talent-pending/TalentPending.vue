@@ -75,15 +75,35 @@
         <!--</FormItem>-->
       </Form>
     </ModalUtil>
+    <!--  推荐到项目  -->
+    <ModalUtil ref="project" title="推荐项目" @reset="resetProjectTalent" @on-ok="addProjectTalent" :loading="show">
+      <Form ref="projectTalent" :model="projectTalent" :rules="projectTalentRule" :label-width="100">
+        <FormItem label="人才：">
+          {{ talentName }}
+        </FormItem>
+        <FormItem label="推荐项目：" prop="projectId">
+          <Select v-model="projectTalent.projectId" placeholder="请选择项目" clearable>
+            <Option :disabled="talentProjects.indexOf(item.id) > -1" v-for="(item, index) of projects" :value="item.id" :key="'project' + index">
+              {{ item.name }}{{`（${item.customerName}）`}}
+              <span v-show="talentProjects.indexOf(item.id) > -1">{{`（已处于该项目进展中）`}}</span>
+            </Option>
+          </Select>
+        </FormItem>
+        <FormItem label="推荐理由：" prop="remark">
+          <Input placeholder="推荐理由" type="textarea" v-model="projectTalent.remark" :rows="3"/>
+        </FormItem>
+      </Form>
+    </ModalUtil>
   </Card>
 </template>
 
 <script>
   import { talentStatus } from "../../../libs/constant";
-  import { getUserId, getStatusRender, toggleShow, getDateTime, getRenderList, globalSearch } from "../../../libs/tools";
+  import { getUserId, getStatusRender, toggleShow, getDateTime, getRenderList, getUserInfoByKey, globalSearch } from "../../../libs/tools";
   import { talentPendingList } from "../../../api/count";
   import { getListByTableName } from "../../../api/common";
   import { addRemind, finishRemind } from "../../../api/talent";
+  import { openByUserId, addProjectTalent } from "../../../api/project";
 
   export default {
     name: "TalentPending",
@@ -129,63 +149,58 @@
             }
           },
           {
-            title: '人才状态',
+            title: '状态',
             align: 'center',
             render: (h, params) => {
               return getStatusRender(h, params.row.talentStatus);
             }
           },
+          // {
+          //   title: '本次跟踪状态',
+          //   align: 'center',
+          //   render: (h, params) => {
+          //     return getStatusRender(h, params.row.status);
+          //   }
+          // },
           {
-            title: '手机号',
-            align: 'center',
-            key: 'phone'
-          },
-          {
-            title: '本次跟踪状态',
-            align: 'center',
-            render: (h, params) => {
-              return getStatusRender(h, params.row.status);
-            }
-          },
-          {
-            title: '跟踪时间',
+            title: '时间',
             align: 'center',
             render: (h, params) => {
               return h('span', getDateTime(params.row.createTime));
             }
           },
-          {
-            title: '跟踪类型',
-            align: 'center',
-            render: (h, params) => {
-              const v = params.row.type;
-              return h('span', v == 1 ? '电话沟通' : v == 2 ? '顾问面试内' : '顾问面试外');
-            }
-          },
-          {
-            title: '跟踪内容',
-            align: 'center',
-            render: (h, params) => {
-              let arr = [];
-              switch (params.row.type) {
-                case 1:
-                  arr = [`跟踪记录：${params.row.remark}`];
-                  break;
-                case 2:
-                  arr = [`人才基本情况：${params.row.situation}`, `离职原因：${params.row.cause}`, `薪资架构：${params.row.salary}`];
-                  break;
-                case 3:
-                  arr = [`面试时间：${getDateTime(params.row.meetTime)}`, `面试地点：${params.row.meetAddress}`, `人才基本情况：${params.row.situation}`, `离职原因：${params.row.cause}`, `薪资架构：${params.row.salary}`];
-                  break;
-              }
-              return getRenderList(h, JSON.stringify(arr));
-            }
-          },
-          {
-            title: '进展中项目数',
-            align: 'center',
-            key: 'projectCount'
-          },
+          // {
+          //   title: '跟踪类型',
+          //   align: 'center',
+          //   render: (h, params) => {
+          //     const v = params.row.type;
+          //     return h('span', v == 1 ? '电话沟通' : v == 2 ? '顾问面试内' : '顾问面试外');
+          //   }
+          // },
+          // {
+          //   title: '跟踪内容',
+          //   align: 'center',
+          //   render: (h, params) => {
+          //     let arr = [];
+          //     switch (params.row.type) {
+          //       case 1:
+          //         arr = [`跟踪记录：${params.row.remark}`];
+          //         break;
+          //       case 2:
+          //         arr = [`人才基本情况：${params.row.situation}`, `离职原因：${params.row.cause}`, `薪资架构：${params.row.salary}`];
+          //         break;
+          //       case 3:
+          //         arr = [`面试时间：${getDateTime(params.row.meetTime)}`, `面试地点：${params.row.meetAddress}`, `人才基本情况：${params.row.situation}`, `离职原因：${params.row.cause}`, `薪资架构：${params.row.salary}`];
+          //         break;
+          //     }
+          //     return getRenderList(h, JSON.stringify(arr));
+          //   }
+          // },
+          // {
+          //   title: '进展中项目数',
+          //   align: 'center',
+          //   key: 'projectCount'
+          // },
           {
             title: '操作',
             align: 'center',
@@ -200,7 +215,7 @@
                   props: {
                     type: 'primary',
                     size: 'small',
-                    disabled: followUserId && followUserId != this.searchData.userId || !!params.row.projectCount
+                    disabled: followUserId && followUserId != this.searchData.userId || !!params.row.progress
                   },
                   on: {
                     click: () => {
@@ -208,7 +223,25 @@
                       this.showRemindModal(params.row.talentId, params.row.id);
                     }
                   }
-                }, '跟进'),
+                }, '常规跟踪'),
+                h('Button',{
+                  props: {
+                    size: 'small',
+                    disabled: followUserId && followUserId != this.searchData.userId || !!params.row.offerCount
+                  },
+                  class: {
+                    'ml-5': true
+                  },
+                  on: {
+                    click: () => {
+                      this.projectTalentIndex = params.row._index;
+                      this.talentProjects = params.row.projects || [];
+                      this.projectTalent.talentId = params.row.talentId;
+                      this.talentName = params.row.name;
+                      toggleShow(this, 'project');
+                    }
+                  }
+                }, '推荐')
                 // h('Button', {
                 //   props: {
                 //     type: 'warning',
@@ -255,11 +288,46 @@
         finishId: null, // 结束跟进id
         customerList: [],
         talentType: null,
+        // 推荐
+        projectTalent: {
+          createUserId: getUserId(),
+          talentId: null,
+          projectId: null,
+          status: 0,
+          type: 1,
+          remark: null,
+          roleId: getUserInfoByKey('roleId'),
+        },
+        projectTalentRule: {
+          projectId: [
+            { required: true, type: 'number', message: '请选择项目', trigger: 'change' }
+          ],
+          remark: [
+            { required: true, type: 'string', message: '请填写推荐理由', trigger: 'blur' }
+          ],
+        },
+        projectTalentIndex: null,
+        projects: [], // 所有对当前用户开放的项目
+        talentProjects: [], // 当前人才已关联的项目
+        talentName: null,
+
       }
     },
     methods: {
       search() {
         globalSearch(this);
+      },
+      resetProjectTalent() {
+        this.projectTalent = {
+          createUserId: getUserId(),
+          talentId: null,
+          projectId: null,
+          status: 0,
+          type: 1,
+          remark: null,
+          roleId: getUserInfoByKey('roleId'),
+        };
+        this.$refs['projectTalent'].resetFields();
       },
       resetRemind() {
         this.remind = {
@@ -278,6 +346,20 @@
           followRemindId: null,
           customerId: null
         };
+      },
+      addProjectTalent() {
+        this.$refs['projectTalent'].validate(valid => {
+          if (valid) {
+            this.show = true;
+            addProjectTalent(this.projectTalent).then(data => {
+              const obj = this.$refs['manager'].list[this.projectTalentIndex];
+              obj.progress = (obj.progress || 0) + 1;
+              obj.projects.push(this.projectTalent.projectId);
+              this.show = false;
+              toggleShow(this, 'project', false);
+            }).catch(data => {this.show = false});
+          }
+        })
       },
       toggleShow(key, flag) {
         toggleShow(this, key, flag);
@@ -356,6 +438,9 @@
       this.searchData.userId = getUserId();
       getListByTableName({ type: 1 }).then(data => {
         this.customerList = data || [];
+      }).catch(data => {});
+      openByUserId({ userId: getUserId() }).then(data => {
+        this.projects = data || [];
       }).catch(data => {});
     },
   }
