@@ -169,21 +169,21 @@
           }, text));
         };
         getAction('补充跟踪', status, 99);
-        switch (status.toString()) {
-          case '0':
+        switch (status) {
+          case 0:
             type != 100 ? (roleId == 3 ? getAction('推荐给客户', '0', 100) : '') : action.push(h('span', {class: {'cl-error': true}}, '等待项目总监审核'));
             break;
-          case '1':
-            roleId == 3 && getAction('通知人才面试','1', 2);
+          case 1:
+            roleId == 3 && getAction('安排面试','1', 2);
             roleId == 3 && getAction('确认面试','2', 3);
             break;
-          case '2':
+          case 2:
             // roleId == 3 && getAction('通知人才面试','2', 2);
             roleId == 3 && getAction('面试改期','2', 4);
             roleId == 3 && getAction('放弃面试','8', 5);
             roleId == 3 && getAction('人才确认面试','3', 6);
             break;
-          case '3':
+          case 3:
             // roleId == 3 && type !=7  && getAction('面试反馈','3', 16);
             // roleId == 3 && type !=16 && getAction('面试待定','3', 7);
             roleId == 3 && getAction('面试反馈','3', 16);
@@ -192,15 +192,15 @@
             roleId == 3 && getAction('offer谈判','3', 9);
             // roleId == 3 && getAction('签订offer','4', 10);
             break;
-          case '4':
+          case 4:
             // getAction('辞职中','4', 11);
             roleId == 3 && getAction('签订offer','5', 10);
             break;
-          case '5':
+          case 5:
             // getAction('进入保证期','6', 13);
             getUserId()==createUserId && getAction('确认入职','6', 12);
             break;
-          case '6':
+          case 6:
             getUserId()==createUserId && getAction('通过保证期','7', 14);
             break;
           default:break;
