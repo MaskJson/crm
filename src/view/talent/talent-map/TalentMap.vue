@@ -105,13 +105,13 @@
                 let str = '';
                 switch (remind.type) {
                   case 1:
-                    str = `${remind.remark}--${getDateTime(remind.createUser)}`;
+                    str = `${remind.remark}--${remind.createUser}`;
                     break;
                   case 2:
-                    str = `${remind.situation}--${remind.cause}--${remind.salary}--${getDateTime(remind.createUser)}`;
+                    str = `${remind.situation}--${remind.cause}--${remind.salary}--${remind.createUser}`;
                     break;
                   case 3:
-                    str = `${getDateTime(remind.meetTime)}--${remind.meetAddress}--${remind.situation}--${remind.cause}${remind.salary}--${getDateTime(remind.createUser)}`;
+                    str = `${getDateTime(remind.meetTime)}--${remind.meetAddress}--${remind.situation}--${remind.cause}${remind.salary}--${remind.createUser}`;
                     break;
                 }
                 return h('span', str);

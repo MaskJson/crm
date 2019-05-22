@@ -66,19 +66,19 @@
             render: (h, params) => {
               const remind = params.row;
               if (remind && remind.type){
-                let arr = [];
+                let str = '';
                 switch (remind.type) {
                   case 1:
-                    arr = [ `跟踪记录：${remind.remark}`];
+                    str = `${remind.remark}--${remind.createUser}`;
                     break;
                   case 2:
-                    arr = [ `人才基本情况：${remind.situation}`, `离职原因：${remind.cause}`, `薪资架构：${remind.salary}`];
+                    str = `${remind.situation}--${remind.cause}--${remind.salary}--${remind.createUser}`;
                     break;
                   case 3:
-                    arr = [ `面试时间：${getDateTime(remind.meetTime)}`, `面试地点：${remind.meetAddress}`, `人才基本情况：${remind.situation}`, `离职原因：${remind.cause}`, `薪资架构：${remind.salary}`];
+                    str = `${getDateTime(remind.meetTime)}--${remind.meetAddress}--${remind.situation}--${remind.cause}${remind.salary}--${remind.createUser}`;
                     break;
                 }
-                return getRenderList(h, JSON.stringify(arr));
+                return h('span', str);
               } else {
                 return h('span', '');
               }

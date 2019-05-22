@@ -30,8 +30,8 @@
       </div>
 
       <h3>单日报表</h3>
-      <DatePicker v-model="monthTime" placeholder="请选择月份" clearable/>
-      <Button type="primary" class="ml-10" type="month" @click="getData(3, monthTime)">查询</Button>
+      <DatePicker v-model="monthTime" type="month" placeholder="请选择月份" clearable/>
+      <Button type="primary" class="ml-10"  @click="getData(3, monthTime)">查询</Button>
       <div class="mt-10 mb-20">
         <h5>进展跟踪</h5>
         <Progress :list="getProgressFilter(2)"/>

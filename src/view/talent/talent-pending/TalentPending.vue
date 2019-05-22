@@ -91,10 +91,10 @@
       return {
         show: false,
         talentStatus: talentStatus,
-        // searchData: {
-        //   userId: null,
-        //   type: null
-        // },
+        searchData: {
+          userId: null,
+          type: null
+        },
         columns: [
           {
             type: 'selection',
