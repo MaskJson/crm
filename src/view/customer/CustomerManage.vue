@@ -193,7 +193,20 @@
           {
             title: '公司名称',
             align: 'center',
-            key: 'name'
+            key: 'name',
+            render: (h, params) => {
+              return h('Button', {
+                props: {
+                  size: 'small',
+                  type: 'text'
+                },
+                on: {
+                  click: () => {
+                    this.$router.push('/customer/customer-detail?id=' + params.row.id)
+                  }
+                }
+              })
+            }
           },
           {
             title: '城市',

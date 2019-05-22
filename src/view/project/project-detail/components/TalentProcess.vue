@@ -117,6 +117,10 @@
   import { getCity, getDateTime, getDateTime2, getStatusRender, toggleShow, getUserId, getUserInfoByKey, getRenderList, getProjectTalentStatus, getProjectTalentType } from "../../../../libs/tools";
   import { getProjectTalentByStatus, addProjectTalentRemind, reBack } from "../../../../api/project";
 
+  const statuses = JSON.parse(JSON.stringify(projectTalentStatus));
+  statuses.splice(0, 2, {value: '1', label: '推荐人才'});
+  statuses.pop();
+
   export default {
     name: 'talent-progress',
     props: ['userList', 'flag', 'performance', 'projectTalents', 'home'],
@@ -228,7 +232,7 @@
         return action;
       }
       return {
-        projectTalentStatus: projectTalentStatus,
+        projectTalentStatus: statuses,
         projectTalentRemindStatus: projectProgress,
         nickName: getUserInfoByKey('nickName'),
         roleId: getUserInfoByKey('roleId'),

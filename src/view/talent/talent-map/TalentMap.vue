@@ -166,6 +166,7 @@
                       type: 'warning',
                       size: 'small'
                     },
+                    class: 'ml-5',
                     on: {
                       click: () => {
                         this.show = true;
@@ -192,6 +193,7 @@
                       type: 'warning',
                       size: 'small'
                     },
+                    class: 'ml-5',
                     on: {
                       click: () => {
                         toggleType({

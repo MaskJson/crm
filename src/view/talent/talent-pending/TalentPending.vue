@@ -351,6 +351,7 @@
         this.$refs['projectTalent'].validate(valid => {
           if (valid) {
             this.show = true;
+            this.projectTalent.createUserId = getUserId();
             addProjectTalent(this.projectTalent).then(data => {
               const obj = this.$refs['manager'].list[this.projectTalentIndex];
               obj.progress = (obj.progress || 0) + 1;
