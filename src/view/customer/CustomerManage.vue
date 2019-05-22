@@ -166,6 +166,7 @@
         },
         remind: {
           type: 1,
+          contactId: null,
           status: null,
           remark: null,
           meetTime: null,
@@ -173,7 +174,6 @@
           meetNotice: null,
           nextType: null,
           nextRemindTime: null,
-          contactId: null,
           contactTimeStart: null,
           contactTimeEnd: null,
         },

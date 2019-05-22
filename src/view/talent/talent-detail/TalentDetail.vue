@@ -77,9 +77,8 @@
           </Select>
           <Timeline v-if="remindFilter && remindFilter.length > 0" class="mt-10">
             <TimelineItem v-for="(item, index) of remindFilter" :key="'remind' + index">
-              <p class="fs16">{{ item.type | typeFilter }}</p>
+              <p class="fs16">{{ item.type | typeFilter }} <span class="ml-40">人才状态：{{item.status | talentStatusFilter}}</span></p>
               <!--<p class="mt-5"><span class="mR10">创建者：{{item.createUser}}</span><span class="ml-20">创建时间：{{getDateTime(item.createTime)}}</span></p>-->
-              <p class="mt-5">人才状态：{{item.status | talentStatusFilter}}</p>
               <div class="bgf2 mt-5 pd-5" v-if="item.type == 1">内容：{{item.remark}} <span class="ml-20">{{item.createUser}}</span><span class="ml-20">{{getDateTime(item.createTime)}}</span></div>
               <div class="bgf2 mt-5 pd-5" v-else-if="item.type == 2">
                 <!--<p class="mt-5">候选人基本情况：{{item.situation}}</p>-->

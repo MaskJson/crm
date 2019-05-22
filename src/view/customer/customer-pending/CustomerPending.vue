@@ -25,6 +25,11 @@
             <Option :value="3">客户上门</Option>
           </Select>
         </FormItem>
+        <FormItem label="联系人：" prop="contactId">
+          <Select v-model="remind.contactId" placeholder="选择联系人">
+            <Option v-for="(item, index) of contacts" :key="'contact' + index" :value="item.id">{{item.name}}</Option>
+          </Select>
+        </FormItem>
         <FormItem label="沟通记录" class="ivu-form-item-required" v-if="remind.type == 1 || remind.type == 3">
           <Input type="textarea" placeholder="沟通了解情况" :rows="3" v-model="remind.remark"/>
         </FormItem>
@@ -63,7 +68,7 @@
 <script>
   import { getUserId, getDateTime, globalSearch, toggleShow,getCustomerType, getRenderList } from "../../../libs/tools";
   import { customerPendingList } from "../../../api/count";
-  import { addRemind, finishRemind } from "../../../api/customer";
+  import { addRemind, finishRemind, getCustomerContact } from "../../../api/customer";
   import { customerTypes } from "../../../libs/constant";
 
   export default {
@@ -71,6 +76,7 @@
     data() {
       return {
         show: false,
+        contacts: [],
         searchData: {
           userId: getUserId(),
           type: null
@@ -94,37 +100,37 @@
               return h('span', v == 1 ? '电话沟通' : v == 3 ? '客户上门' : '拜访客户');
             }
           },
+          // {
+          //   title: '跟踪状态',
+          //   align: 'center',
+          //   render: (h, params) => {
+          //     const type = params.row.status;
+          //     return h('span',type == 0 ? '普通公司' : type == 6 ? '客户' : '拓展中' + `(${getCustomerType(h, type)})`);
+          //   }
+          // },
           {
-            title: '跟踪状态',
-            align: 'center',
-            render: (h, params) => {
-              const type = params.row.status;
-              return h('span',type == 0 ? '普通公司' : type == 6 ? '客户' : '拓展中' + `(${getCustomerType(h, type)})`);
-            }
-          },
-          {
-            title: '跟踪时间',
+            title: '时间',
             align: 'center',
             render: (h, params) => {
               return h('span', getDateTime(params.row.createTime));
             }
           },
+          // {
+          //   title: '跟踪内容',
+          //   align: 'center',
+          //   render: (h, params) => {
+          //     switch (params.row.type) {
+          //       case 1:
+          //       case 3:
+          //         return h('span', `跟踪内容：${params.row.remark}`);break;
+          //       case 2:
+          //         const data = [`见面时间：${getDateTime(params.row.meetTime)}`, `见面地点：${params.row.meetAddress}`, `见面内容：${params.row.meetNotice}`]
+          //         return getRenderList(h, JSON.stringify(data));
+          //     }
+          //   }
+          // },
           {
-            title: '跟踪内容',
-            align: 'center',
-            render: (h, params) => {
-              switch (params.row.type) {
-                case 1:
-                case 3:
-                  return h('span', `跟踪内容：${params.row.remark}`);break;
-                case 2:
-                  const data = [`见面时间：${getDateTime(params.row.meetTime)}`, `见面地点：${params.row.meetAddress}`, `见面内容：${params.row.meetNotice}`]
-                  return getRenderList(h, JSON.stringify(data));
-              }
-            }
-          },
-          {
-            title: '公司状态',
+            title: '状态',
             align: 'center',
             key: 'type',
             render: (h, params) => {
@@ -150,23 +156,31 @@
                   },
                   on: {
                     click: () => {
-                      this.customerType = params.row.customerType;
-                      this.showRemindModal(params.row.customerId, params.row.id);
+                      getCustomerContact({id: params.row.customerId}).then(data => {
+                        this.show = false;
+                        this.contacts = data || [];
+                        if (this.contacts.length == 0) {
+                          this.$Message.error('暂无联系人，请前往详情页添加');
+                          return false;
+                        }
+                        this.customerType = params.row.type;
+                        this.showRemindModal(params.row.customerId, params.row.id);
+                      }).catch(data => {this.show = false;})
                     }
                   }
-                }, '跟进'),
-                h('Button', {
-                  props: {
-                    type: 'warning',
-                    size: 'small'
-                  },
-                  on: {
-                    click: () => {
-                      this.finishId = params.row.id;
-                      this.finishRemind(2);
-                    }
-                  }
-                }, '结束跟进')
+                }, '添加跟踪'),
+                // h('Button', {
+                //   props: {
+                //     type: 'warning',
+                //     size: 'small'
+                //   },
+                //   on: {
+                //     click: () => {
+                //       this.finishId = params.row.id;
+                //       this.finishRemind(2);
+                //     }
+                //   }
+                // }, '结束跟进')
               ]);
             }
           }
@@ -174,6 +188,7 @@
         remind: {
           type: 1,
           customerId: null,
+          contactId: null,
           status: null,
           remark: null,
           meetTime: null,
@@ -191,6 +206,9 @@
           ],
           status: [
             { required: true, type: 'number', message: '请选择客户状态', trigger: 'blur' }
+          ],
+          contactId: [
+            { required: true, type: 'number', message: '请选择联系人', trigger: 'change' }
           ]
         },
         finishId: null,

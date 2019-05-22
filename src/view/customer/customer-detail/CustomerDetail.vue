@@ -53,16 +53,19 @@
           </Select>
           <Timeline v-if="remindFilter && remindFilter.length > 0" class="mt-10">
             <TimelineItem v-for="(item, index) of remindFilter" :key="'remind' + index">
-              <p class="fs16">{{item.type | typeFilter}}</p>
-              <p class="mt-5">跟踪状态：{{item.status | customerTypeFilter}}</p>
+              <p class="fs16">{{item.type | typeFilter}} <span class="ml-40">客户状态：{{item.status == 0 ? '普通公司' : item.status == 6 ? '客户' : '拓展中' + `(${getCustomerType(false, type)})`}}</span></p>
+              <!--<p class="mt-5">跟踪状态：{{item.status | customerTypeFilter}}</p>-->
               <p class="mt-5" v-if="item.status == 5">
                 合同期：
                 {{getDateTime(entity.contactTimeStart)}}
                 <span class="mlr5"></span>
                 {{getDateTime(entity.contactTimeEnd)}}
               </p>
-              <p class="mt-5"><span class="mR10">创建者：{{item.createUser}}</span><span class="ml-20">创建时间：{{getDateTime(item.createTime)}}</span></p>
-              <p class="bgf2 mt-5">内容：{{item.type == 2 ? item.meetNotice : item.remark}}</p>
+              <!--<p class="mt-5"><span class="mR10">创建者：{{item.createUser}}</span><span class="ml-20">创建时间：{{getDateTime(item.createTime)}}</span></p>-->
+              <p class="bgf2 mt-5">
+                内容：{{item.type == 2 ? item.meetNotice : item.remark}}
+                <span class="ml-20">{{item.createUser}}</span>
+                <span class="ml-20">{{getDateTime(item.createTime)}}</span></p>
             </TimelineItem>
           </Timeline>
           <div v-else>暂无跟踪记录</div>
