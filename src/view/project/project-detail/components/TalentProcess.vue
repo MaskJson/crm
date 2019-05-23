@@ -623,7 +623,11 @@
         }).then(data => {
           this.show = false;
           toggleShow(this, 'remind', false);
-          this.getProjectTalent();
+          if (!this.home) {
+            this.getProjectTalent();
+          } else {
+            this.$emit('change');
+          }
         }).catch(data => {this.show = false;})
       },
       // 获取当前进展状态下的项目人才

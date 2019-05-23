@@ -102,7 +102,7 @@
                     this.$router.push('/customer/customer-detail?id=' + params.row.customerId)
                   }
                 }
-              })
+              }, params.row.name)
             }
           },
           {

@@ -3,8 +3,8 @@
     <Row class="container">
       <Col span="6" class="pd-10" v-if="roleId != 8">
         <div class="radius4 border pd-10">
-          <h3 class="cursor" @click="goto('/talent/talent-pending')">人才常规跟踪待办项：{{count.talentFirst + count.talentSecond + count.talentThird}}</h3>
-          <h3 class="cursor mt-10" @click="goto('/customer/customer-pending')">客户常规跟踪待办项：{{count.customerFirst + count.customerSecond + count.customerThird}}</h3>
+          <h3 class="cursor" @click="goto('/talent/talent-pending')">人才常规跟踪待办项：<span class="cl-primary">{{count.talentFirst + count.talentSecond + count.talentThird}}</span></h3>
+          <h3 class="cursor mt-10" @click="goto('/customer/customer-pending')">客户常规跟踪待办项：<span class="cl-primary">{{count.customerFirst + count.customerSecond + count.customerThird}}</span></h3>
           <!--<p class="mt-10">-->
             <!--<span class="inline-block">电话沟通：</span>-->
             <!--<span class="ml-10 cl-primary cursor" @click="goto('/talent/talent-pending', '1')">{{count.talentFirst}}</span>-->
@@ -99,7 +99,7 @@
     </Row>
     <Row v-show="list.length > 0">
       <h2>项目进展</h2>
-      <TalentProgress flag="yes" home="yes" :project-talents="list"/>
+      <TalentProgress flag="yes" home="yes" :project-talents="list" @change="getProjectTalent"/>
     </Row>
     <SpinUtil :show="show"/>
   </Card>
@@ -147,7 +147,7 @@
           this.show = false;
           this.list = data || [];
         }).catch(data => {this.show = false;})
-      }
+      },
     },
     created() {
       this.show = true;
