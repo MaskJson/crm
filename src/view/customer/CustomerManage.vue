@@ -200,12 +200,13 @@
                   size: 'small',
                   type: 'text'
                 },
+                class: 'cl-primary',
                 on: {
                   click: () => {
                     this.$router.push('/customer/customer-detail?id=' + params.row.id)
                   }
                 }
-              })
+              }, params.row.name)
             }
           },
           {

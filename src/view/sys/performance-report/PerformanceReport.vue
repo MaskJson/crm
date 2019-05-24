@@ -105,6 +105,7 @@
         this.getReportInfos(flag, time);
       },
       getProjectProgressInfos(flag, time) {
+        time = time || new Date();
         getProjectProgressInfos({
           userId: this.userId,
           roleId: this.roleId,
@@ -116,6 +117,7 @@
         })
       },
       getTalentRemindInfos(flag, time) {
+        time = time || new Date();
         getTalentRemindInfos({
           userId: this.userId,
           roleId: this.roleId,
@@ -127,6 +129,7 @@
         })
       },
       getCustomerRemindInfos(flag, time) {
+        time = time || new Date();
         getCustomerRemindInfos({
           userId: this.userId,
           roleId: this.roleId,
@@ -138,6 +141,7 @@
         })
       },
       getReportInfos(flag, time) {
+        time = time || new Date();
         getReportInfos({
           userId: this.userId,
           roleId: this.roleId,

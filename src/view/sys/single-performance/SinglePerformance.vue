@@ -90,6 +90,7 @@
         this.getCustomerRemindInfo(flag, time);
       },
       getReport(flag, time, b) {
+        time = time || new Date();
         getReportInfo({
           userId: this.userId,
           flag,
@@ -103,6 +104,7 @@
         })
       },
       getProjectProgressInfo(flag, time) {
+        time = time || new Date();
         getProjectProgressInfo({
           userId: this.userId,
           flag,
@@ -113,6 +115,7 @@
         })
       },
       getTalentRemindInfo(flag, time) {
+        time = time || new Date();
         getTalentRemindInfo({
           userId: this.userId,
           flag,
@@ -123,6 +126,7 @@
         })
       },
       getCustomerRemindInfo(flag, time) {
+        time = time || new Date();
         getCustomerRemindInfo({
           userId: this.userId,
           flag,
@@ -134,7 +138,7 @@
       }
     },
     created() {
-      this.getData(1, this.time, true);
+      this.getData(this.flag, this.time, true);
     }
   }
 </script>

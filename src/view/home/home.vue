@@ -36,7 +36,7 @@
           <!--</p>-->
         <!--</div>-->
       <!--</Col>-->
-      <Col span="4" class="pd-10" v-if="roleId != 1">
+      <Col span="4" class="pd-10">
         <div class="radius4 border pd-10">
           <h3 class="cursor" @click="goto2('/project/progress-pending', '1')">项目启动阶段</h3>
           <p class="mt-10">
@@ -53,7 +53,7 @@
           </p>
         </div>
       </Col>
-      <Col span="4" class="pd-10" v-if="[2,3,6].indexOf(roleId) > -1">
+      <Col span="4" class="pd-10">
         <div class="radius4 border pd-10">
           <h3 class="cursor" @click="goto2('/project/progress-pending', '2')">项目攻坚阶段</h3>
           <p class="mt-10">
@@ -66,7 +66,7 @@
           </p>
         </div>
       </Col>
-      <Col span="4" class="pd-10" v-if="[2,3,6].indexOf(roleId) > -1">
+      <Col span="4" class="pd-10">
         <div class="radius4 border pd-10">
           <h3 class="cursor" @click="goto2('/project/progress-pending', '3')">项目收尾阶段</h3>
           <p class="mt-10">
@@ -83,7 +83,7 @@
           </p>
         </div>
       </Col>
-      <Col span="4" class="pd-10" v-if="[2,3,6].indexOf(roleId) > -1">
+      <Col span="4" class="pd-10">
         <div class="radius4 border pd-10">
           <h3 class="cursor" @click="goto2('/project/progress-pending', '4')">项目结束</h3>
           <p class="mt-10">
