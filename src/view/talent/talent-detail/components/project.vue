@@ -28,10 +28,37 @@
           <div class="inline-block alignT">
             <div>
               <Button size="small" class="mr-5" v-if="remind.type == 99">补充跟踪</Button>
-              <Button :type="getType(remind.status)" size="small" class="mr-5">{{getProjectTalentStatus(false, remind.status)}}</Button>
+              <Button :type="getType(remind.status)" size="small" class="mr-5">{{getProjectTalentStatus(false, remind.status)}}{{!!remind.index ? `（第${remind.index}次面试）` : ''}}</Button>
               <Button type="text">{{remind.createUser}}</Button>
             </div>
-            <p class="mt-10">{{remind.remark}}</p>
+            <div class="mt-10">
+              <span v-if="!!remind.recommendation">推荐理由：{{remind.recommendation}}<span class="ml-20" v-if="!!remind.remark">备注：{{remind.remark}}</span></span>
+              <span class="ml-20" v-if="!!remind.killRemark">淘汰理由：{{remind.killRemark}} <span class="ml-20" v-if="!!remind.remark">备注：{{remind.remark}}</span></span>
+              <div v-if="!!remind.interviewTime">
+                <span class="ml-10">面试时间：{{getDateTime(remind.interviewTime)}}</span>
+                <span class="ml-10">面试官：{{remind.interviewTone}}</span>
+                <span class="ml-20" v-if="!!remind.remark">备注：{{remind.remark}}</span>
+                <!--<span class="ml-10">面试时间：{{getDateTime(remind.interviewTime)}}</span>-->
+              </div>
+              <div v-if="!!remind.position">
+                <span class="">岗位：{{remind.position}}</span>
+                <span class="ml-20">年薪：{{remind.yearSalary}}万</span>
+                <span class="ml-20">收费：{{remind.charge}}万</span>
+                <span class="ml-20">确认日期：{{getDateTime2(remind.sureTime)}}</span>
+                <span class="ml-20">预计上班时间：{{getDateTime2(remind.workTime)}}</span>
+                <span class="ml-20" v-if="!!remind.remark">备注：{{remind.remark}}</span>
+              </div>
+              <div v-if="!!remind.entryTime">
+                <span class="">入职时间：{{getDateTime2(remind.entryTime)}}</span>
+                <span class="ml-20">试用期截止时间：{{getDateTime2(remind.probationTime)}}</span>
+                <span class="ml-20" v-if="!!remind.remark">备注：{{remind.remark}}</span>
+              </div>
+              <div v-if="!!remind.talentRemark">
+                <span class="">人选反馈：{{remind.talentRemark}}</span>
+                <span class="ml-20">客户反馈：{{remind.customerRemark}}</span>
+                <span class="ml-20" v-if="!!remind.remark">备注：{{remind.remark}}</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -120,7 +147,6 @@
         </FormItem>
       </Form>
     </ModalUtil>
-
     <SpinUtil :show="show"/>
   </div>
 </template>
@@ -129,7 +155,14 @@
   import {projectProgress} from "../../../../libs/constant";
   import {getTalentProjects} from "../../../../api/talent";
   import {reBack, addProjectTalentRemind} from "../../../../api/project";
-  import {getDateTime, getProjectTalentStatus, toggleShow, getUserId, getUserInfoByKey} from "../../../../libs/tools";
+  import {
+    getDateTime,
+    getDateTime2,
+    getProjectTalentStatus,
+    toggleShow,
+    getUserId,
+    getUserInfoByKey,
+  } from "../../../../libs/tools";
 
   export default {
     name: "project",
@@ -288,6 +321,7 @@
         return action;
       },
       getDateTime: getDateTime,
+      getDateTime2: getDateTime2,
       getProjectTalentStatus: getProjectTalentStatus,
       getType(status) {
         if (status == 0) {
@@ -304,6 +338,13 @@
       getProjectList(id) {
         getTalentProjects({id}).then(data => {
           this.projectList = (data || []).map(item => {
+            item.reminds = item.reminds || [];
+            let interviewLen = item.reminds.filter(r => [2,4,8].indexOf(r.type) > -1);
+            item.reminds.forEach(remind => {
+              if ([2,4,8].indexOf(remind.type) > -1) {
+                remind.index = interviewLen--;
+              }
+            });
             return Object.assign(item, {show: true});
           });
           this.$emit('input', this.projectList.length);
