@@ -208,7 +208,7 @@
             break;
           default:break;
         }
-        if (['1','3','4','5','6'].indexOf(status)>-1) {
+        if ([1,3,4,5,6].indexOf(status)>-1) {
           getAction('淘汰', '8', 15);
         }
         if (status=='7' || status=='8') {
@@ -506,7 +506,7 @@
       getList(status) {
         if (status == 1) {
           return (this.projectTalents || []).filter(item => item.status == 0 || item.status == 1);
-        } else if (status == 2) {
+        } else if (status == 2 || status == 3) {
           return (this.projectTalents || []).filter(item => item.status == 2 || item.status == 3);
         } else {
           return (this.projectTalents || []).filter(item => item.remindStatus == this.status);

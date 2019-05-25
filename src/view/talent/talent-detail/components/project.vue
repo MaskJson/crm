@@ -294,7 +294,7 @@
             break;
           default:break;
         }
-        if ([1,2,4,5,6].indexOf(projectStatus)>-1) {
+        if ([1,3,4,5,6].indexOf(projectStatus)>-1) {
           getAction('淘汰', 8, 15);
         }
         if (status=='7' || status=='8') {
