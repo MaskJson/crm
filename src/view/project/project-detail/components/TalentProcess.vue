@@ -161,7 +161,8 @@
           };
           action.push(h('Button', {
             props: {
-              type: 'text'
+              type: 'text',
+              size: 'small'
             },
             on: {
               click: handler
@@ -174,22 +175,24 @@
             type != 100 ? (roleId == 3 ? getAction('推荐给客户', '0', 100) : '') : action.push(h('span', {class: {'cl-error': true}}, '等待项目总监审核'));
             break;
           case 1:
-            roleId == 3 && getAction('安排面试','1', 2);
-            roleId == 3 && getAction('确认面试','2', 3);
+            roleId == 3 && getAction('安排面试','3', 2);
+            // roleId == 3 && getAction('确认面试','2', 3);
             break;
-          case 2:
+          // case 2:
             // roleId == 3 && getAction('通知人才面试','2', 2);
-            roleId == 3 && getAction('面试改期','2', 4);
-            roleId == 3 && getAction('放弃面试','8', 5);
-            roleId == 3 && getAction('人才确认面试','3', 6);
+            // roleId == 3 && getAction('面试改期','2', 4);
+            // roleId == 3 && getAction('放弃面试','8', 5);
+            // roleId == 3 && getAction('人才确认面试','3', 6);
             break;
           case 3:
             // roleId == 3 && type !=7  && getAction('面试反馈','3', 16);
             // roleId == 3 && type !=16 && getAction('面试待定','3', 7);
+            roleId == 3 && getAction('面试改期','3', 4);
+            roleId == 3 && getAction('面试确认', '3', 6);
             roleId == 3 && getAction('面试反馈','3', 16);
             roleId == 3 && getAction('面试待定','3', 7);
             roleId == 3 && getAction('复试','3', 8);
-            roleId == 3 && getAction('offer谈判','3', 9);
+            roleId == 3 && getAction('offer谈判','4', 9);
             // roleId == 3 && getAction('签订offer','4', 10);
             break;
           case 4:

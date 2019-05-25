@@ -85,8 +85,8 @@ export const projectProgress = [
 export const projectTalentStatus = [
   {value: '0', label: '加入项目'},
   {value: '1', label: '推荐给客户'},
-  {value: '2', label: '通知人才面试'},
-  {value: '3', label: '客户面试'},
+  // {value: '2', label: '通知人才面试'},
+  {value: '3', label: '面试阶段'},
   {value: '4', label: 'offer待定'},
   {value: '5', label: 'offer签订待入职'},
   {value: '6', label: '保证期间人才'},
