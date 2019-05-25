@@ -241,7 +241,7 @@
         roleId: getUserInfoByKey('roleId'),
         show: false,
         id: null,
-        status: '0',
+        status: '1',
         current: 1,
         pageSize: 10,
         total: 0,
