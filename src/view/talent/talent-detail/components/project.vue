@@ -11,9 +11,9 @@
             <Button
               type="text"
               class="block"
-              v-for="(action, index) of renderAction(item.id, item.status, item.type)"
+              v-for="(action, index) of renderAction(item.id, item.status, item.type, item.remarkStatus)"
               :key="'btn' + index"
-              @click="setActionData(item.id, action.status, action.type, item.status, item.type, index)"
+              @click="setActionData(item.id, action.status, action.type, item.status, item.type, index, item.remarkStatus)"
             >{{action.text}}</Button>
             <Button type="text" @click="reBack(item.id, item.status, index)">撤销</Button>
           </div>
@@ -85,7 +85,7 @@
         <FormItem label="候选人">
           <span>{{actionData.talentName}}</span>
         </FormItem>
-        <div v-if="[2,4,8].indexOf(actionData.type) > -1">
+        <div v-if="[2,4,8].indexOf(actionData.type) > -1 || actionData.remarkStatus == 2">
           <FormItem label="面试时间" class="ivu-form-item-required">
             <DatePicker v-model="actionData.interviewTime"/>
           </FormItem>
@@ -99,7 +99,7 @@
             <Checkbox v-model="actionData.isLast" />是
           </FormItem>
         </div>
-        <div v-if="actionData.type == 10">
+        <div v-if="actionData.type == 10 || actionData.remarkStatus == 5">
           <FormItem label="岗位">
             <Input v-model="actionData.position"/>
           </FormItem>
@@ -131,13 +131,22 @@
           <FormItem label="客户反馈" class="ivu-form-item-required">
             <Input v-model="actionData.customerRemark"/>
           </FormItem>
+          <FormItem label="状态" class="ivu-form-item-required">
+            <Select v-model="actionData.remarkStatus">
+              <Option :value="1">面试待定</Option>
+              <Option :value="2">复试</Option>
+              <Option :value="4">offer谈判</Option>
+              <Option :value="5">签订offer</Option>
+              <Option :value="8">淘汰</Option>
+            </Select>
+          </FormItem>
         </div>
         <div v-if="actionData.type == 100">
           <FormItem label="推荐理由" class="ivu-form-item-required">
             <Input v-model="actionData.recommendation"/>
           </FormItem>
         </div>
-        <div v-if="actionData.status == 8">
+        <div v-if="actionData.status == 8 || actionData.remarkStatus == 8">
           <FormItem label="淘汰理由" class="ivu-form-item-required">
             <Input v-model="actionData.killRemark"/>
           </FormItem>
@@ -180,7 +189,7 @@
       }
     },
     methods: {
-      setActionData(projectTalentId, status, type, prevStatus, prevType, index) {
+      setActionData(projectTalentId, status, type, prevStatus, prevType, index, remarkStatus) {
         this.actionIndex = index;
         this.actionData = {
           projectTalentId,
@@ -201,9 +210,14 @@
           sureTime: null,
           workTime: null,
           entryTime: null,
-          probationTime: null
+          probationTime: null,
+          talentRemark: null,
+          customerRemark: null,
+          remarkStatus: null,
+          recommendation: null,
+          killRemark: null,
         };
-        if (actionType == 6) {
+        if (actionType == 6 || actionType == 9) {
           this.addRemind();
         } else {
           toggleShow(this, 'remind', true);
@@ -236,6 +250,39 @@
       },
       // 添加跟踪记录
       addRemind() {
+        // 特定状态验证
+        const {remarkStatus, type, status, interviewTime, yearSalary, sureTime, workTime, entryTime, probationTime, talentRemark, customerRemark, recommendation, killRemark} = this.actionData;
+        if ([2,4,8].indexOf(type) > -1 || remarkStatus == 2) {
+          if (!interviewTime) {
+            this.$Message.error('请填写面试时间');
+            return;
+          }
+        } else if (type == 10 || remarkStatus == 5) {
+          if (!yearSalary || !sureTime || !workTime) {
+            this.$Message.error('请填写年薪、确认时间和预计上班时间');
+            return;
+          }
+        } else if (type == 12) {
+          if (!entryTime || !probationTime) {
+            this.$Message.error('请填写入职时间和保证期');
+            return;
+          }
+        } else if (type == 16) {
+          if (!talentRemark || !customerRemark || !remarkStatus) {
+            this.$Message.error('请填写反馈信息');
+            return;
+          }
+        } else if (type == 99) {
+          if (!recommendation) {
+            this.$Message.error('请填写推荐理由');
+            return;
+          }
+        } else if (status == 8 || remarkStatus == 8) {
+          if (!killRemark) {
+            this.$Message.error('请填写淘汰理由');
+            return;
+          }
+        }
         this.show = true;
         addProjectTalentRemind({
           ...this.actionData,
@@ -247,11 +294,12 @@
             ...data,
             createUser: getUserInfoByKey('nickName')
           });
-          this.projectList[this.actionIndex].status = this.actionData.status;
+          Object.assign(this.projectList[this.actionIndex], {status: this.actionData.status, type: this.actionData.type, remarkStatus: this.actionData.remarkStatus});
+          // this.projectList[this.actionIndex].status = this.actionData.status;
           toggleShow(this, 'remind', false);
         }).catch(data => {this.show = false;})
       },
-      renderAction(projectTalentId, projectStatus, type) {
+      renderAction(projectTalentId, projectStatus, type, remarkStatus) {
         let action = [];
         // 添加选项
         const getAction = (text, status, actionType) => {
@@ -274,12 +322,16 @@
             // getAction('确认面试',2, 3);
             break;
           case 3:
-            roleId == 3 && getAction('面试改期',3, 4);
-            roleId == 3 && getAction('面试确认', 3, 6);
-            roleId == 3 && getAction('面试反馈',3, 16);
-            roleId == 3 && getAction('面试待定',3, 7);
-            roleId == 3 && getAction('复试',3, 8);
-            roleId == 3 && getAction('offer谈判',4, 9);
+            if (type == 6) {
+              roleId == 3 && getAction('面试反馈','3', 16);
+            } else if (remarkStatus == 1) {
+              roleId == 3 && getAction('复试','3', 8);
+              roleId == 3 && getAction('offer谈判','4', 9);
+              roleId == 3 && getAction('签订offer','5', 10);
+            } else {
+              roleId == 3 && getAction('面试改期','3', 4);
+              roleId == 3 && getAction('面试确认', '3', 6);
+            }
             break;
           case 4:
             // getAction('辞职中','4', 11);
