@@ -323,11 +323,13 @@
             break;
           case 3:
             if (type == 6) {
-              roleId == 3 && getAction('面试反馈','3', 16);
-            } else if (remarkStatus == 1) {
-              roleId == 3 && getAction('复试','3', 8);
-              roleId == 3 && getAction('offer谈判','4', 9);
-              roleId == 3 && getAction('签订offer','5', 10);
+              if (remarkStatus == 1) {
+                roleId == 3 && getAction('复试','3', 8);
+                roleId == 3 && getAction('offer谈判','4', 9);
+                roleId == 3 && getAction('签订offer','5', 10);
+              } else {
+                roleId == 3 && getAction('面试反馈','3', 16);
+              }
             } else {
               roleId == 3 && getAction('面试改期','3', 4);
               roleId == 3 && getAction('面试确认', '3', 6);
