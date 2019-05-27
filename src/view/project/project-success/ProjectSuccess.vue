@@ -85,6 +85,20 @@
             title: '项目名称',
             align: 'center',
             key: 'name',
+            render: (h, params) => {
+              return h('Button', {
+                props: {
+                  type: 'text',
+                  size: 'small',
+                },
+                class: 'cl-primary',
+                on: {
+                  click: () => {
+                    this.$router.push('/project/project-detail?id=' + params.row.id);
+                  }
+                }
+              }, params.row.name)
+            }
           },
           {
             title: '项目负责人',
