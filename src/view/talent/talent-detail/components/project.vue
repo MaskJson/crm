@@ -272,7 +272,7 @@
             this.$Message.error('请填写反馈信息');
             return;
           }
-        } else if (type == 99) {
+        } else if (type == 100) {
           if (!recommendation) {
             this.$Message.error('请填写推荐理由');
             return;
@@ -415,12 +415,5 @@
 </script>
 
 <style scoped>
-  .btns {
-    position: absolute;
-    top: 30px;
-    left: 0;
-  }
-  .action:hover .btns{
-    display: block;
-  }
+
 </style>

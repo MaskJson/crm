@@ -1,14 +1,14 @@
 <!-- 人才进展情况 -->
 <template>
   <div class="talent-progress">
-    <div v-if="!home">
+    <div v-if="!home" class="zyc">
       <Tabs v-model="status">
         <TabPane v-for="(tab, index) of projectTalentStatus" :key="'tab'+index" :label="tab.label" :name="tab.value"></TabPane>
       </Tabs>
       <Table :data="list" :columns="columns" border></Table>
     </div>
     <div v-else>
-      <div class="mb-10">
+      <div class="mb-10 zyc">
         <div v-if="getList(1).length > 0">
           <h3>推荐阶段</h3>
           <Table :data="getList(1)" :columns="getColumns(1)" border></Table>
@@ -176,6 +176,7 @@
               type: 'text',
               size: 'small'
             },
+            class: 'block center',
             on: {
               click: handler
             }
@@ -184,7 +185,7 @@
         getAction('补充跟踪', status, 99);
         switch (status) {
           case 0:
-            type != 100 ? (roleId == 3 ? getAction('推荐给客户', '0', 100) : '') : action.push(h('span', {class: {'cl-error': true}}, '等待项目总监审核'));
+            type != 100 ? (roleId == 3 ? getAction('推荐给客户', '0', 100) : '') : action.push(h('span', {class: {'cl-error': true, block: true}}, '等待项目总监审核'));
             break;
           case 1:
             roleId == 3 && getAction('安排面试','3', 2);
@@ -235,15 +236,19 @@
             class: {
               'cl-success': status=='7',
               'cl-error': status=='8'&&type!=200,
-              'cl-primary': status=='8'&&type==200
+              'cl-primary': status=='8'&&type==200,
+              'block': true,
+              'center': true
             }
           }, status=='7'?'已通过保证期':type == 200 ? '已在其他项目入职':'已淘汰'))
         }
         if (status != '0' && type != 200) {
           action.push(h('Button', {
             props: {
-              type: 'text'
+              type: 'text',
+              size: 'small'
             },
+            class: 'block center',
             on: {
               click: () => {
                 this.reBack(projectTalentId, status);
@@ -269,6 +274,7 @@
           {
             title: '姓名',
             key: 'talentName',
+            width: 100,
             align: 'center',
             render: (h, params) => {
               const name = params.row.name || params.row.talentName;
@@ -297,8 +303,8 @@
             title: '沟通记录',
             align: 'center',
             render: (h, params) => {
-              const remind = this.getLastRemind(params.row.reminds || []) || {};
-              return h('span', `${remind.remark || ''}-${getDateTime(remind.createTime) || ''}`);
+              const remind = this.getLastRemind(params.row.reminds || [], !!this.home ? params.row.status : this.status) || {};
+              return h('span', !!remind.remark ? `${remind.remark || ''}-${getDateTime(remind.createTime) || ''}` : '');
             }
           },
           {
@@ -307,7 +313,20 @@
             align: 'center',
             width: 200,
             render: (h, params) => {
-              return renderAction.call(this, h, params.row.id, params.row.type, params.row.name, params.row.createUserId, params.row.status, params.row.remarkStatus);
+              const action =  renderAction.call(this, h, params.row.id, params.row.type, params.row.name, params.row.createUserId, params.row.status, params.row.remarkStatus);
+              return h('div', {
+                class: 'ac auto inline-block relative center'
+              }, [
+                h('Button', {
+                  props: {
+                    size: 'small',
+                  },
+                  style: 'height: 32px'
+                }, '操作'),
+                h('div', {
+                  class: 'btns hide w120 border radius4 bgfff'
+                }, action)
+              ]);
             }
           }
         ],
@@ -374,10 +393,10 @@
             render: (h, params) => {
               const remind = this.getLastFK(params.row.reminds || []);
               if (remind) {
-                return getRenderList([
+                return getRenderList(h, JSON.stringify([
                   `人选：${remind.talentRemark}`,
                   `客户：${remind.customerRemark}`,
-                ]);
+                ]));
               }
             }
           },
@@ -546,10 +565,10 @@
         }
       },
       // 获取当前状态的最后一次跟踪
-      getLastRemind(arr) {
+      getLastRemind(arr, status) {
         const len = arr.length;
         for (let i=0; i<len; i++) {
-          if (arr[i].status == this.status || this.status == 1 && arr[i].type == 100) {
+          if (arr[i].status == status || status == 1 && arr[i].type == 100) {
             return arr[i];
           }
         }
@@ -568,6 +587,7 @@
         const len = arr.length;
         for (let i=0; i<len; i++) {
           if (arr[i].type == 16) {
+            console.log('fk')
             return arr[i];
           }
         }
@@ -627,7 +647,7 @@
             this.$Message.error('请填写反馈信息');
             return;
           }
-        } else if (type == 99) {
+        } else if (type == 100) {
           if (!recommendation) {
             this.$Message.error('请填写推荐理由');
             return;
@@ -685,8 +705,9 @@
         this.nameColumn.push({
           title: '项目-公司',
           align: 'center',
+          ellipsis: true,
           render: (h, params) => {
-            return h('div', [
+            return h('div', {class: 'line'}, [
               h('Button', {
                 props: {
                   type: 'text',
