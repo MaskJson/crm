@@ -176,7 +176,7 @@
                           this.$Message.error('暂无联系人，请前往详情页添加');
                           return false;
                         }
-                        this.customerType = params.row.type;
+                        this.customerType = params.row.customerType;
                         this.showRemindModal(params.row.customerId, params.row.id);
                       }).catch(data => {this.show = false;})
                     }

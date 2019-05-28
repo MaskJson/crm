@@ -9,7 +9,7 @@
         <div class="form-con">
           <login-form @on-success-valid="handleSubmit" :userNameRules="userNameRules"
                       :passwordRules="passwordRules"></login-form>
-          <p class="login-tip">输入任意用户名和密码即可</p>
+          <!--<p class="login-tip">输入任意用户名和密码即可</p>-->
         </div>
       </Card>
     </div>

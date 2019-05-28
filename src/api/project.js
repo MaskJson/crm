@@ -70,3 +70,8 @@ export const changeStatus = (params) => {
 export const reBack = (params) => {
   return postRequest('/project/talent/reBack', params);
 };
+
+// 获取当前用户的淘汰进展人才
+export const getKill = (params) => {
+  return getRequest('/project/getKills', params);
+};

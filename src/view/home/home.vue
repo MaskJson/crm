@@ -36,66 +36,66 @@
           <!--</p>-->
         <!--</div>-->
       <!--</Col>-->
-      <Col span="4" class="pd-10">
-        <div class="radius4 border pd-10">
-          <h3 class="cursor" @click="goto2('/project/progress-pending', '1')">项目启动阶段</h3>
-          <p class="mt-10">
-            <span class="inline-block">进展中：</span>
-            <span class="ml-10 cl-primary cursor" @click="goto2('/project/progress-pending', '1', '1')">{{count.qiDongFirst}}</span>
-          </p>
-          <p class="mt-10">
-            <span class="inline-block">停滞中：</span>
-            <span class="ml-10 cl-primary cursor" @click="goto2('/project/progress-pending', '1',  '2')">{{count.qiDongSecond}}</span>
-          </p>
-          <p class="mt-10">
-            <span class="inline-block">缓慢：</span>
-            <span class="ml-10 cl-primary cursor" @click="goto2('/project/progress-pending', '1',  '3')">{{count.qiDongThird}}</span>
-          </p>
-        </div>
-      </Col>
-      <Col span="4" class="pd-10">
-        <div class="radius4 border pd-10">
-          <h3 class="cursor" @click="goto2('/project/progress-pending', '2')">项目攻坚阶段</h3>
-          <p class="mt-10">
-            <span class="inline-block">进展中：</span>
-            <span class="ml-10 cl-primary cursor" @click="goto2('/project/progress-pending', '2', '1')">{{count.gongJianFirst}}</span>
-          </p>
-          <p class="mt-10">
-            <span class="inline-block">缓慢：</span>
-            <span class="ml-10 cl-primary cursor" @click="goto2('/project/progress-pending', '2', '2')">{{count.gongJianSecond}}</span>
-          </p>
-        </div>
-      </Col>
-      <Col span="4" class="pd-10">
-        <div class="radius4 border pd-10">
-          <h3 class="cursor" @click="goto2('/project/progress-pending', '3')">项目收尾阶段</h3>
-          <p class="mt-10">
-            <span class="inline-block">签订offer：</span>
-            <span class="ml-10 cl-primary cursor" @click="goto2('/project/progress-pending', '3', '4')">{{count.shouWeiFirst}}</span>
-          </p>
-          <p class="mt-10">
-            <span class="inline-block">入职：</span>
-            <span class="ml-10 cl-primary cursor" @click="goto2('/project/progress-pending', '3', '5')">{{count.shouWeiSecond}}</span>
-          </p>
-          <p class="mt-10">
-            <span class="inline-block">保证期：</span>
-            <span class="ml-10 cl-primary cursor" @click="goto2('/project/progress-pending', '3', '6')">{{count.shouWeiThird}}</span>
-          </p>
-        </div>
-      </Col>
-      <Col span="4" class="pd-10">
-        <div class="radius4 border pd-10">
-          <h3 class="cursor" @click="goto2('/project/progress-pending', '4')">项目结束</h3>
-          <p class="mt-10">
-            <span class="inline-block">通过保证期：</span>
-            <span class="ml-10 cl-primary cursor" @click="goto2('/project/progress-pending', '4', '7')">{{count.jieShuFirst}}</span>
-          </p>
-          <p class="mt-10">
-            <span class="inline-block">淘汰：</span>
-            <span class="ml-10 cl-primary cursor" @click="goto2('/project/progress-pending', '4', '8')">{{count.jieShuSecond}}</span>
-          </p>
-        </div>
-      </Col>
+      <!--<Col span="4" class="pd-10">-->
+        <!--<div class="radius4 border pd-10">-->
+          <!--<h3 class="cursor" @click="goto2('/project/progress-pending', '1')">项目启动阶段</h3>-->
+          <!--<p class="mt-10">-->
+            <!--<span class="inline-block">进展中：</span>-->
+            <!--<span class="ml-10 cl-primary cursor" @click="goto2('/project/progress-pending', '1', '1')">{{count.qiDongFirst}}</span>-->
+          <!--</p>-->
+          <!--<p class="mt-10">-->
+            <!--<span class="inline-block">停滞中：</span>-->
+            <!--<span class="ml-10 cl-primary cursor" @click="goto2('/project/progress-pending', '1',  '2')">{{count.qiDongSecond}}</span>-->
+          <!--</p>-->
+          <!--<p class="mt-10">-->
+            <!--<span class="inline-block">缓慢：</span>-->
+            <!--<span class="ml-10 cl-primary cursor" @click="goto2('/project/progress-pending', '1',  '3')">{{count.qiDongThird}}</span>-->
+          <!--</p>-->
+        <!--</div>-->
+      <!--</Col>-->
+      <!--<Col span="4" class="pd-10">-->
+        <!--<div class="radius4 border pd-10">-->
+          <!--<h3 class="cursor" @click="goto2('/project/progress-pending', '2')">项目攻坚阶段</h3>-->
+          <!--<p class="mt-10">-->
+            <!--<span class="inline-block">进展中：</span>-->
+            <!--<span class="ml-10 cl-primary cursor" @click="goto2('/project/progress-pending', '2', '1')">{{count.gongJianFirst}}</span>-->
+          <!--</p>-->
+          <!--<p class="mt-10">-->
+            <!--<span class="inline-block">缓慢：</span>-->
+            <!--<span class="ml-10 cl-primary cursor" @click="goto2('/project/progress-pending', '2', '2')">{{count.gongJianSecond}}</span>-->
+          <!--</p>-->
+        <!--</div>-->
+      <!--</Col>-->
+      <!--<Col span="4" class="pd-10">-->
+        <!--<div class="radius4 border pd-10">-->
+          <!--<h3 class="cursor" @click="goto2('/project/progress-pending', '3')">项目收尾阶段</h3>-->
+          <!--<p class="mt-10">-->
+            <!--<span class="inline-block">签订offer：</span>-->
+            <!--<span class="ml-10 cl-primary cursor" @click="goto2('/project/progress-pending', '3', '4')">{{count.shouWeiFirst}}</span>-->
+          <!--</p>-->
+          <!--<p class="mt-10">-->
+            <!--<span class="inline-block">入职：</span>-->
+            <!--<span class="ml-10 cl-primary cursor" @click="goto2('/project/progress-pending', '3', '5')">{{count.shouWeiSecond}}</span>-->
+          <!--</p>-->
+          <!--<p class="mt-10">-->
+            <!--<span class="inline-block">保证期：</span>-->
+            <!--<span class="ml-10 cl-primary cursor" @click="goto2('/project/progress-pending', '3', '6')">{{count.shouWeiThird}}</span>-->
+          <!--</p>-->
+        <!--</div>-->
+      <!--</Col>-->
+      <!--<Col span="4" class="pd-10">-->
+        <!--<div class="radius4 border pd-10">-->
+          <!--<h3 class="cursor" @click="goto2('/project/progress-pending', '4')">项目结束</h3>-->
+          <!--<p class="mt-10">-->
+            <!--<span class="inline-block">通过保证期：</span>-->
+            <!--<span class="ml-10 cl-primary cursor" @click="goto2('/project/progress-pending', '4', '7')">{{count.jieShuFirst}}</span>-->
+          <!--</p>-->
+          <!--<p class="mt-10">-->
+            <!--<span class="inline-block">淘汰：</span>-->
+            <!--<span class="ml-10 cl-primary cursor" @click="goto2('/project/progress-pending', '4', '8')">{{count.jieShuSecond}}</span>-->
+          <!--</p>-->
+        <!--</div>-->
+      <!--</Col>-->
     </Row>
     <Row v-show="list.length > 0">
       <h2>项目进展</h2>

@@ -110,21 +110,41 @@
           <FormItem label="淘汰理由" class="ivu-form-item-required">
             <Input v-model="actionData.killRemark"/>
           </FormItem>
+          <div v-if="(!talent.followUserId || talent.followUserId == userId) && talent.progress <= 1">
+            <p class="cl-error pb-10" style="padding-left: 120px;">淘汰跟进</p>
+            <FormItem label="人才状态：" prop="status">
+              <Select v-model="remind.status">
+                <Option v-for="(item, index) of talentStatus" :key="'status' + index" :value="item.value">
+                  {{ item.label }}
+                </Option>
+              </Select>
+            </FormItem>
+            <FormItem label="下次跟踪类别" prop="remindTypeId">
+              <Select v-model="remind.nextType" clearable>
+                <Option :value="1">电话</Option>
+                <Option :value="2">顾问面试（内）</Option>
+                <Option :value="3">顾问面试（外）</Option>
+              </Select>
+            </FormItem>
+            <FormItem label="下次联系时间" prop="remindTime" >
+              <DatePicker type="datetime" placeholder="日期" v-model="remind.nextRemindTime"></DatePicker>
+            </FormItem>
+          </div>
         </div>
         <FormItem label="备注">
           <Input type="textarea" :rows="3" v-model="actionData.remark"/>
         </FormItem>
       </Form>
-    </ModalUtil>
 
+    </ModalUtil>
     <SpinUtil :show="show"/>
   </div>
 </template>
 
 <script>
-  import { projectTalentStatus, projectProgress } from "../../../../libs/constant";
+  import { projectTalentStatus, projectProgress, talentStatus } from "../../../../libs/constant";
   import { getCity, getDateTime, getDateTime2, getStatusRender, toggleShow, getUserId, getUserInfoByKey, getRenderList, getProjectTalentStatus, getProjectTalentType } from "../../../../libs/tools";
-  import { getProjectTalentByStatus, addProjectTalentRemind, reBack } from "../../../../api/project";
+  import { getProjectTalentByStatus, addProjectTalentRemind, reBack, reviewTalent } from "../../../../api/project";
 
   const statuses = JSON.parse(JSON.stringify(projectTalentStatus));
   statuses.splice(0, 2, {value: '1', label: '推荐人才'});
@@ -135,12 +155,22 @@
     props: ['userList', 'flag', 'performance', 'projectTalents', 'home'],
     data () {
       // 获取操作选项
-      function renderAction(h, projectTalentId, type, name, createUserId, status, remarkStatus) {
+      function renderAction(h, projectTalentId, type, name, createUserId, status, remarkStatus, talentName, followUserId, talentId, talentType, progress) {
         let action = [];
         const roleId = this.roleId;
         // 添加选项
         const getAction = (text, status, actionType) => {
           const handler = () => {
+            this.talentName = talentName;
+            this.talent = {
+              talentId, talentType, followUserId, progress
+            };
+            this.remind = {
+              type: 1,
+              status: null,
+              nextType: null,
+              nextRemindTime: null
+            };
             this.actionData = {
               projectTalentId,
               status: Number(status),
@@ -165,7 +195,7 @@
               customerRemark: null,
               remarkStatus: null
             };
-            if (actionType == 6 || actionType == 9) {
+            if (actionType == 6 || actionType == 9 || actionType == 666) {
               this.addRemind();
             } else {
               toggleShow(this, 'remind', true);
@@ -185,7 +215,7 @@
         getAction('补充跟踪', status, 99);
         switch (status) {
           case 0:
-            type != 100 ? (roleId == 3 ? getAction('推荐给客户', '0', 100) : '') : action.push(h('span', {class: {'cl-error': true, block: true}}, '等待项目总监审核'));
+            type != 100 ? (roleId == 3 ? getAction('推荐给客户', '0', 100) : null) : roleId == 3 ? getAction('通过', '666', 666) : action.push(h('span', {class: {'cl-error': true, block: true}}, '等待项目总监审核'));
             break;
           case 1:
             roleId == 3 && getAction('安排面试','3', 2);
@@ -228,7 +258,7 @@
             break;
           default:break;
         }
-        if ([1,3,4,5,6].indexOf(status)>-1) {
+        if ([0,1,3,4,5,6].indexOf(status)>-1) {
           getAction('淘汰', '8', 15);
         }
         if (status=='7' || status=='8') {
@@ -259,9 +289,12 @@
         return action;
       }
       return {
+        talentStatus: talentStatus.filter(item => item.value != 10),
         projectTalentStatus: statuses,
         projectTalentRemindStatus: projectProgress,
+        talentName: '',
         nickName: getUserInfoByKey('nickName'),
+        userId: getUserId(),
         roleId: getUserInfoByKey('roleId'),
         show: false,
         id: null,
@@ -313,7 +346,10 @@
             align: 'center',
             width: 200,
             render: (h, params) => {
-              const action =  renderAction.call(this, h, params.row.id, params.row.type, params.row.name, params.row.createUserId, params.row.status, params.row.remarkStatus);
+              const action =  renderAction.call(
+                this, h, params.row.id, params.row.type, params.row.name, params.row.createUserId, params.row.status, params.row.remarkStatus, params.row.talentName,
+                params.row.followUserId, params.row.talentId, params.row.talentType, params.row.progress
+              );
               return h('div', {
                 class: 'ac auto inline-block relative center'
               }, [
@@ -353,6 +389,15 @@
           remarkStatus: null,
           recommendation: null,
           killRemark: null,
+        },
+        talent: {
+
+        },
+        remind: {
+          type: 1,
+          status: null,
+          nextType: null,
+          nextRemindTime: null
         }
       }
     },
@@ -623,55 +668,103 @@
           }
         })
       },
-      // 添加跟踪记录
-      addRemind() {
-        // 特定状态验证
-        const {remarkStatus, type, status, interviewTime, yearSalary, sureTime, workTime, entryTime, probationTime, talentRemark, customerRemark, recommendation, killRemark} = this.actionData;
-        if ([2,4,8].indexOf(type) > -1 || remarkStatus == 2) {
-          if (!interviewTime) {
-            this.$Message.error('请填写面试时间');
-            return;
-          }
-        } else if (type == 10 || remarkStatus == 5) {
-          if (!yearSalary || !sureTime || !workTime) {
-            this.$Message.error('请填写年薪、确认时间和预计上班时间');
-            return;
-          }
-        } else if (type == 12) {
-          if (!entryTime || !probationTime) {
-            this.$Message.error('请填写入职时间和保证期');
-            return;
-          }
-        } else if (type == 16) {
-          if (!talentRemark || !customerRemark || !remarkStatus) {
-            this.$Message.error('请填写反馈信息');
-            return;
-          }
-        } else if (type == 100) {
-          if (!recommendation) {
-            this.$Message.error('请填写推荐理由');
-            return;
-          }
-        } else if (status == 8 || remarkStatus == 8) {
-          if (!killRemark) {
-            this.$Message.error('请填写淘汰理由');
-            return;
-          }
-        }
+      // 审核
+      review(projectTalentId, projectRemindId, flag) {
         this.show = true;
-        addProjectTalentRemind({
-          ...this.actionData,
-          createUserId: getUserId(),
-          roleId: this.roleId
+        reviewTalent({
+          projectTalentId,
+          projectRemindId,
+          flag,
+          userId: getUserId()
         }).then(data => {
           this.show = false;
-          toggleShow(this, 'remind', false);
           if (!this.home) {
             this.getProjectTalent();
           } else {
             this.$emit('change');
           }
-        }).catch(data => {this.show = false;})
+        }).catch(data => {
+          this.show = false;
+        })
+      },
+      // 添加跟踪记录
+      addRemind() {
+        // 特定状态验证
+        const {remarkStatus, type, status, interviewTime, yearSalary, sureTime, workTime, entryTime, probationTime, talentRemark, customerRemark, recommendation, killRemark} = this.actionData;
+        if (type == 666) {
+          this.$Modal.confirm({
+            title: '确认推荐',
+            content: `您确认推荐人才-${this.talentName}吗?`,
+            onOk: () => {
+              this.review(this.actionData.projectTalentId, null, true);
+            }
+          })
+        } else {
+          let flag = false;
+          if ([2,4,8].indexOf(type) > -1 || remarkStatus == 2) {
+            if (!interviewTime) {
+              this.$Message.error('请填写面试时间');
+              return;
+            }
+          } else if (type == 10 || remarkStatus == 5) {
+            if (!yearSalary || !sureTime || !workTime) {
+              this.$Message.error('请填写年薪、确认时间和预计上班时间');
+              return;
+            }
+          } else if (type == 12) {
+            if (!entryTime || !probationTime) {
+              this.$Message.error('请填写入职时间和保证期');
+              return;
+            }
+          } else if (type == 16) {
+            if (!talentRemark || !customerRemark || !remarkStatus) {
+              this.$Message.error('请填写反馈信息');
+              return;
+            }
+          } else if (type == 100) {
+            if (!recommendation) {
+              this.$Message.error('请填写推荐理由');
+              return;
+            }
+          } else if (status == 8 || remarkStatus == 8) {
+            if (!killRemark) {
+              this.$Message.error('请填写淘汰理由');
+              return;
+            }
+            if ((!this.talent.followUserId || this.talent.followUserId == this.userId) && this.talent.progress <= 1) {
+              flag = true;
+              this.remind.talentId = this.talent.talentId;
+              this.remind.createUserId = this.userId;
+              if (!this.remind.status) {
+                this.$Message.error('请选择人才状态');
+                return ;
+              }
+              if ((this.remind.nextRemindTime || this.remind.nextType) && (!this.remind.nextRemindTime || !this.remind.nextType)) {
+                this.$Message.warning('设置下次跟踪，类别和时间需填写完整');
+                return false;
+              }
+              if (this.talent.talentType == 1 && (!this.remind.nextType || !this.remind.nextRemindTime)) {
+                this.$Message.warning('专属人才必须选择下次跟踪类别和时间');
+                return false;
+              }
+            }
+          }
+          this.show = true;
+          addProjectTalentRemind({
+            ...this.actionData,
+            createUserId: getUserId(),
+            roleId: this.roleId,
+            talentRemind: flag ? this.remind : null
+          }).then(data => {
+            this.show = false;
+            toggleShow(this, 'remind', false);
+            if (!this.home) {
+              this.getProjectTalent();
+            } else {
+              this.$emit('change');
+            }
+          }).catch(data => {this.show = false;})
+        }
       },
       // 获取当前进展状态下的项目人才
       getProjectTalent() {

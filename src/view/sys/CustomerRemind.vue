@@ -15,16 +15,19 @@
         columns: [
           {
             title: '公司',
+            width: 100,
             align: 'center',
             key: 'customerName'
           },
           {
             title: '联系人',
+            width: 100,
             align: 'center',
             key: 'contactName'
           },
           {
             title: '沟通方式',
+            width: 100,
             align: 'center',
             render: (h, params) => {
               const v = params.row.type;
@@ -50,6 +53,7 @@
           },
           {
             title: '时间',
+            width: 150,
             align: 'center',
             render: (h, params) => {
               return h('span', getDateTime(params.row.createTime));

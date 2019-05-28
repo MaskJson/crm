@@ -47,11 +47,11 @@
             <Input v-model="remind.meetAddress"/>
           </FormItem>
         </div>
-        <FormItem label="客户：" prop="customerId">
-          <Select placeholder="请选择客户" filterable clearable v-model="remind.customerId">
-            <Option v-for="(item, index) of customerList" :key="'customer' + index" :value="item.id">{{ item.name }}</Option>
-          </Select>
-        </FormItem>
+        <!--<FormItem label="客户：" prop="customerId">-->
+          <!--<Select placeholder="请选择客户" filterable clearable v-model="remind.customerId">-->
+            <!--<Option v-for="(item, index) of customerList" :key="'customer' + index" :value="item.id">{{ item.name }}</Option>-->
+          <!--</Select>-->
+        <!--</FormItem>-->
         <FormItem label="人才状态：" prop="status">
           <Select v-model="remind.status">
             <Option v-for="(item, index) of talentStatus" :key="'status' + index" :value="item.value">{{ item.label }}</Option>
@@ -281,9 +281,9 @@
           status: [
             { required: true, type: 'number', message: '请选择状态', trigger: 'change' }
           ],
-          customerId: [
-            { required: true, type: 'number', message: '请选择客户', trigger: 'change' }
-          ],
+          // customerId: [
+          //   { required: true, type: 'number', message: '请选择客户', trigger: 'change' }
+          // ],
         },
         finishId: null, // 结束跟进id
         customerList: [],

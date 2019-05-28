@@ -100,7 +100,7 @@
           <div v-else>暂无跟踪记录</div>
         </TabPane>
         <TabPane :label="`项目经历（${projectLen}）`">
-          <Project v-model="projectLen"/>
+          <Project v-model="projectLen" :talent="entity"/>
         </TabPane>
       </Tabs>
     </Row>

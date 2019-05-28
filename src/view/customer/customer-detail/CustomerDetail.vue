@@ -53,7 +53,7 @@
           </Select>
           <Timeline v-if="remindFilter && remindFilter.length > 0" class="mt-10">
             <TimelineItem v-for="(item, index) of remindFilter" :key="'remind' + index">
-              <p class="fs16">{{item.type | typeFilter}} <span class="ml-40">客户状态：{{item.status == 0 ? '普通公司' : item.status == 6 ? '客户' : '拓展中' + `(${getCustomerType(false, type)})`}}</span></p>
+              <p class="fs16">{{item.type | typeFilter}} <span class="ml-40">客户状态：{{item.status == 0 ? '普通公司' : item.status == 6 ? '客户' : '拓展中' + `(${getCustomerType(false, item.type)})`}}</span></p>
               <!--<p class="mt-5">跟踪状态：{{item.status | customerTypeFilter}}</p>-->
               <p class="mt-5" v-if="item.status == 5">
                 合同期：
@@ -396,6 +396,7 @@
       }
     },
     methods: {
+      getCustomerType:getCustomerType,
       getDateTime: getDateTime,
       okHandler(talentId, status, projectId) {
         // const len = this.talents.length;

@@ -40,6 +40,11 @@ export const allCustomer = (params) => {
   return getRequest('/customer/customer-all', params);
 };
 
+// 客户名称排重，带id
+export const changeCustomerName = (params) => {
+  return postRequest('/customer/changeName', params);
+};
+
 // 获取所有客户
 export const allDepartment = (params) => {
   return getRequest('/customer/department-all', params);

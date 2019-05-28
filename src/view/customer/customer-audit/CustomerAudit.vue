@@ -2,19 +2,25 @@
   <Card>
     <ManagerView ref="manager" :del="false" :save="null" :columns="columns" :searchData="searchData">
       <Button type="success" @click="pass" >批量通过</Button>
-      <Button type="error" @click="refuse" class="ml-10">批量拒绝</Button>
+      <!--<Button type="error" @click="refuse" class="ml-10">批量拒绝</Button>-->
     </ManagerView>
+    <ModalUtil ref="modal" title="修改客户名称" @on-ok="changeName" :loading="loading">
+      <div class="pd-10">
+        <Input v-model="entity.name"/>
+      </div>
+    </ModalUtil>
   </Card>
 </template>
 
 <script>
-  import {getUserId, getUserInfoByKey} from "../../../libs/tools";
-  import {auditList, auditPass, auditRefuse} from "../../../api/customer";
+  import {getUserId, getUserInfoByKey, toggleShow} from "../../../libs/tools";
+  import {auditList, auditPass, auditRefuse, changeCustomerName} from "../../../api/customer";
 
   export default {
     name: "CustomerAudit",
     data() {
       return {
+        loading: false,
         columns: [
           {
             type: 'selection',
@@ -74,32 +80,49 @@
                   }
                 }, '通过')
               ];
-              if (type == 0) {
-                btn.push(
-                  h('Button', {
-                    props: {
-                      type: 'error',
-                      size: 'small'
-                    },
-                    class: {
-                      'ml-10': true
-                    },
-                    on: {
-                      click: () => {
-                        this.$Modal.confirm({
-                          title: '拒绝确认',
-                          content: `确定拒绝公司-${params.row.name}的审核吗？`,
-                          onOk: () => {
-                            this.$refs['manager'].emitManagerHandler('refuse', {
-                              params: [params.row.id]
-                            })
-                          }
-                        })
-                      }
+              // if (type == 0) {
+              //   btn.push(
+              //     h('Button', {
+              //       props: {
+              //         type: 'error',
+              //         size: 'small'
+              //       },
+              //       class: {
+              //         'ml-10': true
+              //       },
+              //       on: {
+              //         click: () => {
+              //           this.$Modal.confirm({
+              //             title: '拒绝确认',
+              //             content: `确定拒绝公司-${params.row.name}的审核吗？`,
+              //             onOk: () => {
+              //               this.$refs['manager'].emitManagerHandler('refuse', {
+              //                 params: [params.row.id]
+              //               })
+              //             }
+              //           })
+              //         }
+              //       }
+              //     }, '拒绝')
+              //   )
+              // }
+              btn.push(
+                h('Button', {
+                  props: {
+                    type: 'primary',
+                    size: 'small'
+                  },
+                  class: {
+                    'ml-10': true
+                  },
+                  on: {
+                    click: () => {
+                      Object.assign(this.entity, params.row);
+                      toggleShow(this, 'modal');
                     }
-                  }, '拒绝')
-                )
-              }
+                  }
+                }, '修改名称')
+              );
               return h('div', btn);
             }
           }
@@ -107,6 +130,10 @@
         searchData: {
           userId: getUserId(),
           roleId: getUserInfoByKey('roleId')
+        },
+        entity: {
+          id: null,
+          name: null
         }
       }
     },
@@ -119,6 +146,22 @@
       refuse() {
         this.$refs['manager'].emitManagerHandler('refuse', {
           isBatch: true
+        })
+      },
+      changeName() {
+        if (!this.entity.name) {
+          this.$Message.warning('请填写客户名称');
+          return false;
+        }
+        this.loading = true;
+        changeCustomerName(this.entity).then(data => {
+          this.loading = false;
+          toggleShow(this, 'modal', false);
+          this.$refs['manager'].emitManagerHandler(3, {
+            unFresh: true
+          })
+        }).catch(data => {
+          this.loading = false;
         })
       }
     },

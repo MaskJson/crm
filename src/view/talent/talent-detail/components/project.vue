@@ -5,7 +5,7 @@
         <span class="cl-primary">{{item.projectName}}(ID：{{item.projectId}})</span>
         <span class="ml-5 mr-5">of</span>
         <span class="cl-primary">{{item.customerName}}</span>
-        <div class="inline-block action relative ml-10" style="height: 32px;" v-if="item.createUserId == userId">
+        <div class="inline-block action relative ml-10" style="height: 32px;" v-if="item.createUserId == userId || item.projectCreateUserId == userId">
           <Button size="small" icon="ios-apps">操作</Button>
           <div class="hide btns w120 border radius4 bgfff">
             <Button
@@ -15,7 +15,7 @@
               :key="'btn' + index"
               @click="setActionData(item.id, action.status, action.type, item.status, item.type, index, item.remarkStatus)"
             >{{action.text}}</Button>
-            <Button type="text" @click="reBack(item.id, item.status, index)">撤销</Button>
+            <Button v-if="item.status != 0" type="text" @click="reBack(item.id, item.status, index)">撤销</Button>
           </div>
         </div>
         <Button class="ml-5" @click="item.show = !item.show">{{item.show ? '隐藏' : '显示'}}</Button>
@@ -83,7 +83,7 @@
           </Select>
         </FormItem>
         <FormItem label="候选人">
-          <span>{{actionData.talentName}}</span>
+          <span>{{talent.name}}</span>
         </FormItem>
         <div v-if="[2,4,8].indexOf(actionData.type) > -1 || actionData.remarkStatus == 2">
           <FormItem label="面试时间" class="ivu-form-item-required">
@@ -150,6 +150,26 @@
           <FormItem label="淘汰理由" class="ivu-form-item-required">
             <Input v-model="actionData.killRemark"/>
           </FormItem>
+          <div v-if="(!talent.followUserId || talent.followUserId == userId) && talent.progress <= 1">
+            <p class="cl-error pb-10" style="padding-left: 120px;">淘汰跟进</p>
+            <FormItem label="人才状态：" prop="status">
+              <Select v-model="remind.status">
+                <Option v-for="(item, index) of talentStatus" :key="'status' + index" :value="item.value">
+                  {{ item.label }}
+                </Option>
+              </Select>
+            </FormItem>
+            <FormItem label="下次跟踪类别" prop="remindTypeId">
+              <Select v-model="remind.nextType" clearable>
+                <Option :value="1">电话</Option>
+                <Option :value="2">顾问面试（内）</Option>
+                <Option :value="3">顾问面试（外）</Option>
+              </Select>
+            </FormItem>
+            <FormItem label="下次联系时间" prop="remindTime" >
+              <DatePicker type="datetime" placeholder="日期" v-model="remind.nextRemindTime"></DatePicker>
+            </FormItem>
+          </div>
         </div>
         <FormItem label="备注">
           <Input type="textarea" :rows="3" v-model="actionData.remark"/>
@@ -161,9 +181,9 @@
 </template>
 
 <script>
-  import {projectProgress} from "../../../../libs/constant";
+  import {projectProgress, talentStatus} from "../../../../libs/constant";
   import {getTalentProjects} from "../../../../api/talent";
-  import {reBack, addProjectTalentRemind} from "../../../../api/project";
+  import {reBack, addProjectTalentRemind, reviewTalent} from "../../../../api/project";
   import {
     getDateTime,
     getDateTime2,
@@ -175,22 +195,57 @@
 
   export default {
     name: "project",
+    props: {
+      talent: {
+        type: Object,
+        default: {}
+      }
+    },
     data() {
       return {
+        talentStatus: talentStatus.filter(item => item.value != 10),
         show: false,
+        talentName: '',
         userId: getUserId(),
+        nickName: getUserInfoByKey('nickName'),
         roleId: getUserInfoByKey('roleId'),
         projectTalentRemindStatus: projectProgress,
         projectList: [],// 项目经历
         actionData: {
 
         },
-        actionIndex: null
+        actionIndex: null,
+        remind: {
+          type: 1,
+          status: null,
+          nextType: null,
+          nextRemindTime: null
+        }
       }
     },
     methods: {
+      // 审核
+      review(projectTalentId, projectRemindId, flag) {
+        this.show = true;
+        reviewTalent({
+          projectTalentId,
+          projectRemindId,
+          flag,
+          userId: getUserId()
+        }).then(data => {
+          this.getProjectList(Number(this.$route.query.id));
+        }).catch(data => {
+          this.show = false;
+        })
+      },
       setActionData(projectTalentId, status, type, prevStatus, prevType, index, remarkStatus) {
         this.actionIndex = index;
+        this.remind = {
+          type: 1,
+          status: null,
+          nextType: null,
+          nextRemindTime: null
+        };
         this.actionData = {
           projectTalentId,
           status: Number(status),
@@ -217,7 +272,7 @@
           recommendation: null,
           killRemark: null,
         };
-        if (actionType == 6 || actionType == 9) {
+        if (type == 6 || type == 9 || type == 666) {
           this.addRemind();
         } else {
           toggleShow(this, 'remind', true);
@@ -252,55 +307,85 @@
       addRemind() {
         // 特定状态验证
         const {remarkStatus, type, status, interviewTime, yearSalary, sureTime, workTime, entryTime, probationTime, talentRemark, customerRemark, recommendation, killRemark} = this.actionData;
-        if ([2,4,8].indexOf(type) > -1 || remarkStatus == 2) {
-          if (!interviewTime) {
-            this.$Message.error('请填写面试时间');
-            return;
+        if (type == 666) {
+          this.$Modal.confirm({
+            title: '确认推荐',
+            content: `您确认推荐当前人才吗?`,
+            onOk: () => {
+              this.review(this.actionData.projectTalentId, null, true);
+            }
+          })
+        } else {
+          let flag = false;
+          if ([2,4,8].indexOf(type) > -1 || remarkStatus == 2) {
+            if (!interviewTime) {
+              this.$Message.error('请填写面试时间');
+              return;
+            }
+          } else if (type == 10 || remarkStatus == 5) {
+            if (!yearSalary || !sureTime || !workTime) {
+              this.$Message.error('请填写年薪、确认时间和预计上班时间');
+              return;
+            }
+          } else if (type == 12) {
+            if (!entryTime || !probationTime) {
+              this.$Message.error('请填写入职时间和保证期');
+              return;
+            }
+          } else if (type == 16) {
+            if (!talentRemark || !customerRemark || !remarkStatus) {
+              this.$Message.error('请填写反馈信息');
+              return;
+            }
+          } else if (type == 100) {
+            if (!recommendation) {
+              this.$Message.error('请填写推荐理由');
+              return;
+            }
+          } else if (status == 8 || remarkStatus == 8) {
+            if (!killRemark) {
+              this.$Message.error('请填写淘汰理由');
+              return;
+            }
+            if ((!this.talent.followUserId || this.talent.followUserId == this.userId) && this.talent.progress <= 1) {
+              flag = true;
+              this.remind.talentId = this.talent.id;
+              this.remind.createUserId = this.userId;
+              if (!this.remind.status) {
+                this.$Message.error('请选择人才状态');
+                return ;
+              }
+              if ((this.remind.nextRemindTime || this.remind.nextType) && (!this.remind.nextRemindTime || !this.remind.nextType)) {
+                this.$Message.warning('设置下次跟踪，类别和时间需填写完整');
+                return false;
+              }
+              if (this.talent.talentType == 1 && (!this.remind.nextType || !this.remind.nextRemindTime)) {
+                this.$Message.warning('专属人才必须选择下次跟踪类别和时间');
+                return false;
+              }
+            }
           }
-        } else if (type == 10 || remarkStatus == 5) {
-          if (!yearSalary || !sureTime || !workTime) {
-            this.$Message.error('请填写年薪、确认时间和预计上班时间');
-            return;
-          }
-        } else if (type == 12) {
-          if (!entryTime || !probationTime) {
-            this.$Message.error('请填写入职时间和保证期');
-            return;
-          }
-        } else if (type == 16) {
-          if (!talentRemark || !customerRemark || !remarkStatus) {
-            this.$Message.error('请填写反馈信息');
-            return;
-          }
-        } else if (type == 100) {
-          if (!recommendation) {
-            this.$Message.error('请填写推荐理由');
-            return;
-          }
-        } else if (status == 8 || remarkStatus == 8) {
-          if (!killRemark) {
-            this.$Message.error('请填写淘汰理由');
-            return;
-          }
+          this.show = true;
+          addProjectTalentRemind({
+            ...this.actionData,
+            createUserId: getUserId(),
+            roleId: getUserInfoByKey('roleId'),
+            talentRemind: flag ? this.remind : null
+          }).then(data => {
+            // Object.assign(this.projectList[this.actionIndex], {status: this.actionData.status, type: this.actionData.type, remarkStatus: this.actionData.remarkStatus});
+            // this.projectList[this.actionIndex].reminds.unshift({
+            //   ...data,
+            //   createUser: getUserInfoByKey('nickName')
+            // });
+            // this.projectList[this.actionIndex].status = this.actionData.status;
+            toggleShow(this, 'remind', false);
+            this.getProjectList(Number(this.$route.query.id));
+          }).catch(data => {this.show = false;})
         }
-        this.show = true;
-        addProjectTalentRemind({
-          ...this.actionData,
-          createUserId: getUserId(),
-          roleId: getUserInfoByKey('roleId')
-        }).then(data => {
-          this.show = false;
-          this.projectList[this.actionIndex].reminds.unshift({
-            ...data,
-            createUser: getUserInfoByKey('nickName')
-          });
-          Object.assign(this.projectList[this.actionIndex], {status: this.actionData.status, type: this.actionData.type, remarkStatus: this.actionData.remarkStatus});
-          // this.projectList[this.actionIndex].status = this.actionData.status;
-          toggleShow(this, 'remind', false);
-        }).catch(data => {this.show = false;})
       },
       renderAction(projectTalentId, projectStatus, type, remarkStatus) {
         let action = [];
+        const roleId = this.roleId;
         // 添加选项
         const getAction = (text, status, actionType) => {
           action.push({
@@ -315,7 +400,8 @@
         getAction('补充跟踪', projectStatus, 99);
         switch (projectStatus) {
           case 0:
-            type != 100 ? getAction('推荐给客户', 0, 100) : action.push(h('span', {class: {'cl-error': true}}, '等待项目总监审核'));
+            // type != 100 ? getAction('推荐给客户', 0, 100) : action.push(h('span', {class: {'cl-error': true}}, '等待项目总监审核'));
+            type != 100 ? (roleId == 3 ? getAction('推荐给客户', '0', 100) : null) : roleId == 3 ? getAction('通过', '666', 666) : action.push(h('span', {class: {'cl-error': true, block: true}}, '等待项目总监审核'));
             break;
           case 1:
             getAction('安排面试',3, 2);
@@ -348,17 +434,17 @@
             break;
           default:break;
         }
-        if ([1,3,4,5,6].indexOf(projectStatus)>-1) {
+        if ([0,1,3,4,5,6].indexOf(projectStatus)>-1) {
           getAction('淘汰', 8, 15);
         }
-        if (status=='7' || status=='8') {
+        if (projectStatus=='7' || projectStatus=='8') {
           action.push(h('span',{
             class: {
-              'cl-success': status=='7',
-              'cl-error': status=='8'&&type!=200,
-              'cl-primary': status=='8'&&type==200
+              'cl-success': projectStatus=='7',
+              'cl-error': projectStatus=='8'&&type!=200,
+              'cl-primary': projectStatus=='8'&&type==200
             }
-          }, status=='7'?'已通过保证期':type == 200 ? '已在其他项目入职':'已淘汰'))
+          }, projectStatus=='7'?'已通过保证期':type == 200 ? '已在其他项目入职':'已淘汰'))
         }
         // if (status != '0' && type != 200) {
         //   action.push(h('Button', {
@@ -402,7 +488,8 @@
             return Object.assign(item, {show: true});
           });
           this.$emit('input', this.projectList.length);
-        }).catch(data => {});
+          this.show = false;
+        }).catch(data => {this.show = false});
       },
     },
     created() {
