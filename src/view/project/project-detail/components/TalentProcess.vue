@@ -593,7 +593,7 @@
         } else if (status == 2 || status == 3) {
           return (this.projectTalents || []).filter(item => item.status == 2 || item.status == 3);
         } else {
-          return (this.projectTalents || []).filter(item => item.remindStatus == this.status);
+          return (this.projectTalents || []).filter(item => item.status == status);
         }
       },
       getColumns(status) {
