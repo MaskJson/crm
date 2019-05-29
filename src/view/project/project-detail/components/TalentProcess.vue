@@ -111,7 +111,6 @@
             <Input v-model="actionData.killRemark"/>
           </FormItem>
           <div v-if="(!talent.followUserId || talent.followUserId == userId) && talent.progress <= 1">
-            <p class="cl-error pb-10" style="padding-left: 120px;">淘汰跟进</p>
             <FormItem label="人才状态：" prop="status">
               <Select v-model="remind.status">
                 <Option v-for="(item, index) of talentStatus" :key="'status' + index" :value="item.value">
