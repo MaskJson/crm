@@ -61,6 +61,7 @@
           this.$store.commit("setAvatarPath", data.user.avatar);
           // 加载菜单
           util.initRouter(this);
+          window.location.reload();
           this.$router.push({
             name: "home"
           });

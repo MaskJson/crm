@@ -417,6 +417,7 @@
             align: 'center',
             key: 'recommendation'
           },
+
           ...this.actionColumn
         ]
       },
@@ -621,7 +622,7 @@
       getLastInterview(arr) {
         const len = arr.length;
         for (let i=0; i<len; i++) {
-          if ([2,4,8].indexOf(arr[i].type > -1)) {
+          if ([2,4,8].indexOf(arr[i].type) > -1) {
             return arr[i];
           }
         }
@@ -631,7 +632,6 @@
         const len = arr.length;
         for (let i=0; i<len; i++) {
           if (arr[i].type == 16) {
-            console.log('fk')
             return arr[i];
           }
         }
