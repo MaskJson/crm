@@ -4,9 +4,10 @@
       <Button type="success" @click="pass" >批量通过</Button>
       <!--<Button type="error" @click="refuse" class="ml-10">批量拒绝</Button>-->
     </ManagerView>
-    <ModalUtil ref="modal" title="修改客户名称" @on-ok="changeName" :loading="loading">
+    <ModalUtil ref="modal" title="修改客户名称" @on-ok="changeName" :loading="loading" @reset="had = false">
       <div class="pd-10">
-        <Input v-model="entity.name"/>
+        <Input v-model="entity.name" @on-blur="checkName"/>
+        <p class="cl-error" v-if="had">该项目名已存在</p>
       </div>
     </ModalUtil>
   </Card>
@@ -14,12 +15,13 @@
 
 <script>
   import {getUserId, getUserInfoByKey, toggleShow} from "../../../libs/tools";
-  import {auditList, auditPass, auditRefuse, changeCustomerName} from "../../../api/customer";
+  import {auditList, auditPass, auditRefuse, changeCustomerName, checkCustomerName} from "../../../api/customer";
 
   export default {
     name: "CustomerAudit",
     data() {
       return {
+        had: false,
         loading: false,
         columns: [
           {
@@ -147,6 +149,17 @@
         this.$refs['manager'].emitManagerHandler('refuse', {
           isBatch: true
         })
+      },
+      checkName() {
+        if (!this.entity.name) {
+          return ;
+        }
+        this.loading = true;
+        checkCustomerName(this.entity).then(data => {
+          data = data || [];
+          this.had = !!data.length;
+          this.loading = false;
+        }).catch(data => {this.loading = false;})
       },
       changeName() {
         if (!this.entity.name) {

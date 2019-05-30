@@ -73,7 +73,7 @@
             <DatePicker v-model="actionData.sureTime"/>
           </FormItem>
           <FormItem label="预计上班日期" class="ivu-form-item-required">
-            <DatePirkcer v-model="actionData.workTime"/>
+            <DatePicker v-model="actionData.workTime"/>
           </FormItem>
         </div>
         <div v-if="actionData.type == 12">
@@ -154,12 +154,13 @@
     props: ['userList', 'flag', 'performance', 'projectTalents', 'home'],
     data () {
       // 获取操作选项
-      function renderAction(h, projectTalentId, type, name, createUserId, status, remarkStatus, talentName, followUserId, talentId, talentType, progress) {
+      function renderAction(h, projectTalentId, type, name, createUserId, status, remarkStatus, talentName, followUserId, talentId, talentType, progress, createUser) {
         let action = [];
         const roleId = this.roleId;
         // 添加选项
         const getAction = (text, status, actionType) => {
           const handler = () => {
+            this.nickName = createUser;
             this.talentName = talentName;
             this.talent = {
               talentId, talentType, followUserId, progress
@@ -292,7 +293,7 @@
         projectTalentStatus: statuses,
         projectTalentRemindStatus: projectProgress,
         talentName: '',
-        nickName: getUserInfoByKey('nickName'),
+        nickName: '',
         userId: getUserId(),
         roleId: getUserInfoByKey('roleId'),
         show: false,
@@ -347,7 +348,7 @@
             render: (h, params) => {
               const action =  renderAction.call(
                 this, h, params.row.id, params.row.type, params.row.name, params.row.createUserId, params.row.status, params.row.remarkStatus, params.row.talentName,
-                params.row.followUserId, params.row.talentId, params.row.talentType, params.row.progress
+                params.row.followUserId, params.row.talentId, params.row.talentType, params.row.progress, params.row.createUser
               );
               return h('div', {
                 class: 'ac auto inline-block relative center'

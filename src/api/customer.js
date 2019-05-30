@@ -41,6 +41,9 @@ export const allCustomer = (params) => {
 };
 
 // 客户名称排重，带id
+export const checkCustomerName = (params) => {
+  return getRequest('/customer/checkName', params);
+};
 export const changeCustomerName = (params) => {
   return postRequest('/customer/changeName', params);
 };

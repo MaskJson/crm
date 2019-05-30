@@ -4,6 +4,8 @@
       <h3>{{title.replace('报','')}}绩效</h3>
       <DatePicker v-model="time" :type="flag == 3 ? 'month' : 'date'" placeholder="请选择日期" clearable/>
       <Button type="primary" class="ml-10" @click="getData(flag, time)">查询</Button>
+      <Button type="primary" class="ml-10" @click="searchChange(true)" v-if="flag == 1">前一天</Button>
+      <Button type="primary" class="ml-10" @click="searchChange(false)" v-if="flag == 1">后一天</Button>
       <div class="mt-10 mb-20">
         <div v-show="progressFilter.length > 0">
           <h5>进展跟踪</h5>
@@ -98,6 +100,12 @@
       }
     },
     methods: {
+      searchChange(flag) {
+        let date = (this.time || new Date()).getTime();
+        date = date +(flag ? (-3600*24*1000) : 3600*24*1000);
+        this.time = new Date(date);
+        this.getData(this.flag, this.time);
+      },
       getData(flag, time) {
         this.getProjectProgressInfos(flag, time);
         this.getTalentRemindInfos(flag, time);

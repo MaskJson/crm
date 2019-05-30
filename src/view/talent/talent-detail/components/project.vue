@@ -13,7 +13,7 @@
               class="block"
               v-for="(action, index) of renderAction(item.id, item.status, item.type, item.remarkStatus)"
               :key="'btn' + index"
-              @click="setActionData(item.id, action.status, action.type, item.status, item.type, index, item.remarkStatus)"
+              @click="setActionData(item.id, action.status, action.type, item.status, item.type, index, item.remarkStatus, item.createUser)"
             >{{action.text}}</Button>
             <Button v-if="item.status != 0" type="text" @click="reBack(item.id, item.status, index)">撤销</Button>
           </div>
@@ -206,7 +206,7 @@
         show: false,
         talentName: '',
         userId: getUserId(),
-        nickName: getUserInfoByKey('nickName'),
+        nickName: '',
         roleId: getUserInfoByKey('roleId'),
         projectTalentRemindStatus: projectProgress,
         projectList: [],// 项目经历
@@ -237,8 +237,9 @@
           this.show = false;
         })
       },
-      setActionData(projectTalentId, status, type, prevStatus, prevType, index, remarkStatus) {
+      setActionData(projectTalentId, status, type, prevStatus, prevType, index, remarkStatus, createUser) {
         this.actionIndex = index;
+        this.nickName = createUser;
         this.remind = {
           type: 1,
           status: null,
