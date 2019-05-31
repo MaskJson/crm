@@ -339,9 +339,38 @@
             title: '沟通记录',
             align: 'center',
             render: (h, params) => {
+
               // const remind = this.getLastRemind(params.row.reminds || [], !!this.home ? params.row.status : this.status) || {};
-              const remind = params.row.remind || {};
-              return h('span', !!remind.remark ? `${remind.remark || ''}-${getDateTime(remind.createTime) || ''}` : '');
+              const remind = !!this.performance ? params.row.remind || {} : this.getLastRemind(params.row.reminds || [], !!this.home ? params.row.status : this.status) || {}
+              const {type,status,createTime,recommendation,killRemark,interviewTime,interviewTone,remark,
+                isLast,position,yearSalary,charge,sureTime,workTime,entryTime,probationTime,talentRemark,customerRemark,remarkStatus} = remind;
+              const interview = [`面试时间：${getDateTime(interviewTime)}`,`提醒对象：${params.row.createUser}`,`${!!interviewTone?'面试官：'+interviewTone:''}`].filter(item => !!item);
+              const offer = [`岗位：${position}`,!!yearSalary?`年薪：${yearSalary}`:'',!!charge?`收费：${charge}`:'',`确认日期：${getDateTime(sureTime)}`,`预计上班时间：${getDateTime(workTime)}`].filter(item => !!item);
+              const pass = [`入职时间：${getDateTime2(entryTime)}`,`试用期结束：${getDateTime2(probationTime)}`];
+              const fk = [`人才反馈：${talentRemark}`,`客户反馈：${customerRemark}`];
+              const recommend = [`推荐理由：${recommendation}`];
+              const kill = [`淘汰：${killRemark}`];
+              const rmk = [!!remark?`备注：${remark}`:'',`创建时间：${getDateTime(createTime)}`].filter(item => !!item);
+              let arr;
+              switch (type) {
+                case 2:
+                case 4:
+                case 8: arr = interview;break;
+                case 10: arr = offer;break;
+                case 12: arr = pass;break;
+                case 16:
+                  arr = fk;
+                  remarkStatus == 2 && arr.push(...interview);
+                  remarkStatus == 5 && arr.push(...offer);
+                  remarkStatus == 8 && arr.push(...kill);
+                  break;
+                case 99: arr = [];break;
+                case 100: arr = recommend;break;
+                default: arr = [];break;
+              }
+              arr = arr.concat(rmk);
+              // return h('span', !!remind.remark ? `${remind.remark || ''}-${getDateTime(remind.createTime) || ''}` : '');
+              return getRenderList(h, JSON.stringify(arr));
             }
           },
           {
@@ -412,6 +441,7 @@
           ...this.nameColumn,
           {
             title: '推荐时间',
+            width: 150,
             align: 'center',
             render: (h, params) => {
               return h('span', getDateTime(params.row.updateTime));
@@ -419,6 +449,7 @@
           },
           {
             title: '推荐理由',
+            width: 250,
             align: 'center',
             key: 'recommendation'
           },
@@ -431,6 +462,7 @@
           ...this.nameColumn,
           {
             title: '面试时间',
+            width: 150,
             align: 'center',
             render: (h, params) => {
               const remind = this.getLastInterview(params.row.reminds || []) || {};
@@ -439,6 +471,7 @@
           },
           {
             title: '人选反馈-客户反馈',
+            width: 220,
             align: 'center',
             render: (h, params) => {
               const remind = this.getLastFK(params.row.reminds || []);
@@ -458,6 +491,7 @@
           ...this.nameColumn,
           {
             title: '签订offer时间',
+            width: 150,
             align: 'center',
             render: (h, params) => {
               const remind = this.getLastOffer(params.row.reminds || []) || {};
@@ -466,6 +500,7 @@
           },
           {
             title: '岗位',
+            width: 100,
             align: 'center',
             render: (h, params) => {
               const remind = this.getLastOffer(params.row.reminds || []) || {};
@@ -474,6 +509,7 @@
           },
           {
             title: '年薪',
+            width: 100,
             align: 'center',
             render: (h, params) => {
               const remind = this.getLastOffer(params.row.reminds || []) || {};
@@ -482,6 +518,7 @@
           },
           {
             title: '入职时间',
+            width: 150,
             align: 'center',
             render: (h, params) => {
               const remind = this.getLastOffer(params.row.reminds || []) || {};
@@ -496,6 +533,7 @@
           ...this.nameColumn,
           {
             title: '岗位',
+            width: 100,
             align: 'center',
             render: (h, params) => {
               const remind = this.getLastOffer(params.row.reminds || []) || {};
@@ -504,6 +542,7 @@
           },
           {
             title: '年薪',
+            width: 100,
             align: 'center',
             render: (h, params) => {
               const remind = this.getLastOffer(params.row.reminds || []) || {};
@@ -512,6 +551,7 @@
           },
           {
             title: '入职时间',
+            width: 150,
             align: 'center',
             render: (h, params) => {
               const remind = this.getLastSure(params.row.reminds || []) || {};
@@ -520,6 +560,7 @@
           },
           {
             title: '保证期',
+            width: 150,
             align: 'center',
             render: (h, params) => {
               const remind = this.getLastSure(params.row.reminds || []) || {};
@@ -534,6 +575,7 @@
           ...this.nameColumn,
           {
             title: '推荐时间',
+            width: 150,
             align: 'center',
             render: (h, params) => {
               return h('span', getDateTime(params.row.updateTime));
@@ -541,6 +583,7 @@
           },
           {
             title: '入职时间',
+            width: 150,
             align: 'center',
             render: (h, params) => {
               const remind = this.getLastSure(params.row.reminds || []) || {};
@@ -549,6 +592,7 @@
           },
           {
             title: '岗位',
+            width: 100,
             align: 'center',
             render: (h, params) => {
               const remind = this.getLastOffer(params.row.reminds || []) || {};
@@ -557,6 +601,7 @@
           },
           {
             title: '年薪',
+            width: 100,
             align: 'center',
             render: (h, params) => {
               const remind = this.getLastOffer(params.row.reminds || []) || {};
@@ -571,6 +616,7 @@
           ...this.nameColumn,
           {
             title: '淘汰理由',
+            width: 250,
             align: 'center',
             key: 'killRemark'
           },
@@ -618,7 +664,7 @@
       getLastRemind(arr, status) {
         const len = arr.length;
         for (let i=0; i<len; i++) {
-          if (arr[i].status == status || status == 1 && arr[i].type == 100) {
+          if (arr[i].status == status || status == 1 && (arr[i].type == 100 || arr[i].type == 101)) {
             return arr[i];
           }
         }
@@ -802,6 +848,7 @@
         this.nameColumn.push({
           title: '项目-公司',
           align: 'center',
+          width: 250,
           ellipsis: true,
           render: (h, params) => {
             return h('div', {class: 'line'}, [
