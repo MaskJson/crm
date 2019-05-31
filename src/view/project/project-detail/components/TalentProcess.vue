@@ -268,7 +268,10 @@
               'cl-error': status=='8'&&type!=200,
               'cl-primary': status=='8'&&type==200,
               'block': true,
-              'center': true
+            },
+            style: {
+              marginLeft: '7px',
+              textAlign: 'left'
             }
           }, status=='7'?'已通过保证期':type == 200 ? '已在其他项目入职':'已淘汰'))
         }
@@ -336,7 +339,8 @@
             title: '沟通记录',
             align: 'center',
             render: (h, params) => {
-              const remind = this.getLastRemind(params.row.reminds || [], !!this.home ? params.row.status : this.status) || {};
+              // const remind = this.getLastRemind(params.row.reminds || [], !!this.home ? params.row.status : this.status) || {};
+              const remind = params.row.remind || {};
               return h('span', !!remind.remark ? `${remind.remark || ''}-${getDateTime(remind.createTime) || ''}` : '');
             }
           },

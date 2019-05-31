@@ -5,9 +5,15 @@
       <!--<Button type="error" @click="refuse" class="ml-10">批量拒绝</Button>-->
     </ManagerView>
     <ModalUtil ref="modal" title="修改客户名称" @on-ok="changeName" :loading="loading" @reset="had = false">
-      <div class="pd-10">
-        <Input v-model="entity.name" @on-blur="checkName"/>
-        <p class="cl-error" v-if="had">该项目名已存在</p>
+      <div class="pd-10 relative">
+        <Input v-model="entity.name" @on-focus="show = true" @on-blur="show = false" @on-input="checkName"/>
+        <!--<p class="cl-error" v-if="had">该项目名已存在</p>-->
+        <div class="bgfff borderB nameList">
+          <li class="border bgfff company-item" v-if="customers && customers.length == 0">暂无数据</li>
+          <li class="border bgfff company-item cursor" v-for="(c, index) of customers" :key="'customer' + index">
+            {{c.name}}
+          </li>
+        </div>
       </div>
     </ModalUtil>
   </Card>
@@ -23,6 +29,8 @@
       return {
         had: false,
         loading: false,
+        show: false,
+        customers: [],
         columns: [
           {
             type: 'selection',
@@ -154,12 +162,10 @@
         if (!this.entity.name) {
           return ;
         }
-        this.loading = true;
         checkCustomerName(this.entity).then(data => {
           data = data || [];
-          this.had = !!data.length;
-          this.loading = false;
-        }).catch(data => {this.loading = false;})
+          this.customers = data;
+        }).catch(data => {})
       },
       changeName() {
         if (!this.entity.name) {
@@ -191,5 +197,14 @@
 </script>
 
 <style scoped>
-
+  .nameList {
+    position: absolute;
+    left: 80px;
+    top: 35px;
+    width: 500px;
+    border-radius: 4px;
+    overflow: hidden;
+    z-index: 10;
+    border: solid 1px #9ea7b4 !important;
+  }
 </style>
