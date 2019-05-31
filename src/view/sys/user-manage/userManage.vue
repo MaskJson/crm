@@ -376,32 +376,32 @@
                 //   },
                 //   '删除'
                 // )
-              ]
+              ];
               const roleId = params.row.roleId;
-              if (roleId != 1 && roleId != 3) {
-                children.push(
-                  h('Button', {
-                    props: {
-                      size: 'small',
-                      type: 'warning'
-                    },
-                    on: {
-                      click: () => {
-                        this.$Modal.confirm({
-                          title: '交接确认',
-                          content: '确认要交接吗？交接后此用户所有相关操作将转移给交接人，该用户将被禁用！',
-                          onOk: () => {
-                            this.leaveUserName = params.row.nickName;
-                            this.connect.userId = params.row.id;
-                            this.connectRoleId = roleId;
-                            toggleShow(this, 'connect');
-                          }
-                        });
-                      }
-                    }
-                  }, '离职交接')
-                )
-              }
+              // if (roleId != 1 && roleId != 3) {
+              //   children.push(
+              //     h('Button', {
+              //       props: {
+              //         size: 'small',
+              //         type: 'warning'
+              //       },
+              //       on: {
+              //         click: () => {
+              //           this.$Modal.confirm({
+              //             title: '交接确认',
+              //             content: '确认要交接吗？交接后此用户所有相关操作将转移给交接人，该用户将被禁用！',
+              //             onOk: () => {
+              //               this.leaveUserName = params.row.nickName;
+              //               this.connect.userId = params.row.id;
+              //               this.connectRoleId = roleId;
+              //               toggleShow(this, 'connect');
+              //             }
+              //           });
+              //         }
+              //       }
+              //     }, '离职交接')
+              //   )
+              // }
               return h('div', children)
             }
           }
