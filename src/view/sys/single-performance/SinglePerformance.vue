@@ -20,7 +20,7 @@
       </div>
 
       <Row>
-        <Col span="24" class="pd-5" v-if="flag == 1 && (roleId == 4 || roleId == 5)">
+        <Col span="24" class="pd-5" v-if="(flag == 1 && (roleId == 4 || roleId == 5)) || (flag != 1 && roleId != 4 && roleId != 5)">
           <p>{{title}}</p>
           <Input type="textarea" :rows="3" v-model="content" :placeholder="'请填写' + title" :readonly="!!report && report.length > 0"/>
           <Button class="mt-10" type="primary" v-if="report != null && report.length == 0" @click="saveReport(flag, content)">提交{{title}}</Button>
