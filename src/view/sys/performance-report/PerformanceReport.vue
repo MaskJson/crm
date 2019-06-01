@@ -3,9 +3,10 @@
     <div style="min-height: 400px;">
       <h3>{{title.replace('报','')}}绩效</h3>
       <DatePicker v-model="time" :type="flag == 3 ? 'month' : 'date'" placeholder="请选择日期" clearable/>
+      <Select placeholder="选择成员" v-model="memberId" clearable class="w200 ml-10">
+        <Option v-for="(item, index) of memberList" :value="item.id" :key="'member'+index">{{item.nickName}}</Option>
+      </Select>
       <Button type="primary" class="ml-10" @click="getData(flag, time)">查询</Button>
-      <Button type="primary" class="ml-10" @click="searchChange(true)" v-if="flag == 1">前一天</Button>
-      <Button type="primary" class="ml-10" @click="searchChange(false)" v-if="flag == 1">后一天</Button>
       <div class="mt-10 mb-20">
         <div v-show="progressFilter.length > 0">
           <h5>进展跟踪</h5>
@@ -24,6 +25,10 @@
           <Report :list="reportFilter"/>
         </div>
       </div>
+      <div class="mt-10 center" v-if="flag == 1">
+        <Button type="primary" @click="searchChange(true)">前一天</Button>
+        <Button type="primary" class="ml-10" @click="searchChange(false)">后一天</Button>
+      </div>
     </div>
   </Card>
 </template>
@@ -34,7 +39,7 @@
   import Customer from './components/Customer';
   import Report from './components/Report';
   import {getUserId, getUserInfoByKey, getDateTime2, getDateMonth} from "../../../libs/tools";
-  import {getProjectProgressInfos, getTalentRemindInfos, getCustomerRemindInfos, getReportInfos} from "../../../api";
+  import {getProjectProgressInfos, getTalentRemindInfos, getCustomerRemindInfos, getReportInfos, getMembers} from "../../../api";
 
   export default {
     name: "PerformanceReport",
@@ -94,7 +99,8 @@
         talentList: [],
         customerList: [],
         reportList: [],
-
+        memberList: [],
+        memberId: null,
         userId: getUserId(),
         roleId: getUserInfoByKey('roleId')
       }
@@ -107,6 +113,10 @@
         this.getData(this.flag, this.time);
       },
       getData(flag, time) {
+        if (!time) {
+          this.$Message.warning('请选择日期');
+          return false;
+        }
         this.getProjectProgressInfos(flag, time);
         this.getTalentRemindInfos(flag, time);
         this.getCustomerRemindInfos(flag, time);
@@ -118,6 +128,7 @@
           userId: this.userId,
           roleId: this.roleId,
           flag,
+          memberId: this.memberId || null,
           time: flag != 3 ? getDateTime2(time) : (getDateMonth(time) || '').replace('-', '')
         }).then(data => {
           const v = data || [];
@@ -130,6 +141,7 @@
           userId: this.userId,
           roleId: this.roleId,
           flag,
+          memberId: this.memberId || null,
           time: flag != 3 ? getDateTime2(time) : (getDateMonth(time) || '').replace('-', '')
         }).then(data => {
           const v = data || [];
@@ -142,6 +154,7 @@
           userId: this.userId,
           roleId: this.roleId,
           flag,
+          memberId: this.memberId || null,
           time: flag != 3 ? getDateTime2(time) : (getDateMonth(time) || '').replace('-', '')
         }).then(data => {
           const v = data || [];
@@ -154,6 +167,7 @@
           userId: this.userId,
           roleId: this.roleId,
           flag,
+          memberId: this.memberId || null,
           time: flag != 3 ? getDateTime2(time) : (getDateMonth(time) || '').replace('-', '')
         }).then(data => {
           const v = this.filterReports(data);
@@ -169,7 +183,14 @@
       },
     },
     created() {
-      this.getData(this.flag, this.time);
+      getMembers({
+        userId: this.userId,
+        roleId: this.roleId,
+        flag: this.flag
+      }).then(data => {
+        this.memberList = data || [];
+      }).catch(res => {})
+      // this.getData(this.flag, this.time);
     }
   }
 </script>

@@ -65,7 +65,31 @@
             }
           },
           {
-            title: '沟通记录',
+            title: '上次沟通记录',
+            align: 'center',
+            render: (h, params) => {
+              const remind = params.row.prev || {};
+              if (remind && remind.type){
+                let str = '';
+                switch (remind.type) {
+                  case 1:
+                    str = `${remind.remark}--${remind.createUser}`;
+                    break;
+                  case 2:
+                    str = `${remind.situation}--${remind.cause}--${remind.salary}--${remind.createUser}`;
+                    break;
+                  case 3:
+                    str = `${getDateTime(remind.meetTime)}--${remind.meetAddress}--${remind.situation}--${remind.cause}${remind.salary}--${remind.createUser}`;
+                    break;
+                }
+                return h('span', str);
+              } else {
+                return h('span', '');
+              }
+            }
+          },
+          {
+            title: '本次沟通记录',
             align: 'center',
             render: (h, params) => {
               const remind = params.row;

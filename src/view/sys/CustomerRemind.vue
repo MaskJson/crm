@@ -35,7 +35,25 @@
             }
           },
           {
-            title: '沟通记录',
+            title: '上次沟通记录',
+            align: 'center',
+            render: (h, params) => {
+              const arr = [];
+              const remind = params.row.prev || {};
+              arr.push(`跟踪状态：${getCustomerType(false, remind.status) || '列名未联系'}`);
+              if (remind.type == 1 || remind.type == 3) {
+                arr.push(`沟通内容：${remind.remark}`)
+              } else {
+                arr.push(`拜访时间：${getDateTime(remind.meetTime)}`, `拜访地点：${remind.meetAddress}`, `拜访记录：${remind.meetNotice}`)
+              }
+              if (params.row.status == 5) {
+                arr.push(`合同期：${getDateTime2(remind.contactTimeStart) || ''}-${getDateTime2(remind.contactTimeEnd) || ''}`)
+              }
+              return getRenderList(h, JSON.stringify(arr));
+            }
+          },
+          {
+            title: '本次沟通记录',
             align: 'center',
             render: (h, params) => {
               const arr = [];

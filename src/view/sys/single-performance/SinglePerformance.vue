@@ -18,7 +18,6 @@
           <CustomerRemind :list="customerList"/>
         </div>
       </div>
-
       <Row>
         <Col span="24" class="pd-5" v-if="(flag == 1 && (roleId == 4 || roleId == 5)) || (flag != 1 && roleId != 4 && roleId != 5)">
           <p>{{title}}</p>
@@ -26,6 +25,10 @@
           <Button class="mt-10" type="primary" v-if="report != null && report.length == 0" @click="saveReport(flag, content)">提交{{title}}</Button>
         </Col>
       </Row>
+      <div class="mt-10 center" v-if="flag == 1">
+        <Button type="primary" @click="searchChange(true)">前一天</Button>
+        <Button type="primary" class="ml-10" @click="searchChange(false)">后一天</Button>
+      </div>
     </div>
     <SpinUtil :show="show"/>
   </Card>
@@ -65,6 +68,12 @@
       }
     },
     methods: {
+      searchChange(flag) {
+        let date = (this.time || new Date()).getTime();
+        date = date +(flag ? (-3600*24*1000) : 3600*24*1000);
+        this.time = new Date(date);
+        this.getData(this.flag, this.time);
+      },
       saveReport(type, content) {
         if (content.trim().length == 0) {
           this.$Message.error('请填写报告内容');
@@ -84,6 +93,10 @@
         })
       },
       getData(flag, time, b) {
+        if (!time) {
+          this.$Message.warning('请选择日期');
+          return false;
+        }
         this.getReport(flag, time, b);
         this.getProjectProgressInfo(flag, time);
         this.getTalentRemindInfo(flag, time);
@@ -138,7 +151,7 @@
       }
     },
     created() {
-      this.getData(this.flag, this.time, true);
+      // this.getData(this.flag, this.time, true);
     }
   }
 </script>

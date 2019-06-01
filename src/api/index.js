@@ -145,4 +145,8 @@ export const saveReport = (params) => {
   return postJson('/performance/report/save', params);
 };
 
+// 报表获取下级成员
+export const getMembers = (params) => {
+  return getRequest('/performance/members', params);
+};
 

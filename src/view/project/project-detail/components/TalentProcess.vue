@@ -344,13 +344,13 @@
               const remind = !!this.performance ? params.row.remind || {} : this.getLastRemind(params.row.reminds || [], !!this.home ? params.row.status : this.status) || {}
               const {type,status,createTime,recommendation,killRemark,interviewTime,interviewTone,remark,
                 isLast,position,yearSalary,charge,sureTime,workTime,entryTime,probationTime,talentRemark,customerRemark,remarkStatus} = remind;
-              const interview = [`面试时间：${getDateTime(interviewTime)}`,`提醒对象：${params.row.createUser}`,`${!!interviewTone?'面试官：'+interviewTone:''}`].filter(item => !!item);
-              const offer = [`岗位：${position}`,!!yearSalary?`年薪：${yearSalary}`:'',!!charge?`收费：${charge}`:'',`确认日期：${getDateTime(sureTime)}`,`预计上班时间：${getDateTime(workTime)}`].filter(item => !!item);
+              const interview = [`面试时间：${getDateTime(interviewTime) || ''}`,`提醒对象：${params.row.createUser}`,`${!!interviewTone?'面试官：'+interviewTone:''}`].filter(item => !!item);
+              const offer = [`岗位：${position}`,!!yearSalary?`年薪：${yearSalary}`:'',!!charge?`收费：${charge}`:'',`确认日期：${getDateTime2(sureTime) || ''}`,`预计上班时间：${getDateTime2(workTime) || ''}`].filter(item => !!item);
               const pass = [`入职时间：${getDateTime2(entryTime)}`,`试用期结束：${getDateTime2(probationTime)}`];
               const fk = [`人才反馈：${talentRemark}`,`客户反馈：${customerRemark}`];
               const recommend = [`推荐理由：${recommendation}`];
               const kill = [`淘汰：${killRemark}`];
-              const rmk = [!!remark?`备注：${remark}`:'',`创建时间：${getDateTime(createTime)}`].filter(item => !!item);
+              const rmk = [!!remark?`备注：${remark}`:'',`创建时间：${getDateTime2(createTime) || ''}`].filter(item => !!item);
               let arr;
               switch (type) {
                 case 2:
