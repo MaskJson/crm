@@ -175,7 +175,10 @@
         })
       },
       filterReports(v) {
-        const {members, reports} = v || {};
+        let {members, reports} = v || {};
+        if (!!this.memberId) {
+          members = members.filter(item => item.createUserId == this.memberId);
+        }
         return members.map(item => {
           item.children = reports.filter(r => r.createUserId == item.createUserId);
           return item;
