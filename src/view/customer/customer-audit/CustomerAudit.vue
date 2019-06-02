@@ -6,9 +6,9 @@
     </ManagerView>
     <ModalUtil ref="modal" title="修改客户名称" @on-ok="changeName" :loading="loading" @reset="had = false">
       <div class="pd-10 relative">
-        <Input v-model="entity.name" @on-focus="show = true" @on-blur="show = false" @on-input="checkName"/>
+        <Input v-model="entity.name" @on-focus="show = true" @on-blur="show = false" @input="checkName"/>
         <!--<p class="cl-error" v-if="had">该项目名已存在</p>-->
-        <div class="bgfff borderB nameList">
+        <div class="bgfff borderB nameList" v-show="show">
           <li class="border bgfff company-item" v-if="customers && customers.length == 0">暂无数据</li>
           <li class="border bgfff company-item cursor" v-for="(c, index) of customers" :key="'customer' + index">
             {{c.name}}
@@ -144,7 +144,8 @@
         entity: {
           id: null,
           name: null
-        }
+        },
+        timeout: null
       }
     },
     methods: {
@@ -162,10 +163,13 @@
         if (!this.entity.name) {
           return ;
         }
-        checkCustomerName(this.entity).then(data => {
-          data = data || [];
-          this.customers = data;
-        }).catch(data => {})
+        !!this.timeout && clearTimeout(this.timeout);
+        this.timeout = setTimeout(() => {
+          checkCustomerName(this.entity).then(data => {
+            data = data || [];
+            this.customers = data;
+          }).catch(data => {})
+        }, 500);
       },
       changeName() {
         if (!this.entity.name) {
@@ -199,12 +203,21 @@
 <style scoped>
   .nameList {
     position: absolute;
-    left: 80px;
-    top: 35px;
-    width: 500px;
+    left: 10px;
+    top: 42px;
+    width: 200px;
     border-radius: 4px;
     overflow: hidden;
     z-index: 10;
     border: solid 1px #9ea7b4 !important;
+  }
+  .company-item {
+    list-style: none;
+    border-bottom: none;
+    padding: 3px 6px;
+    font-size: 12px;
+  }
+  .company-item:hover {
+    background: #f2f2f2;
   }
 </style>

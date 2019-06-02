@@ -53,3 +53,8 @@ export const homeCount = (params) => {
 export const progressList = (params) => {
   return getRequest('/count/project/progress', params);
 };
+
+// 获取今日面试提醒
+export const interviewList = (params) => {
+  return getRequest('/performance/interview', params);
+};

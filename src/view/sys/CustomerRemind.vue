@@ -21,13 +21,13 @@
           },
           {
             title: '联系人',
-            width: 100,
+            width: 80,
             align: 'center',
             key: 'contactName'
           },
           {
             title: '沟通方式',
-            width: 100,
+            width: 80,
             align: 'center',
             render: (h, params) => {
               const v = params.row.type;
@@ -37,6 +37,7 @@
           {
             title: '上次沟通记录',
             align: 'center',
+            // width: 360,
             render: (h, params) => {
               const arr = [];
               const remind = params.row.prev || {};
@@ -49,12 +50,13 @@
               if (params.row.status == 5) {
                 arr.push(`合同期：${getDateTime2(remind.contactTimeStart) || ''}-${getDateTime2(remind.contactTimeEnd) || ''}`)
               }
-              return getRenderList(h, JSON.stringify(arr));
+              return getRenderList(h, JSON.stringify(arr), true);
             }
           },
           {
             title: '本次沟通记录',
             align: 'center',
+            // width: 360,
             render: (h, params) => {
               const arr = [];
               arr.push(`跟踪状态：${getCustomerType(false, params.row.status) || '列名未联系'}`);
@@ -66,12 +68,12 @@
               if (params.row.status == 5) {
                 arr.push(`合同期：${getDateTime2(params.row.contactTimeStart) || ''}-${getDateTime2(params.row.contactTimeEnd) || ''}`)
               }
-              return getRenderList(h, JSON.stringify(arr));
+              return getRenderList(h, JSON.stringify(arr), true);
             }
           },
           {
             title: '时间',
-            width: 150,
+            width: 135,
             align: 'center',
             render: (h, params) => {
               return h('span', getDateTime(params.row.createTime));

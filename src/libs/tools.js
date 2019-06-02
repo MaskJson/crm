@@ -275,9 +275,12 @@ export const renderLink = (h, href, text) => {
 }
 
 // 获取普通列表render
-export const getRenderList = (h, data) => {
-  data = getJsonArray(data)
-  return h('div', data.map(item => {
+export const getRenderList = (h, data, flag) => {
+  data = getJsonArray(data);
+
+  return !!flag
+    ? h('p',{class: 'line', domProps: {title: data.join('--')}}, data.join('--'))
+    : h('div', data.map(item => {
     return h('p', item)
   }))
 }

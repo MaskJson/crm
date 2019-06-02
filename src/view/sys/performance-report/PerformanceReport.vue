@@ -3,26 +3,26 @@
     <div style="min-height: 400px;">
       <h3>{{title.replace('报','')}}绩效</h3>
       <DatePicker v-model="time" :type="flag == 3 ? 'month' : 'date'" placeholder="请选择日期" clearable/>
-      <Select placeholder="选择成员" v-model="memberId" clearable class="w200 ml-10">
+      <Select placeholder="请选择顾问" v-model="memberId" clearable class="w200 ml-10" v-if="flag == 1">
         <Option v-for="(item, index) of memberList" :value="item.id" :key="'member'+index">{{item.nickName}}</Option>
       </Select>
       <Button type="primary" class="ml-10" @click="getData(flag, time)">查询</Button>
       <div class="mt-10 mb-20">
         <div v-show="progressFilter.length > 0">
           <h5>进展跟踪</h5>
-          <Progress :list="progressFilter"/>
+          <Progress :list="progressFilter" :flag="flag"/>
         </div>
         <div v-show="talentFilter.length > 0">
           <h5>人才常规跟踪</h5>
-          <Talent :list="talentFilter"/>
+          <Talent :list="talentFilter" :flag="flag"/>
         </div>
         <div v-show="customerFilter.length > 0">
           <h5>客户常规跟踪</h5>
-          <Customer :list="customerFilter"/>
+          <Customer :list="customerFilter" :flag="flag"/>
         </div>
         <div v-show="reportFilter.length > 0">
           <h5>报告</h5>
-          <Report :list="reportFilter"/>
+          <Report :list="reportFilter" :flag="flag"/>
         </div>
       </div>
       <div class="mt-10 center" v-if="flag == 1">
@@ -88,7 +88,7 @@
         return result;
       },
       reportFilter() {
-        const arr = this.reportList;
+        const arr = this.reportList.filter(item => item.children && item.children.length > 0);
         return arr;
       }
     },
@@ -115,6 +115,10 @@
       getData(flag, time) {
         if (!time) {
           this.$Message.warning('请选择日期');
+          return false;
+        }
+        if (flag == 1 && !this.memberId) {
+          this.$Message.warning('请选择顾问');
           return false;
         }
         this.getProjectProgressInfos(flag, time);

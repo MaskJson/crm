@@ -1,6 +1,7 @@
 <template>
   <div class="mt-10">
-    <Table border :columns="columns" :data="list"></Table>
+    <Table v-if="flag != 1" border :columns="columns" :data="list"></Table>
+    <div v-if="flag == 1">{{list && list.length>0 ? (list[0].children && list[0].children.length>0 ? list[0].children[0].content : '' ) : ''}}</div>
   </div>
 </template>
 
@@ -9,7 +10,7 @@
 
   export default {
     name: "Report",
-    props: ['list'],
+    props: ['list', 'flag'],
     data() {
       return {
         columns: [

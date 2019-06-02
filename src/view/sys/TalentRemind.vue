@@ -15,7 +15,7 @@
         columns: [
           {
             title: '人选',
-            width: 100,
+            width: 80,
             key: 'talentName',
             align: 'center',
             render: (h, params) => {
@@ -42,7 +42,7 @@
           {
             title: '岗位',
             align: 'center',
-            width: 100,
+            width: 80,
             render: (h, params) => {
               return h('span', (params.row.info || {}).position)
             }
@@ -58,7 +58,7 @@
           {
             title: '沟通方式',
             align: 'center',
-            width: 100,
+            width: 80,
             render: (h, params) => {
               const v = params.row.type;
               return h('span', v == 1 ? '电话沟通' : v == 2 ? '顾问面试内' : '顾问面试外');
@@ -115,7 +115,7 @@
           {
             title: '时间',
             align: 'center',
-            width: 150,
+            width: 135,
             render: (h, params) => {
               return h('span', getDateTime(params.row.createTime))
             }
