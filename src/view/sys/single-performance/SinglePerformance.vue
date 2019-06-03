@@ -97,6 +97,7 @@
           this.$Message.warning('请选择日期');
           return false;
         }
+        this.show = true;
         this.getReport(flag, time, b);
         this.getProjectProgressInfo(flag, time);
         this.getTalentRemindInfo(flag, time);
@@ -109,12 +110,13 @@
           flag,
           time: flag != 3 ? getDateTime2(time) : (getDateMonth(time) || '').replace('-', '')
         }).then(data => {
+          this.show = false;
           const v = data || [];
           const report = v.length > 0 ? v[0] : {userId: getUserId(), content: ''};
           if(b) {
             this.report = v;
             this.content = report.content;}
-        })
+        }).catch(res => {this.show = false;})
       },
       getProjectProgressInfo(flag, time) {
         time = time || new Date();

@@ -3,7 +3,7 @@
     <div style="min-height: 400px;">
       <h3>{{title.replace('报','')}}绩效</h3>
       <DatePicker v-model="time" :type="flag == 3 ? 'month' : 'date'" placeholder="请选择日期" clearable/>
-      <Select placeholder="请选择顾问" v-model="memberId" clearable class="w200 ml-10" v-if="flag == 1">
+      <Select placeholder="请选择顾问" v-model="memberId" clearable class="w200 ml-10">
         <Option v-for="(item, index) of memberList" :value="item.id" :key="'member'+index">{{item.nickName}}</Option>
       </Select>
       <Button type="primary" class="ml-10" @click="getData(flag, time)">查询</Button>
@@ -13,23 +13,24 @@
           <Progress :list="progressFilter" :flag="flag"/>
         </div>
         <div v-show="talentFilter.length > 0">
-          <h5>人才常规跟踪</h5>
+          <h5 class="mt-10">人才常规跟踪</h5>
           <Talent :list="talentFilter" :flag="flag"/>
         </div>
         <div v-show="customerFilter.length > 0">
-          <h5>客户常规跟踪</h5>
+          <h5 class="mt-10">客户常规跟踪</h5>
           <Customer :list="customerFilter" :flag="flag"/>
         </div>
         <div v-show="reportFilter.length > 0">
-          <h5>报告</h5>
+          <h5 class="mt-10">报告</h5>
           <Report :list="reportFilter" :flag="flag"/>
         </div>
       </div>
-      <div class="mt-10 center" v-if="flag == 1">
-        <Button type="primary" @click="searchChange(true)">前一天</Button>
-        <Button type="primary" class="ml-10" @click="searchChange(false)">后一天</Button>
+      <div class="mt-10 center">
+        <Button type="primary" @click="searchChange(true)">{{prevTxt}}</Button>
+        <Button type="primary" class="ml-10" @click="searchChange(false)">{{nextTxt}}</Button>
       </div>
     </div>
+    <SpinUtil :show="show"/>
   </Card>
 </template>
 
@@ -51,6 +52,12 @@
       Report
     },
     computed: {
+      prevTxt() {
+        return this.flag == 1 ? '前一天' : this.flag == 2 ? '上一周' : '上个月';
+      },
+      nextTxt() {
+        return this.flag == 1 ? '后一天' : this.flag == 2 ? '下一周' : '下个月';
+      },
       title() {
         return this.flag == 1 ? '日报' : this.flag == 2 ? '周报' : '月报';
       },
@@ -94,6 +101,7 @@
     },
     data() {
       return {
+        show: false,
         time: null,
         projectList: [],
         talentList: [],
@@ -108,7 +116,13 @@
     methods: {
       searchChange(flag) {
         let date = (this.time || new Date()).getTime();
-        date = date +(flag ? (-3600*24*1000) : 3600*24*1000);
+        let mills = 0;
+        switch (this.flag) {
+          case 1: mills = 3600*24*1000;break;
+          case 2: mills = 3600*24*1000*7;break;
+          case 3: mills = 3600*24*1000*30;break;
+        }
+        date = date +(flag ? (-mills) : mills);
         this.time = new Date(date);
         this.getData(this.flag, this.time);
       },
@@ -121,6 +135,7 @@
           this.$Message.warning('请选择顾问');
           return false;
         }
+        this.show = true;
         this.getProjectProgressInfos(flag, time);
         this.getTalentRemindInfos(flag, time);
         this.getCustomerRemindInfos(flag, time);
@@ -135,9 +150,10 @@
           memberId: this.memberId || null,
           time: flag != 3 ? getDateTime2(time) : (getDateMonth(time) || '').replace('-', '')
         }).then(data => {
+          this.show = false;
           const v = data || [];
           this.projectList = v;
-        })
+        }).catch(res => {this.show = false;})
       },
       getTalentRemindInfos(flag, time) {
         time = time || new Date();

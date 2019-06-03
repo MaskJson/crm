@@ -4,13 +4,13 @@
       <Button type="success" @click="pass" >批量通过</Button>
       <!--<Button type="error" @click="refuse" class="ml-10">批量拒绝</Button>-->
     </ManagerView>
-    <ModalUtil ref="modal" title="修改客户名称" @on-ok="changeName" :loading="loading" @reset="had = false">
+    <ModalUtil ref="modal" title="修改客户名称" @on-ok="changeName" :loading="loading" @reset="entity.replaceId = null">
       <div class="pd-10 relative">
-        <Input v-model="entity.name" @on-focus="show = true" @on-blur="show = false" @input="checkName"/>
+        <Input v-model="entity.name" @on-focus="show = true" @input="checkName" class="zzz"/>
         <!--<p class="cl-error" v-if="had">该项目名已存在</p>-->
         <div class="bgfff borderB nameList" v-show="show">
           <li class="border bgfff company-item" v-if="customers && customers.length == 0">暂无数据</li>
-          <li class="border bgfff company-item cursor" v-for="(c, index) of customers" :key="'customer' + index">
+          <li class="border bgfff company-item cursor" v-for="(c, index) of customers" :key="'customer' + index" @click="setEntity(c)">
             {{c.name}}
           </li>
         </div>
@@ -143,7 +143,8 @@
         },
         entity: {
           id: null,
-          name: null
+          name: null,
+          replaceId: null
         },
         timeout: null
       }
@@ -159,7 +160,12 @@
           isBatch: true
         })
       },
+      setEntity(customer) {
+        this.entity.name = customer.name;
+        this.entity.replaceId = customer.id;
+      },
       checkName() {
+        this.entity.replaceId = null;
         if (!this.entity.name) {
           return ;
         }
@@ -196,7 +202,17 @@
           refuse: auditRefuse
         }
       }
-    }
+    },
+    mounted() {
+      document.addEventListener('click', (event) => {
+        const e = event || window.event;
+        if (e.srcElement.parentElement.className.indexOf('zzz') < 0) {
+          setTimeout(() => {
+            this.show = false;
+          }, 100);
+        }
+      });
+    },
   }
 </script>
 
