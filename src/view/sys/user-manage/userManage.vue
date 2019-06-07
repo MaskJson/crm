@@ -55,7 +55,7 @@
       </Col>
     </Row>
     <Modal :title="modalTitle" v-model="userModalVisible" :mask-closable='false' :width="500" :styles="{top: '30px'}">
-      <Form ref="userForm" :model="userForm" :label-width="70" :rules="userFormValidate">
+      <Form ref="userForm" :model="userForm" :label-width="80" :rules="userFormValidate">
         <FormItem label="用户名" prop="username">
           <Input v-model="userForm.username" autocomplete="off"/>
         </FormItem>
@@ -72,7 +72,7 @@
           <!--</Select>-->
         <!--</FormItem>-->
         <!--:disabled="!!userForm.id"-->
-        <FormItem label="角色分配" prop="roleId" v-show="!!userForm.id">
+        <FormItem label="角色分配" prop="roleId" v-show="!userForm.id">
           <Select v-model="userForm.roleId" >
             <Option v-for="item in roleList" :value="item.id" :key="'role-' + item.id" :label="item.roleName">
               <!-- <div style="display:flex;flex-direction:column"> -->
@@ -152,7 +152,7 @@
         } else {
           callback()
         }
-      }
+      };
       return {
         show: false,
         accessToken: {},
