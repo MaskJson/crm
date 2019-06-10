@@ -360,22 +360,22 @@
                       toggleShow(this, 'password');
                     }
                   }
-                }, '修改密码')
-                // h(
-                //   'Button',
-                //   {
-                //     props: {
-                //       type: 'error',
-                //       size: 'small'
-                //     },
-                //     on: {
-                //       click: () => {
-                //         this.remove([params.row.id])
-                //       }
-                //     }
-                //   },
-                //   '删除'
-                // )
+                }, '修改密码'),
+                h(
+                  'Button',
+                  {
+                    props: {
+                      type: 'error',
+                      size: 'small'
+                    },
+                    on: {
+                      click: () => {
+                        this.remove([params.row.id])
+                      }
+                    }
+                  },
+                  '删除'
+                )
               ];
               const roleId = params.row.roleId;
               // if (roleId != 1 && roleId != 3) {

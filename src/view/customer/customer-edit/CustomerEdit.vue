@@ -142,6 +142,7 @@
             if (!entity.id) {
               entity.createUserId = getUserId();
             }
+            entity.roleId = getUserInfoByKey('roleId');
             save(entity).then(data => {
               this.$router.push('/customer/customer-manage');
             }).catch(data => {
