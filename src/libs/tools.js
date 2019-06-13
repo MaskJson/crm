@@ -456,10 +456,13 @@ export const toggleShow = (vm, key, flag) => {
 // get role
 export const getRoleName = (level) => {
   switch (level) {
-    case 2: return 'PM';
-    case 3: return 'IPL';
-    case 4: return 'MPL';
-    case 5: return 'PT';
+    case 2: return '经理';
+    case 3: return '高级顾问';
+    case 4: return '中级顾问';
+    case 5: return '兼职';
+    case 6: return '顾问';
+    case 7: return '助理';
+    default: return '';
   }
 }
 

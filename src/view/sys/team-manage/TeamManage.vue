@@ -34,6 +34,12 @@
         <FormItem label="兼职：" class="mb-5">
           <Checkbox v-for="(item, index) of pts" :key="'pt' + index" :label="item.checked" v-model="item.checked">{{ item.nickName }}</Checkbox>
         </FormItem>
+        <FormItem label="顾问：" class="mb-5">
+          <Checkbox v-for="(item, index) of gws" :key="'gw' + index" :label="item.checked" v-model="item.checked">{{ item.nickName }}</Checkbox>
+        </FormItem>
+        <FormItem label="助理：" class="mb-5">
+          <Checkbox v-for="(item, index) of zls" :key="'zl' + index" :label="item.checked" v-model="item.checked">{{ item.nickName }}</Checkbox>
+        </FormItem>
         <p class="mt-5 mb-5 cl-error">顾问和兼职没有下级成员</p>
         <p class="cl-primary" v-show="pms.filter(item => item.checked).length">项目经理：</p>
         <FormItem v-show="item.checked" v-for="(item, index) of pms" :key="'pm_check' + index" :label="item.nickName + '：'" class="mb-5">
@@ -48,7 +54,7 @@
           </CheckboxGroup>
         </FormItem>
         <p class="cl-primary" v-show="mpls.filter(item => item.checked).length">中级顾问：</p>
-        <FormItem v-show="item.checked" v-for="(item, index) of mpls" :key="'ipl_check' + index" :label="item.nickName + '：'" class="mb-5">
+        <FormItem v-show="item.checked" v-for="(item, index) of mpls" :key="'mpl_check' + index" :label="item.nickName + '：'" class="mb-5">
           <CheckboxGroup v-model="item.children">
             <Checkbox v-for="(item, index) of pls" :key="'pl1' + index" :label="item.id">{{ item.nickName }}</Checkbox>
           </CheckboxGroup>
@@ -81,10 +87,12 @@
           name: ''
         },
         // 编辑提交使用列表
-        pms: [],
-        ipls: [],
-        mpls: [],
-        pts: [],
+        pms: [], // 经理
+        ipls: [], // 高级顾问
+        mpls: [], // 中级顾问
+        pts: [], // 兼职
+        gws: [], // 顾问
+        zls: [], // 助理
         // 顾问和助理
         pls: [],
         // 树形结构
@@ -237,7 +245,7 @@
           id: null,
           userId: null,
         };
-        const brr = ['pms', 'ipls', 'mpls', 'pts'];
+        const brr = ['pms', 'ipls', 'mpls', 'pts', 'gws', 'zls'];
         brr.forEach(key => {
           this[key].forEach(item => {
             item.checked = false;
@@ -257,7 +265,7 @@
       },
       // 编辑提交
       save() {
-        const keys = ['pms', 'ipls', 'mpls', 'pts'];
+        const keys = ['pms', 'ipls', 'mpls', 'pts', 'gws', 'zls'];
         const teamObj = {};
         keys.forEach((key, index) => {
           teamObj[key] = this[key].filter(item => item.checked).map(item => {
@@ -271,7 +279,7 @@
             }
           })
         });
-        if (!teamObj['pms'].length && !teamObj['ipls'].length && !teamObj['mpls'].length && !teamObj['pts'].length) {
+        if (!teamObj['pms'].length && !teamObj['ipls'].length && !teamObj['mpls'].length && !teamObj['pts'].length && !teamObj['gws'].length && !teamObj['zls'].length) {
           this.$Message.error('团队成员不能为空');
           return;
         }
@@ -288,7 +296,7 @@
         if (type == 'getInfo') {
           // 团队编辑操作
           const members = data || [];
-          const keys = ['pms', 'ipls', 'mpls', 'pts'];
+          const keys = ['pms', 'ipls', 'mpls', 'pts', 'gws', 'zls'];
           keys.forEach((key, index) => {
             const arr = members.filter(item => item.level == (index + 2));
             // 过滤团队成员，显示复选框
@@ -358,6 +366,8 @@
         this.mpls = users.filter(item => item.roleId == 7);
         this.pts = users.filter(item => item.roleId == 8);
         this.pls = users.filter(item => item.roleId == 4 || item.roleId == 5);
+        this.gws = users.filter(item => item.roleId == 4);
+        this.zls = users.filter(item => item.roleId == 5);
       }).catch(data => {})
       this.getAllTeam();
     }
