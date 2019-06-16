@@ -12,6 +12,11 @@ export const getListByTableName = (params) => {
 
 // 下载文件
 export const uploadFile = (params) => {
-  return postRequest('/common/file', params);
+  return getRequest('/common/file', params);
+};
+
+// 下载文件64
+export const base64 = (params) => {
+  return getRequest('/common/base64', params);
 };
 

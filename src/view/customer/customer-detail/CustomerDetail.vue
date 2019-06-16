@@ -99,12 +99,12 @@
               </Upload>
             </div>
             <span v-else>暂无上传合同</span>
-            <div class="download cursor border pd-40" v-else @click="downloadFile">
-              <p class="center">
-                <Icon type="md-cloud-download" size="24"/>
-              </p>
-              <p class="center">下载合同</p>
-            </div>
+          </div>
+          <div class="download cursor border pd-40" v-else @click="downloadFile">
+            <p class="center">
+              <Icon type="md-cloud-download" size="24"/>
+            </p>
+            <p class="center">下载合同</p>
           </div>
         </TabPane>
         <TabPane :label="`项目列表 (${projectLength})`">

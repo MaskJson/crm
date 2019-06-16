@@ -68,9 +68,9 @@
               </div>
             </Upload>
             <div class="demo-upload-list" v-if="entity.header">
-              <img :src="imgBaseUrl + entity.header">
+              <img :src="talentHeader">
               <div class="demo-upload-list-cover">
-                <Icon type="ios-eye-outline" @click.native="handleView(entity.header)"></Icon>
+                <Icon type="ios-eye-outline" @click.native="handleView(talentHeader)"></Icon>
                 <Icon type="ios-trash-outline" @click.native="handleRemove"></Icon>
               </div>
             </div>
@@ -400,7 +400,7 @@
     </div>
     <Modal title="View Image" v-model="visible" :width="600">
       <div class="center">
-        <img :src="imgBaseUrl + imgName" v-if="visible" style="max-width: 578px;">
+        <img :src="imgName" v-if="visible" style="max-width: 578px;">
       </div>
     </Modal>
     <SpinUtil :show="show"/>
@@ -414,7 +414,7 @@
   import { getTalentInfoUtil, getUserId, getUserInfoByKey } from "../../../libs/tools";
   import { industryList, aptnessList, language, talentSource, talentStatus, educationList, countries } from "../../../libs/constant";
   import { allCustomer, allDepartment } from "../../../api/customer";
-  import { getListByTableName } from "../../../api/common";
+  import { getListByTableName, base64 } from "../../../api/common";
   import { checkByPhone, getDetail, save } from "../../../api/talent";
   import { imgBaseUrl } from "../../../config";
   import { openByUserId } from "../../../api/project";
@@ -429,6 +429,7 @@
       return {
         imgName: null,
         visible: false,
+        header: '', // 头像
         imgBaseUrl: imgBaseUrl,
         userId: null,
         projectId: null, // 添加项目人才
@@ -586,6 +587,11 @@
         }
       }
     },
+    computed: {
+      talentHeader() {
+        return 'data:image/jpeg;base64,' + this.header;
+      }
+    },
     methods: {
       handleRemove() {
         this.entity.header = null;
@@ -610,6 +616,11 @@
       headerSuccess(res) {
         if (res.code == 200) {
           this.entity.header = res.data;
+          base64({
+            path: res.data
+          }).then(data => {
+            this.header = data;
+          }).catch(res => {})
         }
       },
       resumeError(res) {
@@ -911,6 +922,13 @@
         getDetail({ id }).then(data => {
           this.show = false;
           const entity = getTalentInfoUtil(data);
+          if (!!entity.header) {
+            base64({
+              path: entity.header
+            }).then(data => {
+              this.header = data;
+            }).catch(res => {})
+          }
           entity.experienceList.forEach(item => {
             item.status = false
           });

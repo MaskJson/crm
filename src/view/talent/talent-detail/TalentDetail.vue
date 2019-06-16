@@ -34,12 +34,12 @@
               </Upload>
             </div>
             <span v-else>暂无上传简历</span>
-            <div class="download cursor border pd-40" v-else @click="downloadFile(entity.resume)">
-              <p class="center">
-                <Icon type="md-cloud-download" size="24"/>
-              </p>
-              <p class="center">下载简历</p>
-            </div>
+          </div>
+          <div class="download cursor border pd-40" v-else @click="downloadFile(entity.resume)">
+            <p class="center">
+              <Icon type="md-cloud-download" size="24"/>
+            </p>
+            <p class="center">下载简历</p>
           </div>
         </TabPane>
         <TabPane label="简历附件">
@@ -60,12 +60,12 @@
               </Upload>
             </div>
             <span v-else>暂无上传附件</span>
-            <div class="download cursor border pd-40" v-else @click="downloadFile(entity.resume2)">
-              <p class="center">
-                <Icon type="md-cloud-download" size="24"/>
-              </p>
-              <p class="center">下载简历</p>
-            </div>
+          </div>
+          <div class="download cursor border pd-40" v-else @click="downloadFile(entity.resume2)">
+            <p class="center">
+              <Icon type="md-cloud-download" size="24"/>
+            </p>
+            <p class="center">下载简历</p>
           </div>
         </TabPane>
         <TabPane label="基本信息">
