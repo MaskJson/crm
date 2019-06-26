@@ -61,6 +61,9 @@
         <FormItem label="手机号：">
           <Input v-model="contact.phone" class="w300"/>
         </FormItem>
+        <FormItem label="邮箱：">
+          <Input v-model="contact.email" class="w300"/>
+        </FormItem>
       </Form>
     </ModalUtil>
     <!--  删除确认  -->
@@ -156,6 +159,11 @@
             align: 'center',
           },
           {
+            title: '邮箱',
+            key: 'email',
+            align: 'center',
+          },
+          {
             title: '创建者',
             key: 'createUser',
             align: 'center',
@@ -231,6 +239,7 @@
           position: null,
           important: 1,
           phone: null,
+          email: null
         },
         contactRule: {
           name: [
@@ -244,6 +253,12 @@
           ],
           important: [
             { required: true, type: 'number', message: '请选择重要性', trigger: 'blur' }
+          ],
+          email: [
+            { required: false, type: 'email', message: '邮箱格式有误', trigger: 'blur' }
+          ],
+          phone: [
+            { required: false, regexp: /^[1][3,4,5,7,8][0-9]{9}$/, message: '手机号格式有误', trigger: 'blur' }
           ]
         },
         remark: {

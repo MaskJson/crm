@@ -47,7 +47,7 @@
         </FormItem>
         <div v-if="[2,4,8].indexOf(actionData.type) > -1 || actionData.remarkStatus == 2">
           <FormItem label="面试时间" class="ivu-form-item-required">
-            <DatePicker v-model="actionData.interviewTime"/>
+            <DatePicker v-model="actionData.interviewTime" type="datetime"/>
           </FormItem>
           <FormItem label="提醒对象">
             <Input v-model="nickName" readonly/>

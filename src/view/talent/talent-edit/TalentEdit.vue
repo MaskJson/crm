@@ -110,7 +110,7 @@
       <Row>
         <Col span="8">
           <FormItem label="出生日期：">
-            <DatePicker style="z-index: 999999;" type="datetime" v-model="entity.birthday"></DatePicker>
+            <DatePicker style="z-index: 999999;" v-model="entity.birthday"></DatePicker>
           </FormItem>
         </Col>
         <Col span="8">
