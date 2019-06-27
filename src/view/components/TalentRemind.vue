@@ -186,7 +186,7 @@
       }
     },
     created() {
-      openByUserId({ userId: getUserId() }).then(data => {
+      ({ userId: getUserId(), roleId: getUserInfoByKey('roleId')  }).then(data => {
         this.projects = data || [];
       }).catch(data => {});
     },

@@ -979,7 +979,7 @@
     },
     created() {
       this.userId = getUserId();
-      openByUserId({ userId: getUserId() }).then(data => {
+      openByUserId({ userId: getUserId(), roleId: getUserInfoByKey('roleId') }).then(data => {
         this.projects = data || [];
       }).catch(data => {});
       getListByTableName({type: 3}).then(data => {

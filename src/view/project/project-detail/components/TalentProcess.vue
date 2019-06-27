@@ -137,6 +137,7 @@
 
     </ModalUtil>
     <SpinUtil :show="show"/>
+    <TalentRemind ref="remind" :talentProjects="talentProjects" :talentType="talentType" :talentId="talentId" :offerCount="offerCount" :followRemindId="followRemindId" @on-ok="okHandler"/>
   </div>
 </template>
 
@@ -144,6 +145,7 @@
   import { projectTalentStatus, projectProgress, talentStatus } from "../../../../libs/constant";
   import { getCity, getDateTime, getDateTime2, getStatusRender, toggleShow, getUserId, getUserInfoByKey, getRenderList, getProjectTalentStatus, getProjectTalentType } from "../../../../libs/tools";
   import { getProjectTalentByStatus, addProjectTalentRemind, reBack, reviewTalent } from "../../../../api/project";
+  import TalentRemind from '../../../components/TalentRemind';
 
   const statuses = JSON.parse(JSON.stringify(projectTalentStatus));
   statuses.splice(0, 2, {value: '1', label: '推荐人才'});
@@ -152,6 +154,9 @@
   export default {
     name: 'talent-progress',
     props: ['userList', 'flag', 'performance', 'projectTalents', 'home'],
+    components: {
+      TalentRemind
+    },
     data () {
       // 获取操作选项
       function renderAction(h, projectTalentId, type, name, createUserId, status, remarkStatus, talentName, followUserId, talentId, talentType, progress, createUser) {
@@ -204,7 +209,8 @@
           action.push(h('Button', {
             props: {
               type: 'text',
-              size: 'small'
+              size: 'small',
+
             },
             class: 'block center',
             on: {
@@ -212,7 +218,9 @@
             }
           }, text));
         };
-        getAction('补充跟踪', status, 99);
+        if (status != 7) {
+          getAction('补充跟踪', status, 99);
+        }
         switch (status) {
           case 0:
             type != 100 ? (roleId == 3 ? getAction('推荐给客户', '0', 100) : null) : roleId == 3 ? getAction('通过', '666', 666) : action.push(h('span', {class: {'cl-error': true, block: true}}, '等待项目总监审核'));
@@ -261,7 +269,8 @@
         if ([0,1,3,4,5,6].indexOf(status)>-1) {
           getAction('淘汰', '8', 15);
         }
-        if (status=='7' || status=='8') {
+        // if (status=='7' || status=='8') {
+        if (status=='8') {
           action.push(h('span',{
             class: {
               'cl-success': status=='7',
@@ -814,6 +823,9 @@
             }
           }).catch(data => {this.show = false;})
         }
+      },
+      okHandler() {
+
       },
       // 获取当前进展状态下的项目人才
       getProjectTalent() {
