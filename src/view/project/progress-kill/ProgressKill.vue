@@ -5,7 +5,7 @@
 </template>
 
 <script>
-  import {getUserId, getDateTime} from "../../../libs/tools";
+  import {getUserId, getDateTime, getUserInfoByKey} from "../../../libs/tools";
   import {getKill} from "../../../api/project";
 
   export default {
@@ -13,7 +13,8 @@
     data() {
       return {
         searchData: {
-          userId: getUserId()
+          userId: getUserId(),
+          roleId: getUserInfoByKey('roleId'),
         },
         columns: [
           {

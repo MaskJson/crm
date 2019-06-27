@@ -2,8 +2,8 @@
   <Card>
     <div style="min-height: 400px;">
       <h3>{{title.replace('报','')}}绩效</h3>
-      <DatePicker v-model="time" :type="flag == 3 ? 'month' : 'date'" placeholder="请选择日期" clearable/>
-      <Button type="primary" class="ml-10" @click="getData(flag, time)">查询</Button>
+      <!--<DatePicker v-model="time" :type="flag == 3 ? 'month' : 'date'" placeholder="请选择日期" clearable/>-->
+      <!--<Button type="primary" class="ml-10" @click="getData(flag, time)">查询</Button>-->
       <div class="mt-10 mb-20">
         <div v-show="projectList.length > 0">
           <h5>进展跟踪</h5>
@@ -22,7 +22,7 @@
         <Col span="24" class="pd-5" v-if="(flag == 1 && (roleId == 4 || roleId == 5)) || (flag != 1 && roleId != 4 && roleId != 5)">
           <p>{{title}}</p>
           <Input type="textarea" :rows="3" v-model="content" :placeholder="'请填写' + title" :readonly="!!report && report.length > 0"/>
-          <Button class="mt-10" type="primary" v-if="report != null && report.length == 0" @click="saveReport(flag, content)">提交{{title}}</Button>
+          <Button class="mt-10" type="primary" v-if="report != null && report.length == 0" @click="checkReport(flag, content)">提交{{title}}</Button>
         </Col>
       </Row>
       <div class="mt-10 center" v-if="flag == 1">
@@ -74,11 +74,27 @@
         this.time = new Date(date);
         this.getData(this.flag, this.time);
       },
-      saveReport(type, content) {
+      checkReport(type, content) {
         if (content.trim().length == 0) {
           this.$Message.error('请填写报告内容');
           return false;
         }
+        const day = new Date().getDay();
+        if (day < 5) {
+          this.$Modal.confirm({
+            title: '提交确认',
+            content: '未到提交周报（月报）时间，是否继续？',
+            cancelText: '不提交',
+            okText: '继续提交',
+            onOk: () => {
+              this.saveReport(type, content);
+            }
+          });
+        } else {
+          this.saveReport(type, content);
+        }
+      },
+      saveReport(type, content) {
         this.show = true;
         const params = {
           createUserId: this.userId,
@@ -93,10 +109,10 @@
         })
       },
       getData(flag, time, b) {
-        if (!time) {
-          this.$Message.warning('请选择日期');
-          return false;
-        }
+        // if (!time) {
+        //   this.$Message.warning('请选择日期');
+        //   return false;
+        // }
         this.show = true;
         this.getReport(flag, time, b);
         this.getProjectProgressInfo(flag, time);
@@ -153,7 +169,7 @@
       }
     },
     created() {
-      // this.getData(this.flag, this.time, true);
+      this.getData(this.flag, this.time, true);
     }
   }
 </script>

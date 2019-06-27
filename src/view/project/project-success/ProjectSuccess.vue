@@ -184,6 +184,7 @@
           industry: industry.trim(),
           follow: follow == 0 ? null : follow == 1,
           userId: getUserId(),
+          roleId: getUserInfoByKey('roleId'),
           status: 4,
         }
       }

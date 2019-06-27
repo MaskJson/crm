@@ -305,7 +305,7 @@
           {
             title: '操作',
             key: 'action',
-            // width: 250,
+            width: 250,
             align: 'center',
             render: (h, params) => {
               const children = [
@@ -368,6 +368,7 @@
                       type: 'error',
                       size: 'small'
                     },
+                    class: 'ml-5',
                     on: {
                       click: () => {
                         this.remove([params.row.id])

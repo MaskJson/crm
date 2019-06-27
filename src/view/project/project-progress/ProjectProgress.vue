@@ -12,7 +12,7 @@
 </template>
 
 <script>
-  import { getDateTime, getUserId, getStatusRender } from "../../../libs/tools";
+  import { getDateTime, getUserId, getStatusRender, getUserInfoByKey } from "../../../libs/tools";
   import { getReports, getRecommends} from "../../../api/count";
   import { reviewTalent } from "../../../api/project";
 
@@ -22,6 +22,7 @@
       return {
         searchData: {
           userId: getUserId(),
+          roleId: getUserInfoByKey('roleId'),
         },
         columns: [
           {

@@ -112,7 +112,8 @@
         show: false,
         talentStatus: talentStatus,
         searchData: {
-          userId: null,
+          userId: getUserId(),
+          roleId: getUserInfoByKey('roleId') == 1 ? 1 : null,
           type: null
         },
         columns: [
@@ -201,6 +202,11 @@
           //   align: 'center',
           //   key: 'projectCount'
           // },
+          {
+            title: '顾问',
+            align: 'center',
+            key: 'createUser'
+          },
           {
             title: '操作',
             align: 'center',
@@ -310,7 +316,6 @@
         projects: [], // 所有对当前用户开放的项目
         talentProjects: [], // 当前人才已关联的项目
         talentName: null,
-
       }
     },
     methods: {
@@ -432,15 +437,17 @@
       }
     },
     created() {
-      const {type} = this.$route.query;
+      const {type, team} = this.$route.query;
       if (!!type) {
         this.searchData.type = Number(type);
       }
-      this.searchData.userId = getUserId();
+      if (team) {
+        this.searchData.roleId = 3;
+      }
       getListByTableName({ type: 1 }).then(data => {
         this.customerList = data || [];
       }).catch(data => {});
-      openByUserId({ userId: getUserId() }).then(data => {
+      openByUserId({ userId: getUserId(), roleId: getUserInfoByKey('roleId') }).then(data => {
         this.projects = data || [];
       }).catch(data => {});
     },

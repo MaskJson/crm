@@ -350,17 +350,17 @@
               const fk = [`人才反馈：${talentRemark}`,`客户反馈：${customerRemark}`];
               const recommend = [`推荐理由：${recommendation}`];
               const kill = [`淘汰：${killRemark}`];
-              const rmk = [!!remark?`备注：${remark}`:'',`创建时间：${getDateTime2(createTime) || ''}`].filter(item => !!item);
-              let arr;
+              const rmk = [`备注：${remark || '没有填写备注'}`,`创建时间：${getDateTime2(createTime) || ''}`].filter(item => !!item);
+              let arr = [];
               switch (type) {
-                case 2:
-                case 4:
-                case 8: arr = interview;break;
-                case 10: arr = offer;break;
-                case 12: arr = pass;break;
+                // case 2:
+                // case 4:
+                // case 8: arr = interview;break;
+                // case 10: arr = offer;break;
+                // case 12: arr = pass;break;
                 case 16:
                   arr = fk;
-                  remarkStatus == 2 && arr.push(...interview);
+                  // remarkStatus == 2 && arr.push(...interview);
                   remarkStatus == 5 && arr.push(...offer);
                   remarkStatus == 8 && arr.push(...kill);
                   break;
