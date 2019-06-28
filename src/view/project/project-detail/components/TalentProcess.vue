@@ -138,6 +138,7 @@
     </ModalUtil>
     <SpinUtil :show="show"/>
     <TalentRemind ref="remind" :talentProjects="talentProjects" :talentType="talentType" :talentId="talentId" :offerCount="offerCount" :followRemindId="followRemindId" @on-ok="okHandler"/>
+    <TuiJian ref="tuijian" :talentProjects="talentProjects" :talentName="talentName" :projectTalentIndex="projectTalentIndex" :talentId="talentId" @on-ok="tjHandler"/>
   </div>
 </template>
 
@@ -146,6 +147,7 @@
   import { getCity, getDateTime, getDateTime2, getStatusRender, toggleShow, getUserId, getUserInfoByKey, getRenderList, getProjectTalentStatus, getProjectTalentType } from "../../../../libs/tools";
   import { getProjectTalentByStatus, addProjectTalentRemind, reBack, reviewTalent } from "../../../../api/project";
   import TalentRemind from '../../../components/TalentRemind';
+  import TuiJian from '../../../components/TuiJian';
 
   const statuses = JSON.parse(JSON.stringify(projectTalentStatus));
   statuses.splice(0, 2, {value: '1', label: '推荐人才'});
@@ -155,18 +157,25 @@
     name: 'talent-progress',
     props: ['userList', 'flag', 'performance', 'projectTalents', 'home'],
     components: {
-      TalentRemind
+      TalentRemind,
+      TuiJian
     },
     data () {
       // 获取操作选项
-      function renderAction(h, projectTalentId, type, name, createUserId, status, remarkStatus, talentName, followUserId, talentId, talentType, progress, createUser) {
+      function renderAction(h, projectTalentId, type, name, createUserId, status, remarkStatus, talentName, followUserId, talentId, talentType, progress, projects, offerCount, createUser, index) {
         let action = [];
         const roleId = this.roleId;
         // 添加选项
         const getAction = (text, status, actionType) => {
           const handler = () => {
             this.nickName = createUser;
+            // update
             this.talentName = talentName;
+            this.talentProjects = projects;
+            this.talentId = talentId;
+            this.talentType = talentType;
+            this.offerCount = offerCount;
+            this.projectTalentIndex = index;
             this.talent = {
               talentId, talentType, followUserId, progress
             };
@@ -200,10 +209,16 @@
               customerRemark: null,
               remarkStatus: null
             };
-            if (actionType == 6 || actionType == 9 || actionType == 666) {
-              this.addRemind();
+            if (status == -1) {
+              toggleShow(this, 'remind');
+            } else if (status == -2) {
+              toggleShow(this, 'tuijian');
             } else {
-              toggleShow(this, 'remind', true);
+              if (actionType == 6 || actionType == 9 || actionType == 666) {
+                this.addRemind();
+              } else {
+                toggleShow(this, 'remind', true);
+              }
             }
           };
           action.push(h('Button', {
@@ -268,6 +283,14 @@
         }
         if ([0,1,3,4,5,6].indexOf(status)>-1) {
           getAction('淘汰', '8', 15);
+        }
+        if (status == '7') {
+          if ((!followUserId || followUserId == getUserId()) && !progress) {
+            getAction('常规跟踪', -1);
+          }
+          if ((!followUserId || followUserId == getUserId()) && !offerCount) {
+            getAction('推荐', -2);
+          }
         }
         // if (status=='7' || status=='8') {
         if (status=='8') {
@@ -353,7 +376,7 @@
               const remind = !!this.performance ? params.row.remind || {} : this.getLastRemind(params.row.reminds || [], !!this.home ? params.row.status : this.status) || {}
               const {type,status,createTime,recommendation,killRemark,interviewTime,interviewTone,remark,
                 isLast,position,yearSalary,charge,sureTime,workTime,entryTime,probationTime,talentRemark,customerRemark,remarkStatus} = remind;
-              const interview = [`面试时间：${getDateTime(interviewTime) || ''}`,`提醒对象：${params.row.createUser}`,`${!!interviewTone?'面试官：'+interviewTone:''}`].filter(item => !!item);
+              const interview = [`面试时间：${getDateTime2(interviewTime) || ''}`,`提醒对象：${params.row.createUser}`,`${!!interviewTone?'面试官：'+interviewTone:''}`].filter(item => !!item);
               const offer = [`岗位：${position}`,!!yearSalary?`年薪：${yearSalary}`:'',!!charge?`收费：${charge}`:'',`确认日期：${getDateTime2(sureTime) || ''}`,`预计上班时间：${getDateTime2(workTime) || ''}`].filter(item => !!item);
               const pass = [`入职时间：${getDateTime2(entryTime)}`,`试用期结束：${getDateTime2(probationTime)}`];
               const fk = [`人才反馈：${talentRemark}`,`客户反馈：${customerRemark}`];
@@ -388,9 +411,10 @@
             align: 'center',
             width: 80,
             render: (h, params) => {
+              const {id, type, name, createUserId, status, remarkStatus, talentName, followUserId, createUser, progress, offerCount, projects, talentType, talentId, _index} = params.row || {};
               const action =  renderAction.call(
-                this, h, params.row.id, params.row.type, params.row.name, params.row.createUserId, params.row.status, params.row.remarkStatus, params.row.talentName,
-                params.row.followUserId, params.row.talentId, params.row.talentType, params.row.progress, params.row.createUser
+                this, h, id, type, name, createUserId, status, remarkStatus, talentName,
+                followUserId, talentId, talentType, progress, projects, offerCount, createUser, _index
               );
               return h('div', {
                 class: 'ac auto inline-block relative center'
@@ -440,7 +464,15 @@
           status: null,
           nextType: null,
           nextRemindTime: null
-        }
+        },
+        // talentRemind infos
+        offerCount: 0,
+        talentProjects: [],
+        talentType: null,
+        talentId: null,
+        followRemindId: null,
+        // projectTalent infos
+        projectTalentIndex: null,
       }
     },
     computed: {
@@ -826,6 +858,13 @@
       },
       okHandler() {
 
+      },
+      tjHandler() {
+        if (!this.home) {
+          this.getProjectTalent();
+        } else {
+          this.$emit('change');
+        }
       },
       // 获取当前进展状态下的项目人才
       getProjectTalent() {
