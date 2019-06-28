@@ -222,8 +222,10 @@
     left: 10px;
     top: 42px;
     width: 200px;
+    max-height: 300px;
     border-radius: 4px;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     z-index: 10;
     border: solid 1px #9ea7b4 !important;
   }

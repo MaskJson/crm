@@ -195,6 +195,9 @@
                     type: 'text',
                     size: 'small'
                   },
+                  domProps: {
+                    title: params.row.name
+                  },
                   class: {
                     'cl-primary': true,
                   },

@@ -81,10 +81,11 @@
         this.$refs['projectTalent'].validate(valid => {
           if (valid) {
             this.show = true;
+            const {projectId} = this.projectTalent;
             this.projectTalent.createUserId = getUserId();
             this.projectTalent.talentId = this.talentId;
             addProjectTalent(this.projectTalent).then(data => {
-              this.$emit('on-ok');
+              this.$emit('on-ok', projectId, this.projectTalentIndex);
               this.show = false;
               toggleShow(this, 'project', false);
             }).catch(data => {this.show = false});

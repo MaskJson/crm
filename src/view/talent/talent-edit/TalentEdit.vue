@@ -180,7 +180,7 @@
         </Col>
         <Col span="8">
           <FormItem label="当前年薪（万元）：">
-            <InputNumber v-model="entity.salary" :min="0"/>
+            <InputNumber v-model="entity.salary"/>
           </FormItem>
         </Col>
         <Col span="8">
@@ -338,12 +338,15 @@
           <Option v-for="(item, index) of talentStatus" :key="'status' + index" :value="item.value">{{ item.label }}</Option>
         </Select>
       </FormItem>
-      <FormItem label="关联项目" v-if="entity.status == 10 && !projectId" filterable clearable>
+      <FormItem label="关联项目" v-if="entity.status == 10 && !projectId && !entity.progress" filterable clearable>
         <Select v-model="entity.projectId" placeholder="请选择项目">
           <Option v-for="(item, index) of projects" :value="item.id" :key="'project' + index">
             {{ item.name }}{{`（${item.customerName}）`}}
           </Option>
         </Select>
+      </FormItem>
+      <FormItem label="推荐理由" v-if="!!entity.projectId" class="">
+        <Input v-model="entity.recommendation"/>
       </FormItem>
     </Form>
     <!--  添加跟踪记录 -->
@@ -489,6 +492,7 @@
           remark: null,
           createUerId: null,
           roleId: getUserInfoByKey('roleId'),
+          recommendation: null,
           experienceList: [
             {
               company: '', // 公司名称
@@ -834,8 +838,12 @@
             return false;
           }
         }
-        if (this.entity.status == 10 && !this.entity.projectId) {
+        if (this.entity.status == 10 && !this.entity.projectId && !this.entity.id) {
           this.$Message.warning('推荐给客户必须关联项目');
+          return false;
+        }
+        if (this.entity.projectId && !this.entity.recommendation) {
+          this.$Message.warning('关联项目必须填写推荐理由');
           return false;
         }
         let flag = true;
@@ -1031,8 +1039,10 @@
     left: 80px;
     top: 35px;
     width: 500px;
+    max-height: 300px;
     border-radius: 4px;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     z-index: 10;
     border: solid 1px #9ea7b4 !important;
   }

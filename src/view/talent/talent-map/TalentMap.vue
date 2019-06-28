@@ -3,10 +3,10 @@
     <Tabs v-model="status" :animated="false">
       <TabPane :label="`我的人才地图（${list.length}）`" name="0"></TabPane>
       <TabPane :label="`收藏的人才地图（${folderList.length}）`" name="2"></TabPane>
-      <TabPane :label="`推荐的人才地图（${statusList.filter(item => item.status == 1).length}）`" name="1"></TabPane>
-      <TabPane :label="`面试的人才地图（${statusList.filter(item => item.status == 3).length}）`" name="3"></TabPane>
-      <TabPane :label="`offer人才地图（${statusList.filter(item => item.status == 4).length}）`" name="4"></TabPane>
-      <TabPane :label="`成功人才地图（${statusList.filter(item => item.status == 7).length}）`" name="7"></TabPane>
+      <TabPane :label="`推荐的人才地图（${statusList.filter(item => item.remindStatus == 1).length}）`" name="1"></TabPane>
+      <TabPane :label="`面试的人才地图（${statusList.filter(item => item.remindStatus == 2 || item.remindStatus==3).length}）`" name="3"></TabPane>
+      <TabPane :label="`offer人才地图（${statusList.filter(item => item.remindStatus == 5).length}）`" name="5"></TabPane>
+      <TabPane :label="`成功人才地图（${statusList.filter(item => item.remindStatus == 7).length}）`" name="7"></TabPane>
     </Tabs>
     <div class="mt-20">
       <Collapse v-if="treeMap.length > 0">
@@ -28,6 +28,7 @@
     </div>
     <SpinUtil :show="show"/>
     <TalentRemind ref="remind" :talentProjects="talentProjects" :talentType="talentType" :talentId="talentId" :offerCount="offerCount" :followRemindId="followRemindId" @on-ok="okHandler"/>
+    <TuiJian ref="tuijian" :talentProjects="talentProjects" :talentName="talentName" :projectTalentIndex="projectTalentIndex" :talentId="talentId" @on-ok="okHandler"/>
   </Card>
 </template>
 
@@ -36,13 +37,19 @@
   import { toggleType } from "../../../api/talent";
   import { getUserId, getStatusRender, getRenderList, getDateTime, toggleShow } from "../../../libs/tools";
   import TalentRemind from './../../components/TalentRemind';
+  import TuiJian from './../../components/TuiJian';
   export default {
     name: "TalentMap",
     components: {
-      TalentRemind
+      TalentRemind,
+      TuiJian
     },
     data() {
       return {
+        // projectTalent info
+        talentName: null,
+        projectTalentIndex: null,
+        // projectTalent infos
         show: false,
         userId: getUserId(),
         status: '0',
@@ -134,14 +141,14 @@
             title: '操作',
             align: 'center',
             render: (h, params) => {
-              const {projects, progress, followUserId, talentId, talentType, offerCount} = params.row;
+              const {projects, progress, followUserId, talentId, talentType, offerCount, talentName, _index} = params.row;
               const btn = [];
               btn.push(
                 h('Button', {
                   props: {
                     type: 'primary',
                     size: 'small',
-                    disabled: progress>0 && (!!followUserId && followUserId != getUserId())
+                    disabled: progress>0 || (!!followUserId && followUserId != getUserId())
                   },
                   on: {
                     click: () => {
@@ -158,6 +165,24 @@
                     }
                   }
                 }, '常规跟踪')
+              );
+              btn.push(
+                h('Button', {
+                  props: {
+                    size: 'small',
+                    disabled: offerCount>0 || (!!followUserId && followUserId != getUserId())
+                  },
+                  class: 'ml-5',
+                  on: {
+                    click: () => {
+                      this.talentProjects = projects;
+                      this.talentId = talentId;
+                      this.talentType = talentType;
+                      this.talentName = talentName;
+                      toggleShow(this, 'tuijian');
+                    }
+                  }
+                }, '推荐')
               );
               if (!followUserId) {
                 btn.push(
@@ -229,7 +254,14 @@
         } else if (this.status == 2) {
           return this.folderList;
         } else {
-          return this.statusList.filter(item => item.remindStatus == Number(this.status));
+          return this.statusList.filter(item => {
+             const status = Number(this.status);
+             if (status == 3) {
+               return item.remindStatus == 2 || item.remindStatus == 3;
+             } else {
+               return item.remindStatus == status;
+             }
+          });
         }
       },
       treeMap() {

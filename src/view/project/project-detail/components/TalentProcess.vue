@@ -151,7 +151,7 @@
 
   const statuses = JSON.parse(JSON.stringify(projectTalentStatus));
   statuses.splice(0, 2, {value: '1', label: '推荐人才'});
-  statuses.pop();
+  // statuses.pop();
 
   export default {
     name: 'talent-progress',
@@ -353,6 +353,9 @@
                     type: 'text',
                     size: 'small'
                   },
+                  domProps: {
+                    title: name
+                  },
                   class: {
                     'cl-primary': true,
                   },
@@ -373,7 +376,7 @@
             // width: 420,
             render: (h, params) => {
               // const remind = this.getLastRemind(params.row.reminds || [], !!this.home ? params.row.status : this.status) || {};
-              const remind = !!this.performance ? params.row.remind || {} : this.getLastRemind(params.row.reminds || [], !!this.home ? params.row.status : this.status) || {}
+              const remind = !!this.performance ? params.row.remind || {} : this.getLastRemind(params.row.reminds || [], !!this.home ? params.row.status : this.status) || {};
               const {type,status,createTime,recommendation,killRemark,interviewTime,interviewTone,remark,
                 isLast,position,yearSalary,charge,sureTime,workTime,entryTime,probationTime,talentRemark,customerRemark,remarkStatus} = remind;
               const interview = [`面试时间：${getDateTime2(interviewTime) || ''}`,`提醒对象：${params.row.createUser}`,`${!!interviewTone?'面试官：'+interviewTone:''}`].filter(item => !!item);
@@ -492,9 +495,10 @@
             title: '推荐理由',
             width: 120,
             align: 'center',
-            key: 'recommendation'
+            render: (h, params) => {
+              return getRenderList(h, JSON.stringify([params.row.recommendation]), true);
+            }
           },
-
           ...this.actionColumn
         ]
       },
@@ -545,7 +549,11 @@
             align: 'center',
             render: (h, params) => {
               const remind = this.getLastOffer(params.row.reminds || []) || {};
-              return h('span', remind.position);
+              return h('span',{
+                domProps: {
+                  title: remind.position
+                },
+              }, remind.position);
             }
           },
           {
@@ -554,7 +562,11 @@
             align: 'center',
             render: (h, params) => {
               const remind = this.getLastOffer(params.row.reminds || []) || {};
-              return h('span', remind.yearSalary);
+              return h('span',{
+                domProps: {
+                  title: remind.yearSalary
+                },
+              }, remind.yearSalary);
             }
           },
           {
@@ -577,7 +589,11 @@
             width: 80,
             render: (h, params) => {
               const remind = this.getLastOffer(params.row.reminds || []) || {};
-              return h('span', remind.position);
+              return h('span', {
+                domProps: {
+                  title: remind.position
+                },
+              }, remind.position);
             }
           },
           {
@@ -586,7 +602,11 @@
             align: 'center',
             render: (h, params) => {
               const remind = this.getLastOffer(params.row.reminds || []) || {};
-              return h('span', remind.yearSalary);
+              return h('span', {
+                domProps: {
+                  title: remind.yearSalary
+                },
+              }, remind.yearSalary);
             }
           },
           {
@@ -636,7 +656,11 @@
             width: 80,
             render: (h, params) => {
               const remind = this.getLastOffer(params.row.reminds || []) || {};
-              return h('span', remind.position);
+              return h('span', {
+                domProps: {
+                  title: remind.position
+                },
+              }, remind.position);
             }
           },
           {
@@ -645,7 +669,11 @@
             align: 'center',
             render: (h, params) => {
               const remind = this.getLastOffer(params.row.reminds || []) || {};
-              return h('span', remind.yearSalary);
+              return h('span', {
+                domProps: {
+                  title: remind.yearSalary
+                },
+              }, remind.yearSalary);
             }
           },
           ...this.actionColumn
@@ -658,7 +686,9 @@
             title: '淘汰理由',
             width: 250,
             align: 'center',
-            key: 'killRemark'
+            render: (h, params) => {
+              return getRenderList(h, JSON.stringify([params.row.killRemark]), true);
+            },
           },
           ...this.actionColumn
         ]
@@ -891,7 +921,11 @@
             width: 150,
             align: 'center',
             render: (h, params) => {
-              return h('span', getProjectTalentStatus(false, params.row.status) + '——' +getProjectTalentType(false, params.row.type));
+              return h('span', {
+                domProps: {
+                  title: getProjectTalentStatus(false, params.row.status) + '——' +getProjectTalentType(false, params.row.type)
+                }
+              }, getProjectTalentStatus(false, params.row.status) + '——' +getProjectTalentType(false, params.row.type));
             }
           });
           this.projectTalentStatus = this.projectTalentStatus.slice(1, 8);
@@ -923,6 +957,9 @@
                   type: 'text',
                   size: 'small'
                 },
+                domProps: {
+                  title: params.row.customerName
+                }
               }, params.row.customerName)
             ]);
           }
