@@ -130,6 +130,8 @@
             <RadioGroup v-model="entity.marry">
               <Radio :label="0">未婚</Radio>
               <Radio :label="1">已婚</Radio>
+              <Radio :label="2">单身</Radio>
+              <Radio :label="3">不确定</Radio>
             </RadioGroup>
           </FormItem>
         </Col>

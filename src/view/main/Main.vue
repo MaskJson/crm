@@ -15,10 +15,10 @@
         <shrinkable-menu :shrink="shrink" @on-change="handleSubmenuChange" :theme="menuTheme"
                          :before-push="beforePush" :open-names="openedSubmenuArr" :menu-list="menuList">
           <div slot="top" class="logo-con">
-            <!--<div class="pd-5 radius4" v-show="!shrink">-->
-              <!--<img class="radius4" :src="maxLogo" key="max-logo"/>-->
-            <!--</div>-->
-            <!--<img v-show="shrink" :src="minLogo" key="min-logo"/>-->
+            <div class="pd-5 radius4" v-show="!shrink">
+              <img class="radius4" :src="maxLogo" key="max-logo"/>
+            </div>
+            <img v-show="shrink" :src="minLogo" key="min-logo"/>
           </div>
         </shrinkable-menu>
       </scroll-bar>

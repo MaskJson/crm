@@ -8,6 +8,9 @@
         <Input placeholder="姓名" class="w200" v-model="searchData.name" clearable/>
       </SearchItem>
       <SearchItem>
+        <Input placeholder="手机号" class="w200" v-model="searchData.phone" clearable/>
+      </SearchItem>
+      <SearchItem>
         <Input placeholder="行业" class="w200" v-model="searchData.industry" clearable/>
       </SearchItem>
       <SearchItem>
@@ -142,10 +145,11 @@
     },
     computed: {
       searchParams() {
-        const { name, industry, aptness, folderId, city, follow, customerName } = this.searchData;
+        const { name, phone, industry, aptness, folderId, city, follow, customerName } = this.searchData;
         return {
           aptness,
           name,
+          phone: phone ? phone.trim() : null,
           industry,
           folderId,
           customerName,
@@ -168,6 +172,7 @@
         searchData: {
           aptness: null,
           name: null,
+          phone: null,
           folderId: null,
           industry: null,
           city: [],

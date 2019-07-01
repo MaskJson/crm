@@ -1,14 +1,17 @@
 <template>
   <Card>
+    <div>
+      <Input placeholder="输入公司关键字自动过滤数据" class="w300" v-model="customerName"/>
+    </div>
     <Tabs v-model="status" :animated="false">
-      <TabPane :label="`我的人才地图（${list.length}）`" name="0"></TabPane>
-      <TabPane :label="`收藏的人才地图（${folderList.length}）`" name="2"></TabPane>
-      <TabPane :label="`推荐的人才地图（${statusList.filter(item => item.remindStatus == 1).length}）`" name="1"></TabPane>
-      <TabPane :label="`面试的人才地图（${statusList.filter(item => item.remindStatus == 2 || item.remindStatus==3).length}）`" name="3"></TabPane>
-      <TabPane :label="`offer人才地图（${statusList.filter(item => item.remindStatus == 5).length}）`" name="5"></TabPane>
-      <TabPane :label="`成功人才地图（${statusList.filter(item => item.remindStatus == 7).length}）`" name="7"></TabPane>
+      <TabPane :label="`我的人才地图（${listFilter.length}）`" name="0"></TabPane>
+      <TabPane :label="`收藏的人才地图（${folderListFilter.length}）`" name="2"></TabPane>
+      <TabPane :label="`推荐的人才地图（${statusListFilter.filter(item => item.remindStatus == 1).length}）`" name="1"></TabPane>
+      <TabPane :label="`面试的人才地图（${statusListFilter.filter(item => item.remindStatus == 2 || item.remindStatus==3).length}）`" name="3"></TabPane>
+      <TabPane :label="`offer人才地图（${statusListFilter.filter(item => item.remindStatus == 5).length}）`" name="5"></TabPane>
+      <TabPane :label="`成功人才地图（${statusListFilter.filter(item => item.remindStatus == 7).length}）`" name="7"></TabPane>
     </Tabs>
-    <div class="mt-20">
+    <div class="">
       <Collapse v-if="treeMap.length > 0">
         <Panel v-for="(c, indexC) of treeMap" :name="'customer' + indexC" :key="'customer' + indexC">
           {{c.name}}{{` (${c.zsCount}/${c.allCount})`}}
@@ -58,6 +61,7 @@
         talentType: null,
         talentId: null,
         followRemindId: null,
+        customerName: '',
         list: [], // 所有相关人才
         statusList: [], // 经历过各个状态的
         folderList: [], // 收藏的人才,
@@ -248,13 +252,25 @@
     },
     // 根据状态从数据中过滤出树状所需数据
     computed: {
+      listFilter() {
+        const name = (this.customerName || '').trim();
+        return !!name ? this.list.filter(item => (item.customerName || '').indexOf(name) > -1) : this.list;
+      },
+      folderListFilter() {
+        const name = (this.customerName || '').trim();
+        return !!name ? this.folderList.filter(item => (item.customerName || '').indexOf(name) > -1) : this.folderList;
+      },
+      statusListFilter() {
+        const name = (this.customerName || '').trim();
+        return !!name ? this.statusList.filter(item => (item.customerName || '').indexOf(name) > -1) : this.statusList;
+      },
       map() {
         if (this.status == 0) {
-          return this.list;
+          return this.listFilter;
         } else if (this.status == 2) {
-          return this.folderList;
+          return this.folderListFilter;
         } else {
-          return this.statusList.filter(item => {
+          return this.statusListFilter.filter(item => {
              const status = Number(this.status);
              if (status == 3) {
                return item.remindStatus == 2 || item.remindStatus == 3;

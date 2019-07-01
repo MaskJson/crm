@@ -214,21 +214,21 @@
         <Col span="8">
           <FormItem label="主顾问：" prop="adviseId">
             <Select placeholder="请选择主顾问" v-model="entity.adviseId">
-              <Option v-for="(item, index) of advisers" :disabled="item.id == entity.partId" :key="'adviser' + index" :value="item.id">{{ item.nickName }}</Option>
+              <Option v-for="(item, index) of ads" :disabled="item.id == entity.partId" :key="'adviser' + index" :value="item.id">{{ item.nickName }}</Option>
             </Select>
           </FormItem>
         </Col>
         <Col span="8">
           <FormItem label="顾问：">
             <Select placeholder="请选择主顾问" v-model="entity.advisers" multiple>
-              <Option v-for="(item, index) of advisers" :key="'adviser' + index" :value="item.id">{{ item.nickName }}</Option>
+              <Option v-for="(item, index) of ads" :key="'adviser' + index" :value="item.id">{{ item.nickName }}</Option>
             </Select>
           </FormItem>
         </Col>
         <Col span="8">
           <FormItem label="特定兼职：">
             <Select placeholder="请选择特定兼职" v-model="entity.partId" filterable clearable>
-              <Option v-for="(item, index) of advisers" :disabled="item.id == entity.adviseId" :key="'pt' + index" :value="item.id">{{ item.nickName }}</Option>
+              <Option v-for="(item, index) of ads" :disabled="item.id == entity.adviseId" :key="'pt' + index" :value="item.id">{{ item.nickName }}</Option>
             </Select>
           </FormItem>
         </Col>
@@ -357,7 +357,7 @@
       }
     },
     computed: {
-      advisers() {
+      ads() {
         const ids = this.members.map(item => item.userId);
         return this.users.filter(item => ids.indexOf(item.id) > -1 || item.id == getUserId());
       }
@@ -418,6 +418,7 @@
             entity.matches = JSON.stringify(entity.matches);
             entity.industry = JSON.stringify(entity.industry);
             entity.aptness = JSON.stringify(entity.aptness);
+            entity.advisers = entity.advisers || [];
             if (!entity.id) {
               entity.createUserId = getUserId();
             }
@@ -440,7 +441,7 @@
           this.$Message.error('您还未拥有团队成员，请联系管理创建团队');
         }
       }).catch(data => {});
-      findProjectCustomers({}).then(data => {
+      findProjectCustomers({userId: getUserId()}).then(data => {
         this.customerList = data || [];
       }).catch(data => {});
       getListByTableName({ type: 4 }).then(data => {

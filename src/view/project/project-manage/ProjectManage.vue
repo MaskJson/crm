@@ -77,9 +77,9 @@
         },
         columns: [
           {
-            title: '项目ID',
+            title: '企业名称',
             align: 'center',
-            key: 'id'
+            key: 'customerName'
           },
           {
             title: '项目名称',

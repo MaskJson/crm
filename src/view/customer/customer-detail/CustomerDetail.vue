@@ -293,6 +293,7 @@
           {
             title: '人才名称',
             key: 'talentName',
+            width: 100,
             align: 'center',
             render: (h, params) => {
               return h('div', {
@@ -320,11 +321,13 @@
           {
             title: '岗位',
             align: 'center',
+            width: 150,
             key: 'position'
           },
           {
             title: '状态',
             align: 'center',
+            width: 100,
             render: (h, params) => {
               return getStatusRender(h, params.row.status);
             }
@@ -347,7 +350,12 @@
                     str = `${getDateTime(remind.meetTime)}--${remind.meetAddress}--${remind.situation}--${remind.cause}${remind.salary}--${getDateTime(remind.createTime)}`;
                     break;
                 }
-                return h('span', str);
+                return h('div', {
+                  class: 'line',
+                  domProps: {
+                    title: str
+                  }
+                }, str);
               } else {
                 return h('span', '');
               }
@@ -356,6 +364,7 @@
           {
             title: '跟踪用户',
             align: 'center',
+            width: 100,
             render: (h, params) => {
               const remind = params.row.remind || {};
               return h('span', remind.createUser);
@@ -364,6 +373,7 @@
           {
             title: '操作',
             align: 'center',
+            width: 100,
             render: (h, params) => {
               const {projects, progress, followUserId, talentId, talentType, offerCount} = params.row;
               return h('Button', {

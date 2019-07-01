@@ -137,7 +137,7 @@
 
     </ModalUtil>
     <SpinUtil :show="show"/>
-    <TalentRemind ref="remind" :talentProjects="talentProjects" :talentType="talentType" :talentId="talentId" :offerCount="offerCount" :followRemindId="followRemindId" @on-ok="okHandler"/>
+    <TalentRemind ref="cg_remind" :talentProjects="talentProjects" :talentType="talentType" :talentId="talentId" :offerCount="offerCount" :followRemindId="followRemindId" @on-ok="okHandler"/>
     <TuiJian ref="tuijian" :talentProjects="talentProjects" :talentName="talentName" :projectTalentIndex="projectTalentIndex" :talentId="talentId" @on-ok="tjHandler"/>
   </div>
 </template>
@@ -210,7 +210,7 @@
               remarkStatus: null
             };
             if (status == -1) {
-              toggleShow(this, 'remind');
+              toggleShow(this, 'cg_remind');
             } else if (status == -2) {
               toggleShow(this, 'tuijian');
             } else {
@@ -307,7 +307,7 @@
             }
           }, status=='7'?'已通过保证期':type == 200 ? '已在其他项目入职':'已淘汰'))
         }
-        if (status != '0' && type != 200) {
+        if (status != '0' && type != 200 && status != 7) {
           action.push(h('Button', {
             props: {
               type: 'text',
@@ -346,26 +346,24 @@
             align: 'center',
             render: (h, params) => {
               const name = params.row.name || params.row.talentName;
-              return h('div', {
-              }, [
-                h('Button', {
-                  props: {
-                    type: 'text',
-                    size: 'small'
-                  },
-                  domProps: {
-                    title: name
-                  },
-                  class: {
-                    'cl-primary': true,
-                  },
-                  on: {
-                    click: () => {
-                      this.$router.push('/talent/talent-detail?id=' + params.row.talentId);
-                    }
+              return h('span', {
+                props: {
+                  type: 'text',
+                  size: 'small'
+                },
+                domProps: {
+                  title: name
+                },
+                class: {
+                  'cl-primary': true,
+                  'cursor': true
+                },
+                on: {
+                  click: () => {
+                    this.$router.push('/talent/talent-detail?id=' + params.row.talentId);
                   }
-                }, name)
-              ]);
+                }
+              }, name);
             }
           }
         ],
@@ -376,6 +374,9 @@
             // width: 420,
             render: (h, params) => {
               // const remind = this.getLastRemind(params.row.reminds || [], !!this.home ? params.row.status : this.status) || {};
+              if (!this.performance && params.row.reminds && params.row.reminds.length == 0) {
+                return h('span', '暂无跟踪记录');
+              }
               const remind = !!this.performance ? params.row.remind || {} : this.getLastRemind(params.row.reminds || [], !!this.home ? params.row.status : this.status) || {};
               const {type,status,createTime,recommendation,killRemark,interviewTime,interviewTone,remark,
                 isLast,position,yearSalary,charge,sureTime,workTime,entryTime,probationTime,talentRemark,customerRemark,remarkStatus} = remind;
@@ -412,7 +413,7 @@
             title: '操作',
             key: 'actions',
             align: 'center',
-            width: 80,
+            width: 100,
             render: (h, params) => {
               const {id, type, name, createUserId, status, remarkStatus, talentName, followUserId, createUser, progress, offerCount, projects, talentType, talentId, _index} = params.row || {};
               const action =  renderAction.call(
@@ -429,7 +430,8 @@
                   style: 'height: 32px'
                 }, '操作'),
                 h('div', {
-                  class: 'btns hide w120 border radius4 bgfff'
+                  class: 'btns hide w120 border radius4 bgfff',
+                  style: 'z-index: 9999'
                 }, action)
               ]);
             }
@@ -734,7 +736,8 @@
       getLastRemind(arr, status) {
         const len = arr.length;
         for (let i=0; i<len; i++) {
-          if (arr[i].status == status || status == 1 && (arr[i].type == 100 || arr[i].type == 101)) {
+          // if (arr[i].status == status || status == 1 && (arr[i].type == 100 || arr[i].type == 101)) {
+          if (arr[i].status == status || (status == 1 || status == 0) && (arr[i].status == 1 || arr[i].status == 0)) {
             return arr[i];
           }
         }

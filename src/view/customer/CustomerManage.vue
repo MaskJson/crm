@@ -200,6 +200,9 @@
                   size: 'small',
                   type: 'text'
                 },
+                domProps: {
+                  title: params.row.name
+                },
                 class: 'cl-primary',
                 on: {
                   click: () => {

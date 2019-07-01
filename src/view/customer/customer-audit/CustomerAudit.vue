@@ -10,7 +10,7 @@
         <!--<p class="cl-error" v-if="had">该项目名已存在</p>-->
         <div class="bgfff borderB nameList" v-show="show">
           <li class="border bgfff company-item" v-if="customers && customers.length == 0">暂无数据</li>
-          <li class="border bgfff company-item cursor" v-for="(c, index) of customers" :key="'customer' + index" @click="setEntity(c)">
+          <li class="border bgfff company-item cursor line" :title="c.name" v-for="(c, index) of customers" :key="'customer' + index" @click="setEntity(c)">
             {{c.name}}
           </li>
         </div>
@@ -170,12 +170,14 @@
           return ;
         }
         !!this.timeout && clearTimeout(this.timeout);
-        this.timeout = setTimeout(() => {
-          checkCustomerName(this.entity).then(data => {
-            data = data || [];
-            this.customers = data;
-          }).catch(data => {})
-        }, 500);
+        if (this.entity.name) {
+          this.timeout = setTimeout(() => {
+            checkCustomerName(this.entity).then(data => {
+              data = data || [];
+              this.customers = data;
+            }).catch(data => {})
+          }, 500);
+        }
       },
       changeName() {
         if (!this.entity.name) {
@@ -221,7 +223,7 @@
     position: absolute;
     left: 10px;
     top: 42px;
-    width: 200px;
+    width: 300px;
     max-height: 300px;
     border-radius: 4px;
     overflow-x: hidden;
