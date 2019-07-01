@@ -155,7 +155,7 @@
 
   export default {
     name: 'talent-progress',
-    props: ['userList', 'flag', 'performance', 'projectTalents', 'home'],
+    props: ['userList', 'flag', 'performance', 'projectTalents', 'home', 'day'],
     components: {
       TalentRemind,
       TuiJian
@@ -711,12 +711,13 @@
     },
     methods: {
       getList(status) {
+        const statusKey = this.performance ? 'remindStatus':'status';
         if (status == 1) {
-          return (this.projectTalents || []).filter(item => item.status == 0 || item.status == 1);
+          return (this.projectTalents || []).filter(item => item[statusKey] == 0 || item[statusKey] == 1);
         } else if (status == 2 || status == 3) {
-          return (this.projectTalents || []).filter(item => item.status == 2 || item.status == 3);
+          return (this.projectTalents || []).filter(item => item[statusKey] == 2 || item[statusKey] == 3);
         } else {
-          return (this.projectTalents || []).filter(item => item.status == status);
+          return (this.projectTalents || []).filter(item => item[statusKey] == status);
         }
       },
       getColumns(status) {
@@ -932,6 +933,20 @@
             }
           });
           this.projectTalentStatus = this.projectTalentStatus.slice(1, 8);
+        }
+        if (this.day) {
+           this.actionColumn.unshift({
+             title: '创建人',
+             align: 'center',
+             width: 80,
+             render: (h, params) => {
+               return h('span', {
+                 domProps: {
+                   title: params.row.createUser
+                 }
+               }, params.row.createUser)
+             }
+           })
         }
         this.nameColumn.push({
           title: '项目-公司',

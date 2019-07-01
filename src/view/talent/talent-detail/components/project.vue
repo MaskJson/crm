@@ -34,6 +34,7 @@
               <Button type="text">{{remind.createUser}}</Button>
             </div>
             <div class="mt-10">
+              <span v-if="remind.type==99">备注：{{remind.remark}}</span>
               <span v-if="!!remind.recommendation">推荐理由：{{remind.recommendation}}<span class="ml-20" v-if="!!remind.remark">备注：{{remind.remark}}</span></span>
               <span class="ml-20" v-if="!!remind.killRemark">淘汰理由：{{remind.killRemark}} <span class="ml-20" v-if="!!remind.remark">备注：{{remind.remark}}</span></span>
               <div v-if="!!remind.interviewTime">
