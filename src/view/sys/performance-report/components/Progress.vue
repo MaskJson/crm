@@ -31,7 +31,7 @@
         let list = [];
         if (this.list) {
           this.list.forEach(item => {
-            list = list.concat([...item.children])
+            list = list.concat([...item.children]);
           })
         }
         list.forEach(item => {

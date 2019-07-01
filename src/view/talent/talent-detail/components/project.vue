@@ -28,37 +28,39 @@
             <div>
               <Button :type="getType(status)" size="small" class="mr-5">{{getProjectTalentStatus(false, status)}}</Button>
             </div>
-            <div class="mt-10 pl-50" v-for="remind of item.statusRemind[status]">
-              <span v-if="remind.talentRemark">
+            <div v-for="remind of item.statusRemind[status]">
+              <div class="mt-10 pl-50" v-show="remind.remark || remind.talentRemark">
+                <span v-if="remind.talentRemark">
                 <span class="mr-10">人选反馈：{{remind.talentRemark}}</span>--
                 <span class="mr-10">客户反馈：{{remind.customerRemark}}</span>
               </span>
-              <span v-else-if="remind.remark" class="mr-10">{{remind.remark}}</span>
-              <!--<span v-if="!!remind.recommendation">推荐理由：{{remind.recommendation}}<span class="ml-20" v-if="!!remind.remark">备注：{{remind.remark}}</span></span>-->
-              <!--<span class="ml-20" v-if="!!remind.killRemark">淘汰理由：{{remind.killRemark}} <span class="ml-20" v-if="!!remind.remark">备注：{{remind.remark}}</span></span>-->
-              <!--<span v-if="!!remind.interviewTime">-->
+                <span v-else-if="remind.remark" class="mr-10">{{remind.remark}}</span>
+                <!--<span v-if="!!remind.recommendation">推荐理由：{{remind.recommendation}}<span class="ml-20" v-if="!!remind.remark">备注：{{remind.remark}}</span></span>-->
+                <!--<span class="ml-20" v-if="!!remind.killRemark">淘汰理由：{{remind.killRemark}} <span class="ml-20" v-if="!!remind.remark">备注：{{remind.remark}}</span></span>-->
+                <!--<span v-if="!!remind.interviewTime">-->
                 <!--<span class="ml-10">面试时间：{{getDateTime(remind.interviewTime)}}</span>-->
                 <!--<span class="ml-10">面试官：{{remind.interviewTone}}</span>-->
                 <!--&lt;!&ndash;<span class="ml-10">面试时间：{{getDateTime(remind.interviewTime)}}</span>&ndash;&gt;-->
-              <!--</span>-->
-              <!--<span v-if="!!remind.position">-->
+                <!--</span>-->
+                <!--<span v-if="!!remind.position">-->
                 <!--<span class="">岗位：{{remind.position}}</span>-->
                 <!--<span class="ml-20">年薪：{{remind.yearSalary}}万</span>-->
                 <!--<span class="ml-20">收费：{{remind.charge}}万</span>-->
                 <!--<span class="ml-20">确认日期：{{getDateTime2(remind.sureTime)}}</span>-->
                 <!--<span class="ml-20">预计上班时间：{{getDateTime2(remind.workTime)}}</span>-->
-              <!--</span>-->
-              <!--<span v-if="!!remind.entryTime">-->
+                <!--</span>-->
+                <!--<span v-if="!!remind.entryTime">-->
                 <!--<span class="">入职时间：{{getDateTime2(remind.entryTime)}}</span>-->
                 <!--<span class="ml-20">试用期截止时间：{{getDateTime2(remind.probationTime)}}</span>-->
-              <!--</span>-->
-              <!--<span v-if="!!remind.talentRemark">-->
+                <!--</span>-->
+                <!--<span v-if="!!remind.talentRemark">-->
                 <!--<span class="">人选反馈：{{remind.talentRemark}}</span>-->
                 <!--<span class="ml-20">客户反馈：{{remind.customerRemark}}</span>-->
-              <!--</span>-->
-              <span class="mr-10">{{getDateTime2(remind.createTime)}}</span>
-              <span class="mr-10">{{remind.createUser}}</span>
-              <span>{{!!remind.index ? `（第${remind.index}次面试）` : ''}}</span>
+                <!--</span>-->
+                <span class="mr-10">{{getDateTime2(remind.createTime)}}</span>
+                <span class="mr-10">{{remind.createUser}}</span>
+                <span>{{!!remind.index ? `（第${remind.index}次面试）` : ''}}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -482,6 +484,7 @@
           this.projectList = (data || []).map(item => {
             item.reminds = item.reminds || [];
             let status = Array.from(new Set(item.reminds.map(item => item.status)));
+            status.sort();
             let statusRemind = {};
             let interviewLen = item.reminds.filter(r => [2,4,8].indexOf(r.type) > -1);
             item.reminds.forEach(remind => {
@@ -492,8 +495,18 @@
             status.forEach(s => {
               statusRemind[s] = [];
               item.reminds.forEach(r => {
-                if (s == r.status) {
-                  statusRemind[s].push(r);
+                if ([4,5,8].indexOf(s) > -1) {
+                  if (s == r.status || s == r.remarkStatus) {
+                    statusRemind[s].unshift(r);
+                  }
+                } else if (s == 2 || s == 3) {
+                  if (s == r.status && (!r.remarkStatus || r.remarkStatus < 3)) {
+                    statusRemind[s].unshift(r);
+                  }
+                } else {
+                  if (s == r.status) {
+                    statusRemind[s].unshift(r);
+                  }
                 }
               })
             });

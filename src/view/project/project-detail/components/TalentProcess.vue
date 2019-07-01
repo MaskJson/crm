@@ -155,7 +155,7 @@
 
   export default {
     name: 'talent-progress',
-    props: ['userList', 'flag', 'performance', 'projectTalents', 'home', 'day'],
+    props: ['userList', 'flag', 'performance', 'projectTalents', 'home', 'day', 'ishome'],
     components: {
       TalentRemind,
       TuiJian
@@ -386,7 +386,7 @@
               const fk = [`人才反馈：${talentRemark}`,`客户反馈：${customerRemark}`];
               const recommend = [`推荐理由：${recommendation}`];
               const kill = [`淘汰：${killRemark}`];
-              const rmk = [`${remark || ''}`,`${getDateTime2(createTime) || ''}`].filter(item => !!item);
+              const rmk = remark ? [`${remark || ''}`,`${this.ishome ? '' : (getDateTime2(createTime) || '')}`]:[];
               let arr = [];
               switch (type) {
                 // case 2:
@@ -925,11 +925,12 @@
             width: 150,
             align: 'center',
             render: (h, params) => {
+              const remindStatus = params.row.remindStatus;
               return h('span', {
                 domProps: {
-                  title: getProjectTalentStatus(false, params.row.status) + '——' +(getProjectTalentType(false, params.row.type)||'')
+                  title: remindStatus == 0 || remindStatus == 1 ? '推荐给客户' : getProjectTalentStatus(false, remindStatus)
                 }
-              }, getProjectTalentStatus(false, params.row.status) + '——' +(getProjectTalentType(false, params.row.type)||''));
+              }, remindStatus == 0 || remindStatus == 1 ? '推荐给客户' : getProjectTalentStatus(false, remindStatus));
             }
           });
           this.projectTalentStatus = this.projectTalentStatus.slice(1, 8);

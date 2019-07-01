@@ -109,7 +109,7 @@
     </Row>
     <Row v-show="list.length > 0">
       <h2>项目进展</h2>
-      <TalentProgress flag="yes" home="yes" :project-talents="list" @change="getProjectTalent"/>
+      <TalentProgress flag="yes" home="yes" :project-talents="list" ishome="yes" @change="getProjectTalent"/>
     </Row>
     <Modal title="今日面试提醒" v-model="showInterview" :width="960">
       <Table border :data="interview" :columns="columns" />
