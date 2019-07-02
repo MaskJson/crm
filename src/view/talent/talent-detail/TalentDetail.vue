@@ -79,20 +79,20 @@
             <TimelineItem v-for="(item, index) of remindFilter" :key="'remind' + index">
               <p class="fs16">{{ item.type | typeFilter }} <span class="ml-40">人才状态：{{item.status | talentStatusFilter}}</span></p>
               <!--<p class="mt-5"><span class="mR10">创建者：{{item.createUser}}</span><span class="ml-20">创建时间：{{getDateTime(item.createTime)}}</span></p>-->
-              <div class="bgf2 mt-5 pd-5" v-if="item.type == 1">内容：{{item.remark}} <span class="ml-20">{{item.createUser}}</span><span class="ml-20">{{getDateTime(item.createTime)}}</span></div>
+              <div class="bgf2 mt-5 pd-5" v-if="item.type == 1">{{item.remark}} <span class="ml-20">{{item.createUser}}</span><span class="ml-20">{{getDateTime(item.createTime)}}</span></div>
               <div class="bgf2 mt-5 pd-5" v-else-if="item.type == 2">
                 <!--<p class="mt-5">候选人基本情况：{{item.situation}}</p>-->
                 <!--<p class="mt-5">求职方向不离职原因：{{item.cause}}</p>-->
                 <!--<p class="mt-5">薪资架构：{{item.salary}}</p>-->
                 <!--<p class="mt-5">面试时间：{{getDateTime(item.meetTime)}}</p>-->
                 <!--<p class="mt-5">面试地点：{{item.meetAddress}}</p>-->
-                内容：{{item.situation}}--{{item.cause}}--{{item.salary}}--{{item.meetAddress}}--{{getDateTime(item.meetTime)}}
+                {{item.situation}}--{{item.cause}}--{{item.salary}}--{{item.meetAddress}}--{{getDateTime(item.meetTime)}}
                 <span class="ml-20">{{item.createUser}}</span><span class="ml-20">{{getDateTime(item.createTime)}}</span>
               </div>
               <div class="bgf2 mt-5 pd-5" v-else>
                 <!--<p class="mt-5">面试时间：{{getDateTime(item.meetTime)}}</p>-->
                 <!--<p class="mt-5">面试地点：{{item.meetAddress}}</p>-->
-                内容：{{item.meetAddress}}--{{getDateTime(item.meetTime)}}
+                {{item.meetAddress}}--{{getDateTime(item.meetTime)}}
                 <span class="ml-20">{{item.createUser}}</span><span class="ml-20">{{getDateTime(item.createTime)}}</span>
               </div>
             </TimelineItem>

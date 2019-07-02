@@ -63,7 +63,7 @@
               </p>
               <!--<p class="mt-5"><span class="mR10">创建者：{{item.createUser}}</span><span class="ml-20">创建时间：{{getDateTime(item.createTime)}}</span></p>-->
               <p class="bgf2 mt-5">
-                内容：{{item.type == 2 ? item.meetNotice : item.remark}}
+                {{item.type == 2 ? item.meetNotice : item.remark}}
                 <span class="ml-20">{{item.createUser}}</span>
                 <span class="ml-20">{{getDateTime(item.createTime)}}</span></p>
             </TimelineItem>
