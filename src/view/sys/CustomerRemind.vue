@@ -50,7 +50,8 @@
               if (params.row.status == 5) {
                 arr.push(`合同期：${getDateTime2(remind.contactTimeStart) || ''}-${getDateTime2(remind.contactTimeEnd) || ''}`)
               }
-              return getRenderList(h, JSON.stringify(arr), true);
+              // return getRenderList(h, JSON.stringify(arr), true);
+              return h('span',{domProps:{title: (remind.meetNotice || remind.remark) || ''}}, (remind.meetNotice || remind.remark) || '');
             }
           },
           {
@@ -68,7 +69,8 @@
               if (params.row.status == 5) {
                 arr.push(`合同期：${getDateTime2(params.row.contactTimeStart) || ''}-${getDateTime2(params.row.contactTimeEnd) || ''}`)
               }
-              return getRenderList(h, JSON.stringify(arr), true);
+              // return getRenderList(h, JSON.stringify(arr), true);
+              return h('span',{domProps:{title: (params.row.meetNotice || params.row.remark) || ''}}, (params.row.meetNotice || params.row.remark) || '');
             }
           },
           {

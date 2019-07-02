@@ -166,7 +166,7 @@
                   props: {
                     type: 'primary',
                     size: 'small',
-                    disabled: followUserId && followUserId != this.searchData.userId
+                    // disabled: followUserId && followUserId != this.searchData.userId
                   },
                   on: {
                     click: () => {

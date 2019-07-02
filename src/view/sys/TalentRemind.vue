@@ -82,7 +82,8 @@
                     str = `${getDateTime(remind.meetTime)}--${remind.meetAddress}--${remind.situation}--${remind.cause}${remind.salary}--${remind.createUser}`;
                     break;
                 }
-                return h('span', str);
+                // return h('span', str);
+                return h('span',{domProps:{title: (remind.situation || remind.remark) || ''}}, (remind.situation || remind.remark) || '');
               } else {
                 return h('span', '');
               }
@@ -106,7 +107,7 @@
                     str = `${getDateTime(remind.meetTime)}--${remind.meetAddress}--${remind.situation}--${remind.cause}${remind.salary}--${remind.createUser}`;
                     break;
                 }
-                return h('span', str);
+                return h('span',{domProps:{title: (remind.situation || remind.remark) || ''}}, (remind.situation || remind.remark) || '');
               } else {
                 return h('span', '');
               }
