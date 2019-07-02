@@ -404,9 +404,9 @@
                 case 100: arr = recommend;break;
                 default: arr = [];break;
               }
-              arr = arr.concat(rmk);
+              arr = rmk.filter(item => !!item);
               // return h('span', !!remind.remark ? `${remind.remark || ''}-${getDateTime(remind.createTime) || ''}` : '');
-              return getRenderList(h, JSON.stringify(rmk), true);
+              return getRenderList(h, JSON.stringify(arr), true);
             }
           },
           {

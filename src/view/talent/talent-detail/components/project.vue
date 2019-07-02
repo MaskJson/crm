@@ -12,7 +12,7 @@
               type="text"
               class="block"
               :class="{'cl-success': action.status == 110, 'cl-error': action.status==120&&action.type!=200, 'cl-warning': action.status==120&&action.type==200}"
-              v-for="(action, index) of renderAction(item.id, item.status, item.type, item.remarkStatus)"
+              v-for="(action, index) of renderAction(item.id, item.status, item.type, item.remarkStatus, item.createUserId)"
               :key="'btn' + index"
               :disabled="action.status == 110 || action.status == 120"
               @click="setActionData(item.id, action.status, action.type, item.status, item.type, index, item.remarkStatus, item.createUser)"
@@ -386,7 +386,7 @@
           }).catch(data => {this.show = false;})
         }
       },
-      renderAction(projectTalentId, projectStatus, type, remarkStatus) {
+      renderAction(projectTalentId, projectStatus, type, remarkStatus, createUserId) {
         let action = [];
         const roleId = this.roleId;
         // 添加选项
