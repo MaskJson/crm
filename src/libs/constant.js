@@ -87,8 +87,8 @@ export const projectTalentStatus = [
   {value: '1', label: '推荐给客户'},
   // {value: '2', label: '通知人才面试'},
   {value: '3', label: '面试阶段'},
-  {value: '4', label: 'offer待定'},
-  {value: '5', label: 'offer签订待入职'},
+  {value: '4', label: 'offer谈判'},
+  {value: '5', label: 'offer签订'},
   {value: '6', label: '保证期间人才'},
   {value: '7', label: '通过保证期'},
   {value: '8', label: '已淘汰'}

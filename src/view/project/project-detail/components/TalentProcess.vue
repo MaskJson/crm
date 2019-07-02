@@ -18,11 +18,11 @@
           <Table :data="getList(2)" :columns="getColumns(2)" border></Table>
         </div>
         <div v-if="getList(4).length > 0">
-          <h3>offer谈判阶段</h3>
+          <h3>offer谈判</h3>
           <Table :data="getList(4)" :columns="getColumns(4)" border></Table>
         </div>
         <div v-if="getList(5).length > 0">
-          <h3>offer签订待入职</h3>
+          <h3>offer签订</h3>
           <Table :data="getList(5)" :columns="getColumns(5)" border></Table>
         </div>
         <div v-if="getList(6).length > 0">
@@ -406,7 +406,7 @@
               }
               arr = arr.concat(rmk);
               // return h('span', !!remind.remark ? `${remind.remark || ''}-${getDateTime(remind.createTime) || ''}` : '');
-              return getRenderList(h, JSON.stringify(arr), true);
+              return getRenderList(h, JSON.stringify(rmk), true);
             }
           },
           {

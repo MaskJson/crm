@@ -23,13 +23,13 @@
         <Button class="ml-5" @click="item.show = !item.show">{{item.show ? '隐藏' : '显示'}}</Button>
       </div>
       <div class="pd-10" v-show="item.show">
-        <div v-for="status of Object.keys(item.statusRemind)" class="mb-15">
+        <div v-for="status of Object.keys(item.statusRemind).reverse()" class="mb-15">
           <div class="inline-block alignT">
             <div>
               <Button :type="getType(status)" size="small" class="mr-5">{{getProjectTalentStatus(false, status)}}</Button>
             </div>
             <div v-for="remind of item.statusRemind[status]">
-              <div class="mt-10 pl-50" v-show="remind.remark || remind.talentRemark">
+              <div class="mt-10 pl-50" v-show="remind.remark || remind.talentRemark || (status != 3)">
                 <span v-if="remind.talentRemark">
                 <span class="mr-10">人选反馈：{{remind.talentRemark}}</span>--
                 <span class="mr-10">客户反馈：{{remind.customerRemark}}</span>
@@ -510,6 +510,7 @@
                 }
               })
             });
+            console.log(Object.keys(statusRemind))
             item.statusRemind = statusRemind;
             return Object.assign(item, {show: true});
           });
