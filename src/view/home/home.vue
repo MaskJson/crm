@@ -4,8 +4,8 @@
       <div class="pd-10 w300 left mr-20" v-if="roleId != 8">
         <div class="radius4 border pd-10">
           <h3 class="cl-error">{{roleId == 1 ? '所有待办项' : '个人待办项'}}</h3>
-          <h3 class="cursor mt-10" @click="goto('/talent/talent-pending')">人才常规跟踪待办项：<span class="cl-primary">{{count.talentFirst + count.talentSecond + count.talentThird}}</span></h3>
-          <h3 class="cursor mt-10" @click="goto('/customer/customer-pending')">客户常规跟踪待办项：<span class="cl-primary">{{count.customerFirst + count.customerSecond + count.customerThird}}</span></h3>
+          <h3 class="cursor mt-10" @click="goto('/talent/talent-pending' + (roleId == 1 ? '?team=110':''))">人才常规跟踪待办项：<span class="cl-primary">{{count.talentFirst + count.talentSecond + count.talentThird}}</span></h3>
+          <h3 class="cursor mt-10" @click="goto('/customer/customer-pending' + (roleId == 1 ? '?team=110':''))">客户常规跟踪待办项：<span class="cl-primary">{{count.customerFirst + count.customerSecond + count.customerThird}}</span></h3>
           <h3 class="cursor mt-10" @click="showInterview = true">今日面试提醒：<span class="cl-primary">{{interview.length}}</span></h3>
         </div>
       </div>

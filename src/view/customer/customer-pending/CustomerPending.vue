@@ -79,7 +79,7 @@
         contacts: [],
         searchData: {
           userId: getUserId(),
-          roleId: getUserInfoByKey('roleId'),
+          roleId: null,
           type: null
         },
         columns: [
@@ -331,9 +331,12 @@
       }
     },
     created() {
-      const {type} = this.$route.query;
+      const {type, team} = this.$route.query;
       if (!!type) {
         this.searchData.type = Number(type);
+      }
+      if (team) {
+        this.searchData.roleId = getUserInfoByKey('roleId');
       }
     },
   }

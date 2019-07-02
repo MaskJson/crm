@@ -113,7 +113,7 @@
         talentStatus: talentStatus,
         searchData: {
           userId: getUserId(),
-          roleId: getUserInfoByKey('roleId') == 1 ? 1 : null,
+          roleId: null,
           type: null
         },
         columns: [
@@ -445,7 +445,7 @@
         this.searchData.type = Number(type);
       }
       if (team) {
-        this.searchData.roleId = 3;
+        this.searchData.roleId = getUserInfoByKey('roleId');
       }
       getListByTableName({ type: 1 }).then(data => {
         this.customerList = data || [];
