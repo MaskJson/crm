@@ -1,6 +1,7 @@
 <template>
   <Card>
     <div style="min-height: 400px;">
+      <PerformanceCount :memberId="userId"/>
       <h3>{{title.replace('报','')}}绩效</h3>
       <!--<DatePicker v-model="time" :type="flag == 3 ? 'month' : 'date'" placeholder="请选择日期" clearable/>-->
       <!--<Button type="primary" class="ml-10" @click="getData(flag, time)">查询</Button>-->
@@ -38,6 +39,7 @@
   import TalentProgress from './../../project/project-detail/components/TalentProcess';
   import TalentRemind from './../TalentRemind';
   import CustomerRemind from './../CustomerRemind';
+  import PerformanceCount from './../PerformanceCount';
   import {getDateMonth, getDateTime2, getUserId, getUserInfoByKey} from "../../../libs/tools";
   import {getProjectProgressInfo, getTalentRemindInfo, getCustomerRemindInfo, getReportInfo, saveReport} from "../../../api";
 
@@ -47,7 +49,8 @@
     components: {
       TalentProgress,
       TalentRemind,
-      CustomerRemind
+      CustomerRemind,
+      PerformanceCount
     },
     computed: {
       title() {

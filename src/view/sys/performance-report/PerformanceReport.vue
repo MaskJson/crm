@@ -1,6 +1,7 @@
 <template>
   <Card>
     <div style="min-height: 400px;">
+      <PerformanceCount ref="count" :memberId="memberId"/>
       <h3>{{title.replace('报','')}}绩效</h3>
       <DatePicker v-model="time" :type="flag == 3 ? 'month' : 'date'" placeholder="请选择日期" clearable/>
       <Select placeholder="请选择顾问" v-model="memberId" clearable class="w200 ml-10">
@@ -39,6 +40,7 @@
   import Talent from './components/Talent';
   import Customer from './components/Customer';
   import Report from './components/Report';
+  import PerformanceCount from './../PerformanceCount';
   import {getUserId, getUserInfoByKey, getDateTime2, getDateMonth} from "../../../libs/tools";
   import {getProjectProgressInfos, getTalentRemindInfos, getCustomerRemindInfos, getReportInfos, getMembers} from "../../../api";
 
@@ -49,7 +51,8 @@
       Progress,
       Talent,
       Customer,
-      Report
+      Report,
+      PerformanceCount
     },
     computed: {
       prevTxt() {
@@ -125,6 +128,7 @@
         date = date +(flag ? (-mills) : mills);
         this.time = new Date(date);
         this.getData(this.flag, this.time);
+        this.$refs['count'].init();
       },
       getData(flag, time) {
         if (!time) {

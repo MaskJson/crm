@@ -150,3 +150,7 @@ export const getMembers = (params) => {
   return getRequest('/performance/members', params);
 };
 
+// 获取绩效页面统计数据
+export const getPerformanceCount = (params) => {
+  return getRequest('/performance/count', params);
+};
