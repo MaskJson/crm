@@ -34,8 +34,8 @@
       init() {
         getPerformanceCount({
           userId: this.userId,
-          roleId: this.userId,
-          memberId: this.memberId
+          roleId: this.roleId,
+          memberId: this.memberId == -1 ? null : this.memberId
         }).then(data => {
           this.map = data || {};
         }).catch(res => {

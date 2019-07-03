@@ -5,6 +5,7 @@
       <h3>{{title.replace('报','')}}绩效</h3>
       <DatePicker v-model="time" :type="flag == 3 ? 'month' : 'date'" placeholder="请选择日期" clearable/>
       <Select placeholder="请选择顾问" v-model="memberId" clearable class="w200 ml-10">
+        <Option :value="-1" :key="-1">全部</Option>
         <Option v-for="(item, index) of memberList" :value="item.id" :key="'member'+index">{{item.nickName}}</Option>
       </Select>
       <Button type="primary" class="ml-10" @click="getData(flag, time)">查询</Button>
@@ -151,7 +152,7 @@
           userId: this.userId,
           roleId: this.roleId,
           flag,
-          memberId: this.memberId || null,
+          memberId: this.memberId == -1 ? null : (this.memberId || null),
           time: flag != 3 ? getDateTime2(time) : (getDateMonth(time) || '').replace('-', '')
         }).then(data => {
           this.show = false;
@@ -165,7 +166,7 @@
           userId: this.userId,
           roleId: this.roleId,
           flag,
-          memberId: this.memberId || null,
+          memberId: this.memberId == -1 ? null : (this.memberId || null),
           time: flag != 3 ? getDateTime2(time) : (getDateMonth(time) || '').replace('-', '')
         }).then(data => {
           const v = data || [];
@@ -178,7 +179,7 @@
           userId: this.userId,
           roleId: this.roleId,
           flag,
-          memberId: this.memberId || null,
+          memberId: this.memberId == -1 ? null : (this.memberId || null),
           time: flag != 3 ? getDateTime2(time) : (getDateMonth(time) || '').replace('-', '')
         }).then(data => {
           const v = data || [];
@@ -191,7 +192,7 @@
           userId: this.userId,
           roleId: this.roleId,
           flag,
-          memberId: this.memberId || null,
+          memberId: this.memberId == -1 ? null : (this.memberId || null),
           time: flag != 3 ? getDateTime2(time) : (getDateMonth(time) || '').replace('-', '')
         }).then(data => {
           const v = this.filterReports(data);
