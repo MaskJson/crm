@@ -5,7 +5,7 @@
       <h3>{{title.replace('报','')}}绩效</h3>
       <DatePicker v-model="time" :type="flag == 3 ? 'month' : 'date'" placeholder="请选择日期" clearable/>
       <Select placeholder="请选择顾问" v-model="memberId" clearable class="w200 ml-10">
-        <Option :value="-1" :key="-1">全部</Option>
+        <Option :value="-1" :key="-1" v-if="[4,5,7,8].indexOf(roleId)<0">全部</Option>
         <Option v-for="(item, index) of memberList" :value="item.id" :key="'member'+index">{{item.nickName}}</Option>
       </Select>
       <Button type="primary" class="ml-10" @click="getData(flag, time)">查询</Button>
