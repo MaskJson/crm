@@ -129,7 +129,6 @@
         date = date +(flag ? (-mills) : mills);
         this.time = new Date(date);
         this.getData(this.flag, this.time);
-        this.$refs['count'].init();
       },
       getData(flag, time) {
         if (!time) {
@@ -141,6 +140,7 @@
           return false;
         }
         this.show = true;
+        this.$refs['count'].init();
         this.getProjectProgressInfos(flag, time);
         this.getTalentRemindInfos(flag, time);
         this.getCustomerRemindInfos(flag, time);
