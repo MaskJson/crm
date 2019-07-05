@@ -66,7 +66,7 @@
 </template>
 
 <script>
-  import { getUserId, getDateTime, globalSearch, toggleShow,getCustomerType, getRenderList } from "../../../libs/tools";
+  import { getUserId, getDateTime, globalSearch, toggleShow,getCustomerType, getRenderList, getUserInfoByKey } from "../../../libs/tools";
   import { customerPendingList } from "../../../api/count";
   import { addRemind, finishRemind, getCustomerContact } from "../../../api/customer";
   import { customerTypes } from "../../../libs/constant";
@@ -79,6 +79,7 @@
         contacts: [],
         searchData: {
           userId: getUserId(),
+          roleId: getUserInfoByKey('roleId'),
           type: null
         },
         columns: [

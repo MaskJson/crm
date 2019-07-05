@@ -376,6 +376,9 @@ export const getCustomerType = (h, data) => {
   let text = '';
   const index = customerTypes.findIndex(item => item.value == data);
   text = index > -1 ? customerTypes[index].label : '';
+  if (data == 1) {
+    text = '列名';
+  }
   return h ? h('span', text) : text;
 }
 // 获取状态render
