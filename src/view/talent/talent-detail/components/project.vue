@@ -11,8 +11,10 @@
             <Button
               type="text"
               class="block"
+              :class="{'cl-success': action.status == 110, 'cl-error': action.status==120&&action.type!=200, 'cl-warning': action.status==120&&action.type==200}"
               v-for="(action, index) of renderAction(item.id, item.status, item.type, item.remarkStatus)"
               :key="'btn' + index"
+              :disabled="action.status == 110 || action.status == 120"
               @click="setActionData(item.id, action.status, action.type, item.status, item.type, index, item.remarkStatus, item.createUser)"
             >{{action.text}}</Button>
             <Button v-if="item.status != 0" type="text" @click="reBack(item.id, item.status, index)">撤销</Button>
@@ -401,7 +403,7 @@
         switch (projectStatus) {
           case 0:
             // type != 100 ? getAction('推荐给客户', 0, 100) : action.push(h('span', {class: {'cl-error': true}}, '等待项目总监审核'));
-            type != 100 ? (roleId == 3 ? getAction('推荐给客户', '0', 100) : null) : roleId == 3 ? getAction('通过', '666', 666) : action.push(h('span', {class: {'cl-error': true, block: true}}, '等待项目总监审核'));
+            type != 100 ? (roleId == 3 ? getAction('推荐给客户', '0', 100) : null) : roleId == 3 ? getAction('通过', '666', 666) : getAction('等待总监审核', 120, 120);
             break;
           case 1:
             getAction('安排面试',3, 2);
@@ -438,13 +440,14 @@
           getAction('淘汰', 8, 15);
         }
         if (projectStatus=='7' || projectStatus=='8') {
-          action.push(h('span',{
-            class: {
-              'cl-success': projectStatus=='7',
-              'cl-error': projectStatus=='8'&&type!=200,
-              'cl-primary': projectStatus=='8'&&type==200
-            }
-          }, projectStatus=='7'?'已通过保证期':type == 200 ? '已在其他项目入职':'已淘汰'))
+          getAction(projectStatus=='7'?'已通过保证期':type == 200 ? '已在其他项目入职':'已淘汰', projectStatus == '7'?110:120, type);
+          // action.push(h('span',{
+          //   class: {
+          //     'cl-success': projectStatus=='7',
+          //     'cl-error': projectStatus=='8'&&type!=200,
+          //     'cl-primary': projectStatus=='8'&&type==200
+          //   }
+          // }, projectStatus=='7'?'已通过保证期':type == 200 ? '已在其他项目入职':'已淘汰'))
         }
         // if (status != '0' && type != 200) {
         //   action.push(h('Button', {

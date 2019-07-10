@@ -939,7 +939,12 @@
           width: 180,
           ellipsis: true,
           render: (h, params) => {
-            return h('div', {class: 'line'}, [
+            return h('div', {
+                class: 'line',
+                domProps: {
+                  title: params.row.projectName + '--' + params.row.customerName
+                }
+              }, [
               h('Button', {
                 props: {
                   type: 'text',
@@ -960,9 +965,6 @@
                   type: 'text',
                   size: 'small'
                 },
-                domProps: {
-                  title: params.row.customerName
-                }
               }, params.row.customerName)
             ]);
           }
