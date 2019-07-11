@@ -5,7 +5,7 @@
         <Panel v-for="(item, index) of list" :key="'progress1'+index">
           <span>{{item.name}}-{{item.children.length}}</span>
           <div slot="content">
-            <TalentProgress flag="yes" performance="yes" home="yes" :project-talents="item.children"/>
+            <TalentProgress flag="yes" performance="yes" home="yes" :project-talents="filterReminds(item.children)"/>
           </div>
         </Panel>
       </Collapse>
@@ -27,15 +27,35 @@
     },
     computed: {
       listFilter() {
+        let result = [];
         let list = [];
         if (this.list) {
           this.list.forEach(item => {
             list = list.concat([...item.children])
           })
         }
-        return list;
+        list.forEach(item => {
+          const index = result.findIndex(it => item.id == it.id && item.createUserId == it.createUserId && item.remindStatus == it.remindStatus);
+          if (index < 0) {
+            result.push(item);
+          }
+        });
+        return result;
       }
     },
+    methods: {
+      filterReminds(list) {
+        list = list || [];
+        let result = [];
+        list.forEach(item => {
+          const index = result.findIndex(it => item.id == it.id && item.createUserId == it.createUserId && item.remindStatus == it.remindStatus);
+          if (index < 0) {
+            result.push(item);
+          }
+        });
+        return result;
+      }
+    }
   }
 </script>
 
