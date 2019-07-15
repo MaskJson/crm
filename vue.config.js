@@ -94,7 +94,7 @@ module.exports = {
     },
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8989',  // 请求本地 需要后台接口
+        target: 'http://120.77.66.2:8989',  // 请求本地 需要后台接口
         changeOrigin: true,
         ws: true
       }

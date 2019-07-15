@@ -35,7 +35,7 @@
           })
         }
         list.forEach(item => {
-          const index = result.findIndex(it => item.id == it.id && item.createUserId == it.createUserId && item.remindStatus == it.remindStatus);
+          const index = result.findIndex(it => item.id == it.id && item.remindStatus == it.remindStatus);
           if (index < 0) {
             result.push(item);
           }
@@ -48,7 +48,7 @@
         list = list || [];
         let result = [];
         list.forEach(item => {
-          const index = result.findIndex(it => item.id == it.id && item.createUserId == it.createUserId && item.remindStatus == it.remindStatus);
+          const index = result.findIndex(it => item.id == it.id && item.remindStatus == it.remindStatus);
           if (index < 0) {
             result.push(item);
           }

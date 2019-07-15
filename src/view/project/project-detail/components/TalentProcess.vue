@@ -375,7 +375,7 @@
             render: (h, params) => {
               // const remind = this.getLastRemind(params.row.reminds || [], !!this.home ? params.row.status : this.status) || {};
               if (!this.performance && params.row.reminds && params.row.reminds.length == 0) {
-                return h('span', '暂无跟踪记录');
+                return h('span', '');
               }
               const remind = !!this.performance ? params.row.remind || {} : this.getLastRemind(params.row.reminds || [], !!this.home ? params.row.status : this.status) || {};
               const {type,status,createTime,recommendation,killRemark,interviewTime,interviewTone,remark,
@@ -386,7 +386,7 @@
               const fk = [`人才反馈：${talentRemark}`,`客户反馈：${customerRemark}`];
               const recommend = [`推荐理由：${recommendation}`];
               const kill = [`淘汰：${killRemark}`];
-              const rmk = [`备注：${remark || '没有填写备注'}`,`创建时间：${getDateTime2(createTime) || ''}`].filter(item => !!item);
+              const rmk = [`${remark || ''}`,`${getDateTime2(createTime) || ''}`].filter(item => !!item);
               let arr = [];
               switch (type) {
                 // case 2:
@@ -927,9 +927,9 @@
             render: (h, params) => {
               return h('span', {
                 domProps: {
-                  title: getProjectTalentStatus(false, params.row.status) + '——' +getProjectTalentType(false, params.row.type)
+                  title: getProjectTalentStatus(false, params.row.status) + '——' +(getProjectTalentType(false, params.row.type)||'')
                 }
-              }, getProjectTalentStatus(false, params.row.status) + '——' +getProjectTalentType(false, params.row.type));
+              }, getProjectTalentStatus(false, params.row.status) + '——' +(getProjectTalentType(false, params.row.type)||''));
             }
           });
           this.projectTalentStatus = this.projectTalentStatus.slice(1, 8);
